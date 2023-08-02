@@ -1,0 +1,95 @@
+import sys
+import json
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem, \
+    QAbstractItemView, QHeaderView
+from PyQt5.QtGui import QIcon, QPixmap
+from buttonclass import MainButton1
+from labelclass import IntroLabel1, IntroLabel3
+
+class FirstPageClass(QWidget):
+    def __init__(self, path, path2, parent=None):
+        super().__init__(parent)
+
+        # Set the background color of the main window
+        self.setStyleSheet("background-color: #1F2843;")
+        self.setFixedSize(910, 790)
+        self.parent = parent
+
+        # Add logo
+        label_design = QLabel(self)
+        pic_design = QPixmap(path)
+        label_design.setPixmap(pic_design.scaled(500, 300))
+        label_design.move(200, 50)
+
+        label_design = IntroLabel3(self)
+        label_design.setText("Last Design Files")
+        label_design.move(100, 400)
+
+        tableWidget = QTableWidget(self)
+        tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        tableWidget.verticalHeader().setVisible(False)
+        tableWidget.horizontalHeader().setStyleSheet('''
+            background-color: #1F2843;
+            color: #7C8AA7;
+            border: None;
+        ''')
+        tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        tableWidget.setStyleSheet('''
+            font: 'Arial';
+            font-size: 16px;
+            blockground-color: #1F2843;
+            color: #7C8AA7;
+            border: none;
+        ''')
+        tableWidget.setColumnWidth(1, 200)
+        tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        tableWidget.resize(800, 220)
+        tableWidget.setRowCount(6)
+        tableWidget.setColumnCount(2)
+        tableWidget.setHorizontalHeaderLabels(['Path', 'Description'])
+        tableWidget.move(150, 430)
+
+        with open(path2, 'r') as f:
+            data = json.load(f)
+
+        for i in range(0, len(data)):
+            key = list(data.keys())[i]
+            print(key, data[key])
+            nameitem = QTableWidgetItem(key)
+            nameitem.setTextAlignment(Qt.AlignCenter)
+            tableWidget.setItem(i, 0, nameitem)
+            desitem = QTableWidgetItem(data[key])
+            desitem.setTextAlignment(Qt.AlignCenter)
+            tableWidget.setItem(i, 1, desitem)
+
+        btn_open = MainButton1(self)
+        btn_open.setText(self.tr('Open Design'))
+        btn_open.move(200, 670)
+        btn_open.resize(170, 55)
+
+        btn_next = MainButton1(self)
+        btn_next.setText(self.tr('Next Step'))
+        btn_next.move(550, 670)
+        btn_next.resize(170, 55)
+
+    # def designUI(self):
+    #     self.parent.designUI()
+    #
+    # def analysisUI(self):
+    #     self.parent.analysisUI()
+
+if __name__ == '__main__':
+    # Create a new QApplication instance
+    app = QApplication(sys.argv)
+
+    # Create a new MyApp instance
+    my_app = FirstPageClass('./Backgrounds/designbackground.png', './Logs/designpath.json')
+
+    # Show the main window
+    my_app.show()
+
+    # Start the event loop
+    sys.exit(app.exec_())
