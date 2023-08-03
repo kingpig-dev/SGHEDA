@@ -69,11 +69,20 @@ class FirstPageClass(QWidget):
         btn_open.setText(self.tr('Open Design'))
         btn_open.move(200, 670)
         btn_open.resize(170, 55)
+        btn_open.clicked.connect(self.btnopen)
 
         btn_next = MainButton1(self)
         btn_next.setText(self.tr('Next Step'))
         btn_next.move(550, 670)
         btn_next.resize(170, 55)
+        btn_next.clicked.connect(self.btnnext)
+
+    def btnopen(self):
+        print('btnopen')
+
+    def btnnext(self):
+        print('btnnext')
+        self.parent.movenext()
 
     # def designUI(self):
     #     self.parent.designUI()

@@ -34,6 +34,7 @@ class Myapp(QMainWindow):
         self.dashboard.move(1000, 1000)
         self.analysis.move(1000, 1000)
         self.design.move(0, 0)
+        self.design.right_widget.setCurrentIndex(0)
 
     def dashboardUI(self):
         print("dashboardUI")
@@ -46,6 +47,7 @@ class Myapp(QMainWindow):
         self.design.move(1000, 1000)
         self.dashboard.move(1000, 1000)
         self.analysis.move(0, 0)
+        self.analysis.right_widget.setCurrentIndex(0)
 
 if __name__ == '__main__':
     # Create a new QApplication instance

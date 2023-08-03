@@ -4,12 +4,16 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLay
 from PyQt5.QtGui import QIcon, QPixmap, QCursor
 from PyQt5.QtCore import Qt
 
-from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton
+from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1
 from firstpageclass import FirstPageClass
+from inputformclass import InputForm
+
 class DesignClass(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
+        self.tabstack = []
+        self.dict = {}
 
         # set the size of window
         self.setFixedSize(1210, 790)
@@ -56,6 +60,7 @@ class DesignClass(QWidget):
                 image: url('+arrow_icon+');
             }
         """)
+        self.combobox_selection.currentIndexChanged.connect(self.combobox_selection_changed)
         self.combobox_selection.move(10, 150)
 
         self.label_num = QLabel(self.left_widget)
@@ -120,6 +125,7 @@ class DesignClass(QWidget):
         self.tab2 = self.ui2()
         self.tab3 = self.ui3()
         self.tab4 = self.ui4()
+        self.tab5 = self.ui5()
 
         # right widget
         self.right_widget = QTabWidget()
@@ -129,6 +135,7 @@ class DesignClass(QWidget):
         self.right_widget.addTab(self.tab2, '')
         self.right_widget.addTab(self.tab3, '')
         self.right_widget.addTab(self.tab4, '')
+        self.right_widget.addTab(self.tab5, '')
 
         self.right_widget.setCurrentIndex(0)
         self.right_widget.setStyleSheet('''
@@ -153,52 +160,223 @@ class DesignClass(QWidget):
         self.setLayout(main_layout)
 
     # -----------------
+    # combobox
+    def combobox_selection_changed(self):
+        selected_text = self.combobox_selection.currentText()
+        if selected_text == "Design":
+            self.right_widget.setCurrentIndex(0)
+        else:
+            self.parent.analysisUI()
+
+    # -----------------
     # buttons
 
     def button1(self):
-        self.right_widget.setCurrentIndex(0)
-
-    def button2(self):
         self.right_widget.setCurrentIndex(1)
 
-    def button3(self):
+    def button2(self):
         self.right_widget.setCurrentIndex(2)
 
-    def button4(self):
+    def button3(self):
         self.right_widget.setCurrentIndex(3)
+
+    def button4(self):
+        self.right_widget.setCurrentIndex(4)
         # self.parent.dashboardUI()
     # -----------------
     # pages
 
     def ui1(self):
-        main = FirstPageClass('./Backgrounds/designbackground.png', './Logs/designpath.json')
-
+        main = FirstPageClass('./Backgrounds/designbackground.png', './Logs/designpath.json', self)
         return main
 
     def ui2(self):
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(QLabel('page 2'))
-        main_layout.addStretch(5)
+        #         Fluid
         main = QWidget()
-        main.setLayout(main_layout)
+        data_form_fluidsystemdesign = ["System Design", ["Inlet Temperature", "dF", "lineedit"], ["Flow Rate", "gpm/ton", "lineedit"], ["Fluid type", ["Water", "Methanol"], "combobox"]]
+        form_fluidsystemdesign = InputForm(main, data_form_fluidsystemdesign)
+        form_fluidsystemdesign.move(200, 100)
+
+        data_form_fluidproperties = ["Fuild Properties",
+                                          ["Fluid Type", ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol", "Sodium Chloride", "Calcium Chloride"], "combobox"],
+                                          ["Design Outlet Temperature", "dF", "lineedit"],
+                                          ["Specific Heat", "dF*lbm", "lineedit"],
+                                          ["Density", "lb/ft^3", "lineedit"]
+                                          ]
+        form_fluidproperties = InputForm(main, data_form_fluidproperties)
+        form_fluidproperties.move(150, 350)
+
+        def uimovenext():
+            print("uimovenext")
+            dict = {}
+            if form_fluidsystemdesign.getValidation():
+                dict[data_form_fluidsystemdesign[0]] = form_fluidsystemdesign.getData()
+            else:
+                return False
+            if form_fluidproperties.getValidation():
+                dict[data_form_fluidproperties[0]] = form_fluidproperties.getData()
+            else:
+                return False
+
+            self.dict["fluid"] = dict
+            self.movenext()
+            return True
+
+        def uimoveprevious():
+            self.moveprevious()
+
+        btn_open = MainButton1(main)
+        btn_open.setText(main.tr('Previous Step'))
+        btn_open.move(200, 670)
+        btn_open.resize(170, 55)
+        btn_open.clicked.connect(uimoveprevious)
+
+        btn_next = MainButton1(main)
+        btn_next.setText(main.tr('Next Step'))
+        btn_next.move(550, 670)
+        btn_next.resize(170, 55)
+        btn_next.clicked.connect(uimovenext)
         return main
 
     def ui3(self):
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(QLabel('page 3'))
-        main_layout.addStretch(5)
+        #       Soil
         main = QWidget()
-        main.setLayout(main_layout)
+        data_form_undisturbedgroundtemperature = ["Undisturbed Ground Temperature",
+                                                 ["Ground Temperature", "dF", "lineedit"]
+                                                 ]
+        form_undisturbedgroundtemperature = InputForm(main, data_form_undisturbedgroundtemperature)
+        form_undisturbedgroundtemperature.move(200, 100)
+
+        data_form_soilthermalproperties = ["Soil Thermal Properties",
+                                          ["Thermal Conductivity", "Btu/(h*ft*⁰F)", "lineedit"],
+                                          ["Thermal Diffusivity", "ft^2/day", "lineedit"]
+                                          ]
+        form_soilthermalproperties = InputForm(main, data_form_soilthermalproperties)
+        form_soilthermalproperties.move(150, 350)
+
+        def uimovenext():
+            print("uimovenext")
+            dict = {}
+            if form_undisturbedgroundtemperature.getValidation():
+                dict[data_form_undisturbedgroundtemperature[0]] = form_undisturbedgroundtemperature.getData()
+            else:
+                return False
+            if form_soilthermalproperties.getValidation():
+                dict[data_form_soilthermalproperties[0]] = form_soilthermalproperties.getData()
+            else:
+                return False
+
+            self.dict["soil"] = dict
+            self.movenext()
+            return True
+
+        def uimoveprevious():
+            self.moveprevious()
+
+
+        btn_open = MainButton1(main)
+        btn_open.setText(main.tr('Previous Step'))
+        btn_open.move(200, 670)
+        btn_open.resize(170, 55)
+        btn_open.clicked.connect(uimoveprevious)
+
+        btn_next = MainButton1(main)
+        btn_next.setText(main.tr('Next Step'))
+        btn_next.move(550, 670)
+        btn_next.resize(170, 55)
+        btn_next.click().connect(uimovenext)
         return main
 
     def ui4(self):
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(QLabel('page 4'))
-        main_layout.addStretch(5)
+        # Piping
         main = QWidget()
-        main.setLayout(main_layout)
+
+        data_form_trenchlayout = ["Trench Layout",
+                                             ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit"],
+                                             ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
+                                             ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
+                                             ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"]
+                                             ]
+        form_trenchlayout = InputForm(main, data_form_trenchlayout)
+        form_trenchlayout.move(200, 100)
+
+        def uimovenext():
+            print("uimovenext")
+            dict = {}
+            if form_trenchlayout.getValidation():
+                dict[data_form_trenchlayout[0]] = form_trenchlayout.getData()
+            else:
+                return False
+
+            self.dict["soil"] = dict
+            self.movenext()
+            return True
+
+        def uimoveprevious():
+            self.moveprevious()
+
+        btn_open = MainButton1(main)
+        btn_open.setText(main.tr('Previous Step'))
+        btn_open.move(200, 670)
+        btn_open.resize(170, 55)
+        btn_open.clicked.connect(uimoveprevious)
+
+        btn_next = MainButton1(main)
+        btn_next.setText(main.tr('Next Step'))
+        btn_next.move(550, 670)
+        btn_next.resize(170, 55)
+        btn_next.clicked.connect(uimovenext)
+
         return main
 
+    def ui5(self):
+        # Configuration
+        main = QWidget()
+
+        data_form_trenchlayout = ["Trench Layout",
+                                             ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit"],
+                                             ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)",
+                                                            "1 1/2 in. (40mm)"], "combobox"],
+                                             ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
+                                             ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"]
+                                             ]
+        form_trenchlayout = InputForm(main, data_form_trenchlayout)
+        form_trenchlayout.move(200, 100)
+
+        def uimovenext():
+            print("uimovenext")
+            dict = {}
+            if form_trenchlayout.getValidation():
+                dict[data_form_trenchlayout[0]] = form_trenchlayout.getData()
+            else:
+                return False
+
+            self.dict["soil"] = dict
+            self.movenext()
+            return True
+
+        def uimoveprevious():
+            self.moveprevious()
+
+        btn_open = MainButton1(main)
+        btn_open.setText(main.tr('Previous Step'))
+        btn_open.move(200, 670)
+        btn_open.resize(170, 55)
+        btn_open.clicked.connect(uimoveprevious)
+
+        btn_next = MainButton1(main)
+        btn_next.setText(main.tr('Next Step'))
+        btn_next.move(550, 670)
+        btn_next.resize(170, 55)
+        btn_next.clicked.connect(uimovenext)
+
+        return main
+
+    def movenext(self):
+        self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
+
+    def moveprevious(self):
+        self.right_widget.setCurrentIndex(self.right_widget.currentIndex() - 1)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
