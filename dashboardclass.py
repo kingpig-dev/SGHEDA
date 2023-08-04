@@ -45,17 +45,17 @@ class Dashboard(QWidget):
 
         # Add a button to the layout
         design_button = MainButton(self)
-        design_button.setText(self.tr('Design GHE'))
+        design_button.setText(self.tr('Open Design & Analysis'))
         design_button.show()
-        design_button.move(280, 650)
+        design_button.move(700, 650)
         design_button.clicked.connect(self.designUI)
-
-        # Add another button to the layout
-        analysis_button = MainButton(self)
-        analysis_button.setText(self.tr('Design Analysis'))
-        analysis_button.show()
-        analysis_button.move(780, 650)
-        analysis_button.clicked.connect(self.analysisUI)
+        #
+        # # Add another button to the layout
+        # analysis_button = MainButton(self)
+        # analysis_button.setText(self.tr('Design Analysis'))
+        # analysis_button.show()
+        # analysis_button.move(780, 650)
+        # analysis_button.clicked.connect(self.analysisUI)
 
     def designUI(self):
         self.parent.designUI()

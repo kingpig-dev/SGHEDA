@@ -1,13 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMainWindow
-from PyQt5.QtGui import QIcon, QPixmap
-from buttonclass import MainButton
-from labelclass import IntroLabel1, IntroLabel2
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtGui import QIcon
 
 
 from dashboardclass import Dashboard
 from designclass import DesignClass
-from analysisclass import AnalysisClass
 
 class Myapp(QMainWindow):
     def __init__(self):
@@ -24,30 +21,18 @@ class Myapp(QMainWindow):
         self.design = DesignClass(self)
         self.design.move(1000, 1000)
 
-        self.analysis = AnalysisClass(self)
-        self.analysis.move(1000, 1000)
-
         self.dashboard = Dashboard(self)
 
     def designUI(self):
         print("designUI")
         self.dashboard.move(1000, 1000)
-        self.analysis.move(1000, 1000)
         self.design.move(0, 0)
         self.design.right_widget.setCurrentIndex(0)
 
     def dashboardUI(self):
         print("dashboardUI")
         self.design.move(1000, 1000)
-        self.analysis.move(1000, 1000)
         self.dashboard.move(0, 0)
-
-    def analysisUI(self):
-        print("analysisUI")
-        self.design.move(1000, 1000)
-        self.dashboard.move(1000, 1000)
-        self.analysis.move(0, 0)
-        self.analysis.right_widget.setCurrentIndex(0)
 
 if __name__ == '__main__':
     # Create a new QApplication instance

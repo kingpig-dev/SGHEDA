@@ -1,6 +1,7 @@
+import json
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMainWindow, QTabWidget, \
-    QHBoxLayout, QSizePolicy, QComboBox
+    QHBoxLayout, QSizePolicy, QComboBox, QFileDialog
 from PyQt5.QtGui import QIcon, QPixmap, QCursor
 from PyQt5.QtCore import Qt
 
@@ -14,6 +15,7 @@ class DesignClass(QWidget):
         self.parent = parent
         self.tabstack = []
         self.dict = {}
+        self.designpath = './Logs/designpath.json'
 
         # set the size of window
         self.setFixedSize(1210, 790)
@@ -29,7 +31,7 @@ class DesignClass(QWidget):
         # Image button
         self.btn_home = ImageButton(self.left_widget, './Images/logo03.png')
         self.btn_home.move(20, 20)
-        # self.btn_home.clicked.connect(self.parent.dashboardUI)
+        self.btn_home.clicked.connect(self.button0)
 
         self.combobox_selection = QComboBox(self.left_widget)
         self.icon_design = QIcon('./Images/design.png')
@@ -79,7 +81,6 @@ class DesignClass(QWidget):
             }
         """)
 
-
         self.btn_1 = SquareButton(self.left_widget, './Images/fluid02.png')
         self.btn_1.setText(' Fluid')
         self.btn_1.setGeometry(0, 200, 200, 50)
@@ -98,11 +99,17 @@ class DesignClass(QWidget):
         self.btn_6 = SquareButton(self.left_widget, './Images/result01.png')
         self.btn_6.setText(' Result')
         self.btn_6.setGeometry(0, 450, 200, 50)
+        self.btn_7 = SquareButton(self.left_widget, './Images/analysis05.png')
+        self.btn_7.setText(' Analysis')
+        self.btn_7.setGeometry(0, 500, 200, 50)
 
         self.btn_1.clicked.connect(self.button1)
         self.btn_2.clicked.connect(self.button2)
         self.btn_3.clicked.connect(self.button3)
         self.btn_4.clicked.connect(self.button4)
+        self.btn_5.clicked.connect(self.button5)
+        self.btn_6.clicked.connect(self.button6)
+        self.btn_7.clicked.connect(self.button7)
 
         self.btn_setting = ExtraButton(self.left_widget, './Images/setting02.png')
         self.btn_setting.setText(' Setting')
@@ -126,6 +133,9 @@ class DesignClass(QWidget):
         self.tab3 = self.ui3()
         self.tab4 = self.ui4()
         self.tab5 = self.ui5()
+        self.tab6 = self.ui6()
+        self.tab7 = self.ui7()
+        self.tab8 = self.ui8()
 
         # right widget
         self.right_widget = QTabWidget()
@@ -136,6 +146,9 @@ class DesignClass(QWidget):
         self.right_widget.addTab(self.tab3, '')
         self.right_widget.addTab(self.tab4, '')
         self.right_widget.addTab(self.tab5, '')
+        self.right_widget.addTab(self.tab6, '')
+        self.right_widget.addTab(self.tab7, '')
+        self.right_widget.addTab(self.tab8, '')
 
         self.right_widget.setCurrentIndex(0)
         self.right_widget.setStyleSheet('''
@@ -170,7 +183,9 @@ class DesignClass(QWidget):
 
     # -----------------
     # buttons
-
+    def button0(self):
+        self.tab1.loadtable()
+        self.right_widget.setCurrentIndex(0)
     def button1(self):
         self.right_widget.setCurrentIndex(1)
 
@@ -182,12 +197,18 @@ class DesignClass(QWidget):
 
     def button4(self):
         self.right_widget.setCurrentIndex(4)
-        # self.parent.dashboardUI()
+    def button5(self):
+        self.right_widget.setCurrentIndex(5)
+    def button6(self):
+        self.right_widget.setCurrentIndex(6)
+    def button7(self):
+        self.right_widget.setCurrentIndex(7)
     # -----------------
     # pages
 
     def ui1(self):
-        main = FirstPageClass('./Backgrounds/designbackground.png', './Logs/designpath.json', self)
+        main = FirstPageClass('./Backgrounds/designbackground.png', self.designpath, self)
+        main.loadtable()
         return main
 
     def ui2(self):
@@ -311,7 +332,7 @@ class DesignClass(QWidget):
             else:
                 return False
 
-            self.dict["soil"] = dict
+            self.dict["Piping"] = dict
             self.movenext()
             return True
 
@@ -358,7 +379,7 @@ class DesignClass(QWidget):
                 dict[data_form_modelingtimeperiod[0]] = form_modelingtimeperiod.getData()
             else:
                 return False
-            self.dict["soil"] = dict
+            self.dict["Configuration"] = dict
             self.movenext()
             return True
 
@@ -379,55 +400,157 @@ class DesignClass(QWidget):
 
         return main
 
-    # def ui6(self):
-    #     # Extra KW
-    #     main = QWidget()
-    #
-    #     data_form_circulationpumps = ["Circulation Pumps",
-    #                                   ["Required Input Power", 'KW', "lineedit", '0.0'],
-    #                                   ["Pump Power", "hP", 'lineedit', '0.0'],
-    #                                   ['Pump Motor Efficiency']
-    #                              ]
-    #     form_circulationpumps = InputForm(main, data_form_pipeconfiguration)
-    #     form_circulationpumps.move(200, 100)
-    #
-    #     data_form_modelingtimeperiod = ["Modeling Time Period",
-    #                                     ['Prediction Time', 'years', 'lineedit', '1.0']]
-    #     form_modelingtimeperiod = InputForm(main, data_form_modelingtimeperiod)
-    #     form_modelingtimeperiod.move(150, 350)
-    #
-    #     def uimovenext():
-    #         print("uimovenext")
-    #         dict = {}
-    #         if form_pipeconfiguration.getValidation():
-    #             dict[data_form_pipeconfiguration[0]] = form_pipeconfiguration.getData()
-    #         else:
-    #             return False
-    #         if form_modelingtimeperiod.getValidation():
-    #             dict[data_form_modelingtimeperiod[0]] = form_modelingtimeperiod.getData()
-    #         else:
-    #             return False
-    #         self.dict["soil"] = dict
-    #         self.movenext()
-    #         return True
+    def ui6(self):
+        # Extra KW
+        main = QWidget()
 
-        # def uimoveprevious():
-        #     self.moveprevious()
-        #
-        # btn_open = MainButton1(main)
-        # btn_open.setText(main.tr('Previous Step'))
-        # btn_open.move(200, 670)
-        # btn_open.resize(170, 55)
-        # btn_open.clicked.connect(uimoveprevious)
-        #
-        # btn_next = MainButton1(main)
-        # btn_next.setText(main.tr('Next Step'))
-        # btn_next.move(550, 670)
-        # btn_next.resize(170, 55)
-        # btn_next.clicked.connect(uimovenext)
-        #
-        # return main
+        data_form_circulationpumps = ["Circulation Pumps",
+                                      ["Required Input Power", 'KW', "lineedit", '0.0'],
+                                      ["Pump Power", "hP", 'lineedit', '0.0'],
+                                      ['Pump Motor Efficiency', '%', 'lineedit', '85']
+                                 ]
+        form_circulationpumps = InputForm(main, data_form_circulationpumps)
+        form_circulationpumps.move(200, 100)
 
+        data_form_additionalpowerrequirements = ["Modeling Power",
+                                        ['Addtional Power', 'KW', 'lineedit', '0.0']]
+        form_additionalpowerrequirements = InputForm(main, data_form_additionalpowerrequirements)
+        form_additionalpowerrequirements.move(150, 350)
+
+        def uimovenext():
+            print("uimovenext")
+            dict = {}
+            if form_circulationpumps.getValidation():
+                dict[data_form_circulationpumps[0]] = form_circulationpumps.getData()
+            else:
+                return False
+            if form_additionalpowerrequirements.getValidation():
+                dict[data_form_additionalpowerrequirements[0]] = form_additionalpowerrequirements.getData()
+            else:
+                return False
+
+            self.dict["Extra KW"] = dict
+            self.movenext()
+            return True
+
+        def uimoveprevious():
+            self.moveprevious()
+
+        btn_open = MainButton1(main)
+        btn_open.setText(main.tr('Previous Step'))
+        btn_open.move(200, 670)
+        btn_open.resize(170, 55)
+        btn_open.clicked.connect(uimoveprevious)
+
+        btn_next = MainButton1(main)
+        btn_next.setText(main.tr('Design'))
+        btn_next.move(550, 670)
+        btn_next.resize(170, 55)
+        btn_next.clicked.connect(uimovenext)
+
+        return main
+    def ui7(self):
+        # Results
+        main = QWidget()
+        main.setStyleSheet('''
+            color: white;
+        ''')
+        data_form_designdimensions = ["Design Dimensions",
+                                      ["Trench Length", 'ft', "lineedit", '20'],
+                                      ["Total Pipe Length", "ft", 'lineedit', '60'],
+                                      ['Inlet Temperature', '⁰F', 'lineedit', '70'],
+                                      ["Outlet Temperature", '⁰F', "lineedit", '40'],
+                                      ["Peak Load", "Kbtu/Hr", 'lineedit', '30'],
+                                      ['Power Consumption', 'KWh/day', 'lineedit', '10'],
+                                      ['System Flow Rate', 'gpm', 'lineedit', '10']
+                                 ]
+        form_designdimensions = InputForm(main, data_form_designdimensions)
+        form_designdimensions.move(200, 100)
+
+        data_form_description = ['Design Description',
+                                 ['Description', '', 'lineedit', 'design GHE for blockchain mining equipment']]
+        form_description = InputForm(main, data_form_description)
+        form_description.move(150, 350)
+
+        def uisavedesign():
+            print("uimovenext")
+            dict = {}
+
+            if form_designdimensions.getValidation():
+                dict[data_form_designdimensions[0]] = form_designdimensions.getData()
+            else:
+                return False
+            print('1')
+            if form_description.getValidation():
+                description = form_description.getData()
+            else:
+                return False
+            print('2')
+            self.dict["Results"] = dict
+            self.dict["Description"] = description
+            print('3')
+            options = QFileDialog.Options()
+            options |= QFileDialog.DontUseNativeDialog
+            file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
+                                                       options=options)
+            print(file_path)
+            if file_path:
+                temp_file_path = file_path.split('/')[-1].split('.')
+                if len(temp_file_path) == 1:
+                    file_path = file_path + '.gld'
+                with open(file_path, 'w') as file:
+                    file.write(json.dumps(self.dict))
+                with open(self.designpath, 'r') as tablefile:
+                    tablecontent = json.load(tablefile)
+                with open(self.designpath, 'w') as savefile:
+                    tablecontent[file_path] = description["Description"]
+                    savefile.write(json.dumps(tablecontent))
+            return True
+
+        def uigotoanalysis():
+            self.parent.dashboardUI()
+
+        btn_save = MainButton1(main)
+        btn_save.setText(main.tr('Save design'))
+        btn_save.move(100, 670)
+        btn_save.resize(170, 55)
+        btn_save.clicked.connect(uisavedesign)
+
+        btn_redesign = MainButton1(main)
+        btn_redesign.setText(main.tr('Redesign'))
+        btn_redesign.move(450, 670)
+        btn_redesign.resize(170, 55)
+        btn_redesign.clicked.connect(self.button0)
+
+        btn_gotoanalysis = MainButton1(main)
+        btn_gotoanalysis.setText(main.tr('Go to Analysis'))
+        btn_gotoanalysis.move(625, 670)
+        btn_gotoanalysis.resize(170, 55)
+        btn_gotoanalysis.clicked.connect(uigotoanalysis)
+
+        return main
+
+    def ui8(self):
+        main = QWidget()
+        btn_save = MainButton1(main)
+        btn_save.setText(main.tr('Save design'))
+        btn_save.move(100, 670)
+        btn_save.resize(170, 55)
+        # btn_save.clicked.connect(uisavedesign)
+
+        btn_redesign = MainButton1(main)
+        btn_redesign.setText(main.tr('Redesign'))
+        btn_redesign.move(450, 670)
+        btn_redesign.resize(170, 55)
+        # btn_redesign.clicked.connect(uiredesign)
+
+        btn_gotoanalysis = MainButton1(main)
+        btn_gotoanalysis.setText(main.tr('Go to Analysis'))
+        btn_gotoanalysis.move(625, 670)
+        btn_gotoanalysis.resize(170, 55)
+        # btn_gotoanalysis.clicked.connect(uigotoanalysis)
+
+        return main
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
 
