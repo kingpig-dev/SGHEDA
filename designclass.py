@@ -193,15 +193,18 @@ class DesignClass(QWidget):
     def ui2(self):
         #         Fluid
         main = QWidget()
-        data_form_fluidsystemdesign = ["System Design", ["Inlet Temperature", "dF", "lineedit"], ["Flow Rate", "gpm/ton", "lineedit"], ["Fluid type", ["Water", "Methanol"], "combobox"]]
+        data_form_fluidsystemdesign = ["System Design",
+                                       ["Inlet Temperature", "dF", "lineedit", "90.0"],
+                                       ["Flow Rate", "gpm/ton", "lineedit", '3.0'],
+                                       ["Fluid type", ["Water", "Methanol"], "combobox"]]
         form_fluidsystemdesign = InputForm(main, data_form_fluidsystemdesign)
         form_fluidsystemdesign.move(200, 100)
 
         data_form_fluidproperties = ["Fuild Properties",
                                           ["Fluid Type", ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol", "Sodium Chloride", "Calcium Chloride"], "combobox"],
-                                          ["Design Outlet Temperature", "dF", "lineedit"],
-                                          ["Specific Heat", "dF*lbm", "lineedit"],
-                                          ["Density", "lb/ft^3", "lineedit"]
+                                          ["Design Outlet Temperature", "⁰F", "lineedit", "60.0"],
+                                          ["Specific Heat", "Btu/(⁰F*lbm)", "lineedit", "1.01"],
+                                          ["Density", "lb/ft^3", "lineedit", "60.6"]
                                           ]
         form_fluidproperties = InputForm(main, data_form_fluidproperties)
         form_fluidproperties.move(150, 350)
@@ -242,14 +245,14 @@ class DesignClass(QWidget):
         #       Soil
         main = QWidget()
         data_form_undisturbedgroundtemperature = ["Undisturbed Ground Temperature",
-                                                 ["Ground Temperature", "dF", "lineedit"]
+                                                 ["Ground Temperature", "⁰F", "lineedit", '62.0']
                                                  ]
         form_undisturbedgroundtemperature = InputForm(main, data_form_undisturbedgroundtemperature)
         form_undisturbedgroundtemperature.move(200, 100)
 
         data_form_soilthermalproperties = ["Soil Thermal Properties",
-                                          ["Thermal Conductivity", "Btu/(h*ft*⁰F)", "lineedit"],
-                                          ["Thermal Diffusivity", "ft^2/day", "lineedit"]
+                                          ["Thermal Conductivity", "Btu/(h*ft*⁰F)", "lineedit", '0.75'],
+                                          ["Thermal Diffusivity", "ft^2/day", "lineedit", '0.62']
                                           ]
         form_soilthermalproperties = InputForm(main, data_form_soilthermalproperties)
         form_soilthermalproperties.move(150, 350)
@@ -284,7 +287,7 @@ class DesignClass(QWidget):
         btn_next.setText(main.tr('Next Step'))
         btn_next.move(550, 670)
         btn_next.resize(170, 55)
-        btn_next.click().connect(uimovenext)
+        btn_next.clicked.connect(uimovenext)
         return main
 
     def ui4(self):
@@ -292,7 +295,7 @@ class DesignClass(QWidget):
         main = QWidget()
 
         data_form_trenchlayout = ["Trench Layout",
-                                             ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit"],
+                                             ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit", '0.156'],
                                              ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
                                              ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
                                              ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"]
@@ -333,24 +336,28 @@ class DesignClass(QWidget):
         # Configuration
         main = QWidget()
 
-        data_form_trenchlayout = ["Trench Layout",
-                                             ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit"],
-                                             ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)",
-                                                            "1 1/2 in. (40mm)"], "combobox"],
-                                             ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
-                                             ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"]
-                                             ]
-        form_trenchlayout = InputForm(main, data_form_trenchlayout)
-        form_trenchlayout.move(200, 100)
+        data_form_pipeconfiguration = ["Pipe Configuration",
+                                 ["Pipe Configuration", ['Slinky Horizontal GHE', 'Slinky Vertical GHE', 'Earth Basket'], "combobox"]
+                                 ]
+        form_pipeconfiguration = InputForm(main, data_form_pipeconfiguration)
+        form_pipeconfiguration.move(200, 100)
+
+        data_form_modelingtimeperiod = ["Modeling Time Period",
+                                        ['Prediction Time', 'years', 'lineedit', '1.0']]
+        form_modelingtimeperiod = InputForm(main, data_form_modelingtimeperiod)
+        form_modelingtimeperiod.move(150, 350)
 
         def uimovenext():
             print("uimovenext")
             dict = {}
-            if form_trenchlayout.getValidation():
-                dict[data_form_trenchlayout[0]] = form_trenchlayout.getData()
+            if form_pipeconfiguration.getValidation():
+                dict[data_form_pipeconfiguration[0]] = form_pipeconfiguration.getData()
             else:
                 return False
-
+            if form_modelingtimeperiod.getValidation():
+                dict[data_form_modelingtimeperiod[0]] = form_modelingtimeperiod.getData()
+            else:
+                return False
             self.dict["soil"] = dict
             self.movenext()
             return True
@@ -371,6 +378,55 @@ class DesignClass(QWidget):
         btn_next.clicked.connect(uimovenext)
 
         return main
+
+    # def ui6(self):
+    #     # Extra KW
+    #     main = QWidget()
+    #
+    #     data_form_circulationpumps = ["Circulation Pumps",
+    #                                   ["Required Input Power", 'KW', "lineedit", '0.0'],
+    #                                   ["Pump Power", "hP", 'lineedit', '0.0'],
+    #                                   ['Pump Motor Efficiency']
+    #                              ]
+    #     form_circulationpumps = InputForm(main, data_form_pipeconfiguration)
+    #     form_circulationpumps.move(200, 100)
+    #
+    #     data_form_modelingtimeperiod = ["Modeling Time Period",
+    #                                     ['Prediction Time', 'years', 'lineedit', '1.0']]
+    #     form_modelingtimeperiod = InputForm(main, data_form_modelingtimeperiod)
+    #     form_modelingtimeperiod.move(150, 350)
+    #
+    #     def uimovenext():
+    #         print("uimovenext")
+    #         dict = {}
+    #         if form_pipeconfiguration.getValidation():
+    #             dict[data_form_pipeconfiguration[0]] = form_pipeconfiguration.getData()
+    #         else:
+    #             return False
+    #         if form_modelingtimeperiod.getValidation():
+    #             dict[data_form_modelingtimeperiod[0]] = form_modelingtimeperiod.getData()
+    #         else:
+    #             return False
+    #         self.dict["soil"] = dict
+    #         self.movenext()
+    #         return True
+
+        # def uimoveprevious():
+        #     self.moveprevious()
+        #
+        # btn_open = MainButton1(main)
+        # btn_open.setText(main.tr('Previous Step'))
+        # btn_open.move(200, 670)
+        # btn_open.resize(170, 55)
+        # btn_open.clicked.connect(uimoveprevious)
+        #
+        # btn_next = MainButton1(main)
+        # btn_next.setText(main.tr('Next Step'))
+        # btn_next.move(550, 670)
+        # btn_next.resize(170, 55)
+        # btn_next.clicked.connect(uimovenext)
+        #
+        # return main
 
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)

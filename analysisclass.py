@@ -26,7 +26,7 @@ class AnalysisClass(QWidget):
         # Image button
         self.btn_home = ImageButton(self.left_widget, './Images/logo03.png')
         self.btn_home.move(20, 20)
-        # self.btn_home.clicked.connect(self.parent.dashboardUI)
+        self.btn_home.clicked.connect(self.parent.dashboardUI)
 
         self.combobox_selection = QComboBox(self.left_widget)
         self.icon_design = QIcon('./Images/design01.png')

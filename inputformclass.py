@@ -8,7 +8,6 @@ class InputForm(QWidget):
 
     def __init__(self, parent, elements):
         super().__init__(parent)
-        self.dict = {}
         self.setStyleSheet('''
             background-color: #1F2843;
             color: white;
@@ -36,6 +35,7 @@ class InputForm(QWidget):
                     background-color: #1F2843;
                     border: none;
                 ''')
+                b.setText(elements[i][3])
                 c = QLabel(elements[i][1])
                 self.grid.addWidget(a, i+1, 0)
                 self.grid.addWidget(b, i+1, 1)
@@ -54,10 +54,10 @@ class InputForm(QWidget):
                 self.grid.addWidget(b, i+1, 1, 1, 2)
                 self.input.append(b)
 
-        self.btn_next = QPushButton()
-        self.btn_next.setText("Next")
-        self.btn_next.clicked.connect(self.btnnext)
-        self.grid.addWidget(self.btn_next, 5, 1)
+        # self.btn_next = QPushButton()
+        # self.btn_next.setText("Next")
+        # self.btn_next.clicked.connect(self.btnnext)
+        # self.grid.addWidget(self.btn_next, 5, 1)
         self.setLayout(self.grid)
 
     def btnnext(self):
@@ -65,14 +65,16 @@ class InputForm(QWidget):
             self.getData()
 
     def getData(self):
+        dict = {}
         for i in range(1, len(self.input)+1):
             # print(self.elements[i][2], i)
             if self.elements[i][2] == "lineedit":
-                self.dict[self.elements[i][1]] = self.input[i-1].text()
+                dict[self.elements[i][0]] = self.input[i-1].text()
+                print(self.input[i-1].text())
             elif self.elements[i][2] == "combobox":
-                self.dict[self.elements[i][1]] = self.input[i-1].currentText()
-                #print(self.input[i-1].currentText())
-        return self.dict
+                dict[self.elements[i][0]] = self.input[i-1].currentText()
+                print(self.input[i-1].currentText())
+        return dict
 
     def getValidation(self):
         for i in range(1, len(self.input)+1):
@@ -81,14 +83,13 @@ class InputForm(QWidget):
                     return False
         return True
 
-
 class Dialog(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.setWindowTitle(self.tr("Dialog"))
 
-        b = ["System Design", ["Inlet Temperature", "dF", "lineedit"], ["Flow Rate", "gpm/ton", "lineedit"], ["Fluid type", ["Water", "Methanol"], "combobox"]]
+        b = ["System Design", ["Inlet Temperature", "dF", "lineedit", '90'], ["Flow Rate", "gpm/ton", "lineedit", '3.0'], ["Fluid type", ["Water", "Methanol"], "combobox"]]
         a = InputForm(self, b)
 
         self.resize(600, 300)
