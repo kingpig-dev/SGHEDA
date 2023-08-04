@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLay
 from PyQt5.QtGui import QIcon, QPixmap
 from buttonclass import MainButton1
 from labelclass import IntroLabel1, IntroLabel3
+from notificationclass import CustomMessageBox
+
 
 class FirstPageClass(QWidget):
     def __init__(self, path, path2, parent=None):
@@ -37,6 +39,10 @@ class FirstPageClass(QWidget):
             border: None;
         ''')
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        # self.tableWidget.horizontalHeader().setStyleSheet("""
+        #     background-color: #2B3651;
+        #     color: white;
+        # """)
         self.tableWidget.setStyleSheet('''
             font: 'Arial';
             font-size: 16px;
@@ -70,7 +76,7 @@ class FirstPageClass(QWidget):
             data = json.load(f)
 
         for i in range(0, len(data)):
-            key = list(data.keys())[len(data)-1-i]
+            key = list(data.keys())[len(data) - 1 - i]
             print(key, data[key])
             nameitem = QTableWidgetItem(key)
             nameitem.setTextAlignment(Qt.AlignCenter)
@@ -80,8 +86,19 @@ class FirstPageClass(QWidget):
             self.tableWidget.setItem(i, 1, desitem)
 
     def btnopen(self):
-        print('btnopen')
-
+        selected_items = self.tableWidget.selectedItems()
+        print('btnopen slected item: ', selected_items)
+        if len(selected_items) == 2:
+            selected_row = selected_items[1].row()
+            filepath = self.tableWidget.item(selected_row, 0).text()
+            self.parent.currentgldpath = filepath
+            self.parent.loaddata()
+        else:
+            icon = QIcon('./Images/logo03.png')
+            custom_message_box = CustomMessageBox(icon, 'Custom Message', 'Please select a row \n'
+                                                                          '   in the table.', self)
+            custom_message_box.setGeometry(900, 20, 300, 70)
+            custom_message_box.show()
     def btnnext(self):
         print('btnnext')
         self.parent.movenext()
@@ -91,6 +108,7 @@ class FirstPageClass(QWidget):
     #
     # def analysisUI(self):
     #     self.parent.analysisUI()
+
 
 if __name__ == '__main__':
     # Create a new QApplication instance

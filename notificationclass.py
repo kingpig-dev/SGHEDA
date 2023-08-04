@@ -1,6 +1,8 @@
+from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QMessageBox, QDialog
+
 
 class Notification(QWidget):
     def __init__(self, message, notification_type, parent=None):
@@ -39,7 +41,35 @@ class Notification(QWidget):
     def close(self):
         # Stop timer and close window
         self.timer.stop()
-        self.hide()
+
+class CustomMessageBox(QDialog):
+    def __init__(self, icon, title, text, parent=None):
+        super().__init__(parent)
+
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setStyleSheet("""
+            background-color: #374866;
+            border-radius: 30px;
+            border: 1px solid red;
+            font-size: 16px;
+            
+        """)
+        # Set window icon
+        self.setWindowIcon(icon)
+
+        # Create icon label
+        icon_label = QLabel(self)
+        icon_label.setPixmap(icon.pixmap(64, 64))
+        icon_label.move(20,10)
+
+        # Create text label
+        text_label = QLabel(self)
+        text_label.setText(text)
+        text_label.setGeometry(100, 5, 200, 64)
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.accept)
+        self.timer.start(3000)
 
 
 class Dialog(QWidget):
@@ -47,12 +77,31 @@ class Dialog(QWidget):
         super().__init__(parent)
 
         self.setWindowTitle(self.tr("Dialog"))
+        self.setStyleSheet("""
+            background-color: #1F2843;
+            color: white;
+        """)
 
-        window = Notification("This is a test notification", "message", self)
-        window.move(app.desktop().screen().rect().topRight() - window.rect().topRight())
+        btn_alarm = QPushButton(self)
+        btn_alarm.setText('alarm')
+        btn_alarm.setGeometry(10, 200, 50, 30)
+        btn_alarm.clicked.connect(self.alarm)
+
+        btn_error = QPushButton(self)
+        btn_error.setText('error')
+        btn_error.setGeometry(60, 200, 50, 30)
+
+        btn_warning = QPushButton(self)
+        btn_warning.setText('warning')
+        btn_warning.setGeometry(110, 200, 50, 30)
 
         self.resize(600, 300)
 
+    def alarm(self):
+        icon = QIcon('./Images/logo03.png')
+        custom_message_box = CustomMessageBox(icon, 'Custom Message', 'This is a custom message.', self)
+        custom_message_box.setGeometry(300, 20, 300, 70)
+        custom_message_box.show()
 
 if __name__ == "__main__":
     import sys

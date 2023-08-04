@@ -83,6 +83,14 @@ class InputForm(QWidget):
                     return False
         return True
 
+    def setData(self, data):
+        for i in range(1, len(self.input)+1):
+            print(data[list(data.keys())[i-1]])
+            if self.elements[i][2] == "lineedit":
+                self.input[i-1].setText(data[list(data.keys())[i-1]])
+            else:
+                self.input[i-1].setText(data[list(data.keys())[i-1]])
+        print('setData')
 class Dialog(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
