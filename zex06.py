@@ -1,40 +1,42 @@
-import sys
-import json
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QAction, QFileDialog
+from PyQt5 import QtWidgets, QtGui, QtCore
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
 
-        self.setGeometry(100, 100, 500, 500)
+class CustomMessageBox(QtWidgets.QDialog):
+    def __init__(self, icon, title, text, parent=None):
+        super().__init__(parent)
 
-        # Create a QTextEdit widget to display the file contents
-        self.textEdit = QTextEdit(self)
-        self.setCentralWidget(self.textEdit)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
-        # Create a QAction to open a file
-        openFile = QAction('Open', self)
-        openFile.triggered.connect(self.showDialog)
+        # Set window icon
+        self.setWindowIcon(icon)
 
-        # Create a menu bar and add the openFile QAction to it
-        menuBar = self.menuBar()
-        fileMenu = menuBar.addMenu('File')
-        fileMenu.addAction(openFile)
+        # Create layout
+        layout = QtWidgets.QVBoxLayout()
 
-    def showDialog(self):
-        # Show a file dialog to select a JSON file
-        fileName, _ = QFileDialog.getOpenFileName(self, 'Open file', '', 'JSON files (*.json)')
+        # Create icon label
+        icon_label = QtWidgets.QLabel()
+        icon_label.setPixmap(icon.pixmap(64, 64))
+        layout.addWidget(icon_label)
 
-        if fileName:
-            # Load the JSON data from the file
-            with open(fileName, 'r') as f:
-                data = json.load(f)
+        # Create text label
+        text_label = QtWidgets.QLabel(text)
+        layout.addWidget(text_label)
 
-            # Display the JSON data in the QTextEdit widget
-            self.textEdit.setText(json.dumps(data, indent=4))
+        # Create OK button
+        ok_button = QtWidgets.QPushButton('OK')
+        ok_button.clicked.connect(self.accept)
+        layout.addWidget(ok_button)
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainWindow = MainWindow()
-    mainWindow.show()
-    sys.exit(app.exec_())
+        self.setLayout(layout)
+
+
+app = QtWidgets.QApplication([])
+
+# Create icon
+icon = QtGui.QIcon('path/to/icon.png')  # Replace with the path to your icon file
+
+# Create and show the custom message box
+custom_message_box = CustomMessageBox(icon, 'Custom Message', 'This is a custom message.')
+custom_message_box.exec()
+
+app.exec()

@@ -1,13 +1,17 @@
 import json
 import sys
+
+from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMainWindow, QTabWidget, \
     QHBoxLayout, QSizePolicy, QComboBox, QFileDialog
 from PyQt5.QtGui import QIcon, QPixmap, QCursor
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1
 from firstpageclass import FirstPageClass
 from inputformclass import InputForm
+from labelclass import IntroLabel1
+from notificationclass import CustomMessageBox
 
 class DesignClass(QWidget):
     def __init__(self, parent=None):
@@ -16,6 +20,9 @@ class DesignClass(QWidget):
         self.tabstack = []
         self.dict = {}
         self.designpath = './Logs/designpath.json'
+        self.num_design = 5
+        self.num_analysis = 4
+        self.currentgldpath = ''
 
         # set the size of window
         self.setFixedSize(1210, 790)
@@ -26,7 +33,10 @@ class DesignClass(QWidget):
         # add all widgets
 
         self.left_widget = QWidget()
-        self.left_widget.setStyleSheet('background-color: #2C3751;')
+        self.left_widget.setStyleSheet("""
+            background-color: #2C3751;
+            border-radius: 10px;
+        """)
 
         # Image button
         self.btn_home = ImageButton(self.left_widget, './Images/logo03.png')
@@ -47,39 +57,42 @@ class DesignClass(QWidget):
                 background-color: #2C3751;
                 selection-background-color: #555555;
                 padding: 1px 18px 1px 3px;
-                min-width: 6em;
+                min-width: 2em;
                 font-size: 16px;
             }
             
             QComboBox::drop-down {
                 subcontrol-origin: padding;
-                width: 15px;
-                
+                width: 5px;
                 border: none;
             }
             
             QComoboBox::down-arrow {
-                image: url('+arrow_icon+');
+                image: url(./Images/down01.png);
             }
-        """)
+        """
+        )
         self.combobox_selection.currentIndexChanged.connect(self.combobox_selection_changed)
-        self.combobox_selection.move(10, 150)
+        self.combobox_selection.move(20, 155)
 
-        self.label_num = QLabel(self.left_widget)
-        self.label_num_icon = QPixmap('./Images/remain01.png')
-        self.label_num.setPixmap(self.label_num_icon.scaled(25, 25))
-        self.label_num.setText(' 5')
-        self.label_num.setGeometry(130, 150, 140, 30)
+        self.label_num = QPushButton(self.left_widget)
+        self.label_num_icon = QIcon('./Images/remain01.png')
+        self.label_num.setIcon(self.label_num_icon)
+        self.label_num.setIconSize(QSize(25, 25))
+        self.label_num.setText(' ' + str(self.num_design))
+        self.label_num.setGeometry(130, 155, 60, 30)
         self.label_num.setStyleSheet("""
-            QLabel {
-                background-color: #2C3751;
-                color: #7C8AA7;
+            QPushButton {
+                background-color: #374866;
+                color: white;
                 font-size: 16px;
+                border-radius: 13px
             }
-            QLabel hover {
+            QPushButton:hover {
                 background-color: #5A6B90;
             }
         """)
+        self.label_num.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
         self.btn_1 = SquareButton(self.left_widget, './Images/fluid02.png')
         self.btn_1.setText(' Fluid')
@@ -102,6 +115,11 @@ class DesignClass(QWidget):
         self.btn_7 = SquareButton(self.left_widget, './Images/analysis05.png')
         self.btn_7.setText(' Analysis')
         self.btn_7.setGeometry(0, 500, 200, 50)
+
+        self.ticker_button = QLabel(self.left_widget)
+        self.ticker_button.setStyleSheet('background-color: #31A8FC')
+        self.ticker_button.resize(5, 50)
+        self.ticker_button.hide()
 
         self.btn_1.clicked.connect(self.button1)
         self.btn_2.clicked.connect(self.button2)
@@ -150,7 +168,7 @@ class DesignClass(QWidget):
         self.right_widget.addTab(self.tab7, '')
         self.right_widget.addTab(self.tab8, '')
 
-        self.right_widget.setCurrentIndex(0)
+        self.button0()
         self.right_widget.setStyleSheet('''
             QTabWidget {
                 border: none;
@@ -168,41 +186,62 @@ class DesignClass(QWidget):
         main_layout = QHBoxLayout()
         main_layout.addWidget(self.left_widget)
         main_layout.addWidget(self.right_widget)
-        main_layout.setStretch(0, 25)
+        main_layout.setStretch(0, 22)
         main_layout.setStretch(1, 100)
         self.setLayout(main_layout)
 
     # -----------------
+    # ticker button
+    def tickerbutton(self):
+        currentIndex = self.right_widget.currentIndex()
+        if self.right_widget.currentIndex() == 0:
+            self.ticker_button.hide()
+        else:
+            self.ticker_button.move(0, 200 + 50*(currentIndex - 1))
+            self.ticker_button.show()
     # combobox
     def combobox_selection_changed(self):
         selected_text = self.combobox_selection.currentText()
-        if selected_text == "Design":
-            self.right_widget.setCurrentIndex(0)
+        if selected_text == '  Design ':
+            self.label_num.setText(' ' + str(self.num_design))
         else:
-            self.parent.analysisUI()
+            self.label_num.setText(' ' + str(self.num_analysis))
 
     # -----------------
     # buttons
     def button0(self):
         self.tab1.loadtable()
         self.right_widget.setCurrentIndex(0)
+        self.tickerbutton()
     def button1(self):
         self.right_widget.setCurrentIndex(1)
-
+        self.tickerbutton()
     def button2(self):
         self.right_widget.setCurrentIndex(2)
-
+        self.tickerbutton()
     def button3(self):
         self.right_widget.setCurrentIndex(3)
-
+        self.tickerbutton()
     def button4(self):
         self.right_widget.setCurrentIndex(4)
+        self.tickerbutton()
     def button5(self):
         self.right_widget.setCurrentIndex(5)
+        self.tickerbutton()
     def button6(self):
         self.right_widget.setCurrentIndex(6)
+        self.tickerbutton()
     def button7(self):
-        self.right_widget.setCurrentIndex(7)
+        if len(self.dict.keys()) == 7:
+            self.right_widget.setCurrentIndex(7)
+            self.tickerbutton()
+        else:
+            icon = QIcon('./Images/logo03.png')
+            custom_message_box = CustomMessageBox(icon, 'Custom Message', 'Please input design \n'
+                                                                          '    parameter.', self)
+            custom_message_box.setGeometry(900, 20, 300, 70)
+            custom_message_box.show()
+            print("notification")
     # -----------------
     # pages
 
@@ -214,6 +253,10 @@ class DesignClass(QWidget):
     def ui2(self):
         #         Fluid
         main = QWidget()
+        label = IntroLabel1(main)
+        label.setText("Fluid")
+        label.move(400, 30)
+
         data_form_fluidsystemdesign = ["System Design",
                                        ["Inlet Temperature", "dF", "lineedit", "90.0"],
                                        ["Flow Rate", "gpm/ton", "lineedit", '3.0'],
@@ -249,6 +292,10 @@ class DesignClass(QWidget):
         def uimoveprevious():
             self.moveprevious()
 
+        def setData(data):
+            form_fluidsystemdesign.setData(data['System Design'])
+            form_fluidproperties.setData(data['Fluid Properties'])
+
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
         btn_open.move(200, 670)
@@ -265,6 +312,11 @@ class DesignClass(QWidget):
     def ui3(self):
         #       Soil
         main = QWidget()
+
+        label = IntroLabel1(main)
+        label.setText("Soil")
+        label.move(400, 30)
+
         data_form_undisturbedgroundtemperature = ["Undisturbed Ground Temperature",
                                                  ["Ground Temperature", "⁰F", "lineedit", '62.0']
                                                  ]
@@ -315,6 +367,10 @@ class DesignClass(QWidget):
         # Piping
         main = QWidget()
 
+        label = IntroLabel1(main)
+        label.setText("Piping")
+        label.move(400, 30)
+
         data_form_trenchlayout = ["Trench Layout",
                                              ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit", '0.156'],
                                              ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
@@ -356,6 +412,10 @@ class DesignClass(QWidget):
     def ui5(self):
         # Configuration
         main = QWidget()
+
+        label = IntroLabel1(main)
+        label.setText("Configuration")
+        label.move(400, 30)
 
         data_form_pipeconfiguration = ["Pipe Configuration",
                                  ["Pipe Configuration", ['Slinky Horizontal GHE', 'Slinky Vertical GHE', 'Earth Basket'], "combobox"]
@@ -403,6 +463,10 @@ class DesignClass(QWidget):
     def ui6(self):
         # Extra KW
         main = QWidget()
+
+        label = IntroLabel1(main)
+        label.setText("Extra KW")
+        label.move(400, 30)
 
         data_form_circulationpumps = ["Circulation Pumps",
                                       ["Required Input Power", 'KW', "lineedit", '0.0'],
@@ -452,6 +516,11 @@ class DesignClass(QWidget):
     def ui7(self):
         # Results
         main = QWidget()
+
+        label = IntroLabel1(main)
+        label.setText("Results")
+        label.move(400, 30)
+
         main.setStyleSheet('''
             color: white;
         ''')
@@ -507,9 +576,6 @@ class DesignClass(QWidget):
                     savefile.write(json.dumps(tablecontent))
             return True
 
-        def uigotoanalysis():
-            self.parent.dashboardUI()
-
         btn_save = MainButton1(main)
         btn_save.setText(main.tr('Save design'))
         btn_save.move(100, 670)
@@ -518,7 +584,7 @@ class DesignClass(QWidget):
 
         btn_redesign = MainButton1(main)
         btn_redesign.setText(main.tr('Redesign'))
-        btn_redesign.move(450, 670)
+        btn_redesign.move(362, 670)
         btn_redesign.resize(170, 55)
         btn_redesign.clicked.connect(self.button0)
 
@@ -526,12 +592,18 @@ class DesignClass(QWidget):
         btn_gotoanalysis.setText(main.tr('Go to Analysis'))
         btn_gotoanalysis.move(625, 670)
         btn_gotoanalysis.resize(170, 55)
-        btn_gotoanalysis.clicked.connect(uigotoanalysis)
+        btn_gotoanalysis.clicked.connect(self.button7)
 
         return main
 
     def ui8(self):
+        # Analysis
         main = QWidget()
+
+        label = IntroLabel1(main)
+        label.setText("Analysis")
+        label.move(400, 30)
+
         btn_save = MainButton1(main)
         btn_save.setText(main.tr('Save design'))
         btn_save.move(100, 670)
@@ -553,9 +625,20 @@ class DesignClass(QWidget):
         return main
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
+        self.tickerbutton()
 
     def moveprevious(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() - 1)
+        self.tickerbutton()
+
+    def loaddata(self):
+        with open(self.currentgldpath, 'r') as f:
+            context = json.load(f)
+        print(context)
+
+
+    def exitbutton(self):
+        self.parent.exit()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

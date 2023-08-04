@@ -4,6 +4,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from buttonclass import MainButton
 from labelclass import IntroLabel1, IntroLabel2
 
+
 class Dashboard(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -62,6 +63,7 @@ class Dashboard(QWidget):
 
     def analysisUI(self):
         self.parent.analysisUI()
+
 
 if __name__ == '__main__':
     # Create a new QApplication instance
