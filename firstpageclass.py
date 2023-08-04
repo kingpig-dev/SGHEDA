@@ -16,6 +16,7 @@ class FirstPageClass(QWidget):
         self.setStyleSheet("background-color: #1F2843;")
         self.setFixedSize(910, 790)
         self.parent = parent
+        self.path2 = path2
 
         # Add logo
         label_design = QLabel(self)
@@ -27,43 +28,30 @@ class FirstPageClass(QWidget):
         label_design.setText("Last Design Files")
         label_design.move(100, 400)
 
-        tableWidget = QTableWidget(self)
-        tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
-        tableWidget.verticalHeader().setVisible(False)
-        tableWidget.horizontalHeader().setStyleSheet('''
+        self.tableWidget = QTableWidget(self)
+        self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tableWidget.verticalHeader().setVisible(False)
+        self.tableWidget.horizontalHeader().setStyleSheet('''
             background-color: #1F2843;
             color: #7C8AA7;
             border: None;
         ''')
-        tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-        tableWidget.setStyleSheet('''
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.tableWidget.setStyleSheet('''
             font: 'Arial';
             font-size: 16px;
             blockground-color: #1F2843;
             color: #7C8AA7;
             border: none;
         ''')
-        tableWidget.setColumnWidth(1, 200)
-        tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setColumnWidth(1, 200)
+        self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        tableWidget.resize(800, 220)
-        tableWidget.setRowCount(6)
-        tableWidget.setColumnCount(2)
-        tableWidget.setHorizontalHeaderLabels(['Path', 'Description'])
-        tableWidget.move(150, 430)
-
-        with open(path2, 'r') as f:
-            data = json.load(f)
-
-        for i in range(0, len(data)):
-            key = list(data.keys())[i]
-            print(key, data[key])
-            nameitem = QTableWidgetItem(key)
-            nameitem.setTextAlignment(Qt.AlignCenter)
-            tableWidget.setItem(i, 0, nameitem)
-            desitem = QTableWidgetItem(data[key])
-            desitem.setTextAlignment(Qt.AlignCenter)
-            tableWidget.setItem(i, 1, desitem)
+        self.tableWidget.resize(800, 220)
+        self.tableWidget.setRowCount(6)
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setHorizontalHeaderLabels(['Path', 'Description'])
+        self.tableWidget.move(150, 430)
 
         btn_open = MainButton1(self)
         btn_open.setText(self.tr('Open Design'))
@@ -76,6 +64,20 @@ class FirstPageClass(QWidget):
         btn_next.move(550, 670)
         btn_next.resize(170, 55)
         btn_next.clicked.connect(self.btnnext)
+
+    def loadtable(self):
+        with open(self.path2, 'r') as f:
+            data = json.load(f)
+
+        for i in range(0, len(data)):
+            key = list(data.keys())[len(data)-1-i]
+            print(key, data[key])
+            nameitem = QTableWidgetItem(key)
+            nameitem.setTextAlignment(Qt.AlignCenter)
+            self.tableWidget.setItem(i, 0, nameitem)
+            desitem = QTableWidgetItem(data[key])
+            desitem.setTextAlignment(Qt.AlignCenter)
+            self.tableWidget.setItem(i, 1, desitem)
 
     def btnopen(self):
         print('btnopen')
