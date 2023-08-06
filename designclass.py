@@ -10,8 +10,9 @@ from PyQt5.QtCore import Qt, QSize
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1
 from firstpageclass import FirstPageClass
 from inputformclass import InputForm
-from labelclass import IntroLabel1
+from labelclass import IntroLabel1, TickerLabel
 from notificationclass import CustomMessageBox
+
 
 class DesignClass(QWidget):
     def __init__(self, parent=None):
@@ -71,7 +72,7 @@ class DesignClass(QWidget):
                 image: url(./Images/down01.png);
             }
         """
-        )
+                                              )
         self.combobox_selection.currentIndexChanged.connect(self.combobox_selection_changed)
         self.combobox_selection.move(20, 155)
 
@@ -96,30 +97,54 @@ class DesignClass(QWidget):
 
         self.btn_1 = SquareButton(self.left_widget, './Images/fluid02.png')
         self.btn_1.setText(' Fluid')
-        self.btn_1.setGeometry(0, 200, 200, 50)
+        self.btn_1.setGeometry(0, 200, 212, 50)
         self.btn_2 = SquareButton(self.left_widget, './Images/soil01.png')
         self.btn_2.setText(' Soil')
-        self.btn_2.setGeometry(0, 250, 200, 50)
+        self.btn_2.setGeometry(0, 250, 212, 50)
         self.btn_3 = SquareButton(self.left_widget, './Images/pipe01.png')
         self.btn_3.setText(' Piping')
-        self.btn_3.setGeometry(0, 300, 200, 50)
+        self.btn_3.setGeometry(0, 300, 212, 50)
         self.btn_4 = SquareButton(self.left_widget, './Images/configuration01.png')
         self.btn_4.setText(' Configuration')
-        self.btn_4.setGeometry(0, 350, 200, 50)
+        self.btn_4.setGeometry(0, 350, 212, 50)
         self.btn_5 = SquareButton(self.left_widget, './Images/power02.png')
         self.btn_5.setText(' Extra Kw')
-        self.btn_5.setGeometry(0, 400, 200, 50)
+        self.btn_5.setGeometry(0, 400, 212, 50)
         self.btn_6 = SquareButton(self.left_widget, './Images/result01.png')
         self.btn_6.setText(' Result')
-        self.btn_6.setGeometry(0, 450, 200, 50)
+        self.btn_6.setGeometry(0, 450, 212, 50)
         self.btn_7 = SquareButton(self.left_widget, './Images/analysis05.png')
         self.btn_7.setText(' Analysis')
-        self.btn_7.setGeometry(0, 500, 200, 50)
+        self.btn_7.setGeometry(0, 500, 212, 50)
 
-        self.ticker_button = QLabel(self.left_widget)
-        self.ticker_button.setStyleSheet('background-color: #31A8FC')
-        self.ticker_button.resize(5, 50)
-        self.ticker_button.hide()
+        self.btn_1_ticker = TickerLabel(self.left_widget)
+        self.btn_1_ticker.setGeometry(180, 210, 30, 30)
+        self.btn_1_ticker.hide()
+
+        self.btn_2_ticker = TickerLabel(self.left_widget)
+        self.btn_2_ticker.setGeometry(180, 260, 30, 30)
+        self.btn_2_ticker.hide()
+
+        self.btn_3_ticker = TickerLabel(self.left_widget)
+        self.btn_3_ticker.setGeometry(180, 310, 30, 30)
+        self.btn_3_ticker.hide()
+
+        self.btn_4_ticker = TickerLabel(self.left_widget)
+        self.btn_4_ticker.setGeometry(180, 360, 30, 30)
+        self.btn_4_ticker.hide()
+
+        self.btn_5_ticker = TickerLabel(self.left_widget)
+        self.btn_5_ticker.setGeometry(180, 410, 30, 30)
+        self.btn_5_ticker.hide()
+
+        self.btn_6_ticker = TickerLabel(self.left_widget)
+        self.btn_6_ticker.setGeometry(180, 460, 30, 30)
+        self.btn_6_ticker.hide()
+
+        self.slide_label = QLabel(self.left_widget)
+        self.slide_label.setStyleSheet('background-color: #31A8FC')
+        self.slide_label.resize(5, 50)
+        self.slide_label.hide()
 
         self.btn_1.clicked.connect(self.button1)
         self.btn_2.clicked.connect(self.button2)
@@ -195,10 +220,11 @@ class DesignClass(QWidget):
     def tickerbutton(self):
         currentIndex = self.right_widget.currentIndex()
         if self.right_widget.currentIndex() == 0:
-            self.ticker_button.hide()
+            self.slide_label.hide()
         else:
-            self.ticker_button.move(0, 200 + 50*(currentIndex - 1))
-            self.ticker_button.show()
+            self.slide_label.move(0, 200 + 50 * (currentIndex - 1))
+            self.slide_label.show()
+
     # combobox
     def combobox_selection_changed(self):
         selected_text = self.combobox_selection.currentText()
@@ -210,27 +236,42 @@ class DesignClass(QWidget):
     # -----------------
     # buttons
     def button0(self):
+        print("button0")
         self.tab1.loadtable()
         self.right_widget.setCurrentIndex(0)
         self.tickerbutton()
+        self.dict = {}
+        self.btn_1_ticker.hide()
+        self.btn_2_ticker.hide()
+        self.btn_3_ticker.hide()
+        self.btn_4_ticker.hide()
+        self.btn_5_ticker.hide()
+        self.btn_6_ticker.hide()
+
     def button1(self):
         self.right_widget.setCurrentIndex(1)
         self.tickerbutton()
+
     def button2(self):
         self.right_widget.setCurrentIndex(2)
         self.tickerbutton()
+
     def button3(self):
         self.right_widget.setCurrentIndex(3)
         self.tickerbutton()
+
     def button4(self):
         self.right_widget.setCurrentIndex(4)
         self.tickerbutton()
+
     def button5(self):
         self.right_widget.setCurrentIndex(5)
         self.tickerbutton()
+
     def button6(self):
         self.right_widget.setCurrentIndex(6)
         self.tickerbutton()
+
     def button7(self):
         if len(self.dict.keys()) == 7:
             self.right_widget.setCurrentIndex(7)
@@ -242,6 +283,7 @@ class DesignClass(QWidget):
             custom_message_box.setGeometry(900, 20, 300, 70)
             custom_message_box.show()
             print("notification")
+
     # -----------------
     # pages
 
@@ -265,11 +307,13 @@ class DesignClass(QWidget):
         form_fluidsystemdesign.move(200, 100)
 
         data_form_fluidproperties = ["Fuild Properties",
-                                          ["Fluid Type", ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol", "Sodium Chloride", "Calcium Chloride"], "combobox"],
-                                          ["Design Outlet Temperature", "⁰F", "lineedit", "60.0"],
-                                          ["Specific Heat", "Btu/(⁰F*lbm)", "lineedit", "1.01"],
-                                          ["Density", "lb/ft^3", "lineedit", "60.6"]
-                                          ]
+                                     ["Fluid Type",
+                                      ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol", "Sodium Chloride",
+                                       "Calcium Chloride"], "combobox"],
+                                     ["Design Outlet Temperature", "⁰F", "lineedit", "60.0"],
+                                     ["Specific Heat", "Btu/(⁰F*lbm)", "lineedit", "1.01"],
+                                     ["Density", "lb/ft^3", "lineedit", "60.6"]
+                                     ]
         form_fluidproperties = InputForm(main, data_form_fluidproperties)
         form_fluidproperties.move(150, 350)
 
@@ -279,12 +323,16 @@ class DesignClass(QWidget):
             if form_fluidsystemdesign.getValidation():
                 dict[data_form_fluidsystemdesign[0]] = form_fluidsystemdesign.getData()
             else:
+                self.btn_1_ticker.hide()
+                self.movenext()
                 return False
             if form_fluidproperties.getValidation():
                 dict[data_form_fluidproperties[0]] = form_fluidproperties.getData()
             else:
+                self.btn_1_ticker.hide()
+                self.movenext()
                 return False
-
+            self.btn_1_ticker.show()
             self.dict["fluid"] = dict
             self.movenext()
             return True
@@ -318,15 +366,15 @@ class DesignClass(QWidget):
         label.move(400, 30)
 
         data_form_undisturbedgroundtemperature = ["Undisturbed Ground Temperature",
-                                                 ["Ground Temperature", "⁰F", "lineedit", '62.0']
-                                                 ]
+                                                  ["Ground Temperature", "⁰F", "lineedit", '62.0']
+                                                  ]
         form_undisturbedgroundtemperature = InputForm(main, data_form_undisturbedgroundtemperature)
         form_undisturbedgroundtemperature.move(200, 100)
 
         data_form_soilthermalproperties = ["Soil Thermal Properties",
-                                          ["Thermal Conductivity", "Btu/(h*ft*⁰F)", "lineedit", '0.75'],
-                                          ["Thermal Diffusivity", "ft^2/day", "lineedit", '0.62']
-                                          ]
+                                           ["Thermal Conductivity", "Btu/(h*ft*⁰F)", "lineedit", '0.75'],
+                                           ["Thermal Diffusivity", "ft^2/day", "lineedit", '0.62']
+                                           ]
         form_soilthermalproperties = InputForm(main, data_form_soilthermalproperties)
         form_soilthermalproperties.move(150, 350)
 
@@ -336,19 +384,23 @@ class DesignClass(QWidget):
             if form_undisturbedgroundtemperature.getValidation():
                 dict[data_form_undisturbedgroundtemperature[0]] = form_undisturbedgroundtemperature.getData()
             else:
+                self.btn_2_ticker.hide()
+                self.movenext()
                 return False
             if form_soilthermalproperties.getValidation():
                 dict[data_form_soilthermalproperties[0]] = form_soilthermalproperties.getData()
             else:
+                self.btn_2_ticker.hide()
+                self.movenext()
                 return False
 
             self.dict["soil"] = dict
+            self.btn_2_ticker.show()
             self.movenext()
             return True
 
         def uimoveprevious():
             self.moveprevious()
-
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
@@ -372,11 +424,13 @@ class DesignClass(QWidget):
         label.move(400, 30)
 
         data_form_trenchlayout = ["Trench Layout",
-                                             ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit", '0.156'],
-                                             ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
-                                             ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
-                                             ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"]
-                                             ]
+                                  ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit", '0.156'],
+                                  ["Pipe Size",
+                                   ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
+                                   "combobox"],
+                                  ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
+                                  ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"]
+                                  ]
         form_trenchlayout = InputForm(main, data_form_trenchlayout)
         form_trenchlayout.move(200, 100)
 
@@ -386,9 +440,12 @@ class DesignClass(QWidget):
             if form_trenchlayout.getValidation():
                 dict[data_form_trenchlayout[0]] = form_trenchlayout.getData()
             else:
+                self.btn_3_ticker.hide()
+                self.movenext()
                 return False
 
             self.dict["Piping"] = dict
+            self.btn_3_ticker.show()
             self.movenext()
             return True
 
@@ -418,8 +475,9 @@ class DesignClass(QWidget):
         label.move(400, 30)
 
         data_form_pipeconfiguration = ["Pipe Configuration",
-                                 ["Pipe Configuration", ['Slinky Horizontal GHE', 'Slinky Vertical GHE', 'Earth Basket'], "combobox"]
-                                 ]
+                                       ["Pipe Configuration",
+                                        ['Slinky Horizontal GHE', 'Slinky Vertical GHE', 'Earth Basket'], "combobox"]
+                                       ]
         form_pipeconfiguration = InputForm(main, data_form_pipeconfiguration)
         form_pipeconfiguration.move(200, 100)
 
@@ -434,12 +492,18 @@ class DesignClass(QWidget):
             if form_pipeconfiguration.getValidation():
                 dict[data_form_pipeconfiguration[0]] = form_pipeconfiguration.getData()
             else:
+                self.btn_4_ticker.hide()
+                self.movenext()
                 return False
             if form_modelingtimeperiod.getValidation():
                 dict[data_form_modelingtimeperiod[0]] = form_modelingtimeperiod.getData()
             else:
+                self.btn_4_ticker.hide()
+                self.movenext()
                 return False
+
             self.dict["Configuration"] = dict
+            self.btn_4_ticker.show()
             self.movenext()
             return True
 
@@ -472,12 +536,12 @@ class DesignClass(QWidget):
                                       ["Required Input Power", 'KW', "lineedit", '0.0'],
                                       ["Pump Power", "hP", 'lineedit', '0.0'],
                                       ['Pump Motor Efficiency', '%', 'lineedit', '85']
-                                 ]
+                                      ]
         form_circulationpumps = InputForm(main, data_form_circulationpumps)
         form_circulationpumps.move(200, 100)
 
         data_form_additionalpowerrequirements = ["Modeling Power",
-                                        ['Addtional Power', 'KW', 'lineedit', '0.0']]
+                                                 ['Addtional Power', 'KW', 'lineedit', '0.0']]
         form_additionalpowerrequirements = InputForm(main, data_form_additionalpowerrequirements)
         form_additionalpowerrequirements.move(150, 350)
 
@@ -487,13 +551,18 @@ class DesignClass(QWidget):
             if form_circulationpumps.getValidation():
                 dict[data_form_circulationpumps[0]] = form_circulationpumps.getData()
             else:
+                self.btn_5_ticker.hide()
+                self.movenext()
                 return False
             if form_additionalpowerrequirements.getValidation():
                 dict[data_form_additionalpowerrequirements[0]] = form_additionalpowerrequirements.getData()
             else:
+                self.btn_5_ticker.hide()
+                self.movenext()
                 return False
 
             self.dict["Extra KW"] = dict
+            self.btn_5_ticker.show()
             self.movenext()
             return True
 
@@ -513,6 +582,7 @@ class DesignClass(QWidget):
         btn_next.clicked.connect(uimovenext)
 
         return main
+
     def ui7(self):
         # Results
         main = QWidget()
@@ -532,7 +602,7 @@ class DesignClass(QWidget):
                                       ["Peak Load", "Kbtu/Hr", 'lineedit', '30'],
                                       ['Power Consumption', 'KWh/day', 'lineedit', '10'],
                                       ['System Flow Rate', 'gpm', 'lineedit', '10']
-                                 ]
+                                      ]
         form_designdimensions = InputForm(main, data_form_designdimensions)
         form_designdimensions.move(200, 100)
 
@@ -548,16 +618,27 @@ class DesignClass(QWidget):
             if form_designdimensions.getValidation():
                 dict[data_form_designdimensions[0]] = form_designdimensions.getData()
             else:
+                icon = QIcon('./Images/logo03.png')
+                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
+                                                                              '    correctly.', self)
+                custom_message_box.setGeometry(900, 20, 300, 70)
+                custom_message_box.show()
                 return False
             print('1')
             if form_description.getValidation():
                 description = form_description.getData()
             else:
+                # notification
+                icon = QIcon('./Images/logo03.png')
+                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
+                                                                              '    parameter.', self)
+                custom_message_box.setGeometry(900, 20, 300, 70)
+                custom_message_box.show()
                 return False
-            print('2')
+
             self.dict["Results"] = dict
             self.dict["Description"] = description
-            print('3')
+            # self.movenext()
             options = QFileDialog.Options()
             options |= QFileDialog.DontUseNativeDialog
             file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
@@ -576,6 +657,38 @@ class DesignClass(QWidget):
                     savefile.write(json.dumps(tablecontent))
             return True
 
+        def gotoanalysis():
+            print("uimovenext")
+            dict = {}
+
+            if form_designdimensions.getValidation():
+                dict[data_form_designdimensions[0]] = form_designdimensions.getData()
+            else:
+                self.btn_6_ticker.hide()
+                icon = QIcon('./Images/logo03.png')
+                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
+                                                                              '    correctly.', self)
+                custom_message_box.setGeometry(900, 20, 300, 70)
+                custom_message_box.show()
+                return False
+            print('1')
+            if form_description.getValidation():
+                description = form_description.getData()
+            else:
+                self.btn_6_ticker.hide()
+                # notification
+                icon = QIcon('./Images/logo03.png')
+                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
+                                                                              '    parameter.', self)
+                custom_message_box.setGeometry(900, 20, 300, 70)
+                custom_message_box.show()
+                return False
+
+            self.dict["Results"] = dict
+            self.dict["Description"] = description
+            self.btn_6_ticker.show()
+            self.button7()
+
         btn_save = MainButton1(main)
         btn_save.setText(main.tr('Save design'))
         btn_save.move(100, 670)
@@ -592,7 +705,7 @@ class DesignClass(QWidget):
         btn_gotoanalysis.setText(main.tr('Go to Analysis'))
         btn_gotoanalysis.move(625, 670)
         btn_gotoanalysis.resize(170, 55)
-        btn_gotoanalysis.clicked.connect(self.button7)
+        btn_gotoanalysis.clicked.connect(gotoanalysis)
 
         return main
 
@@ -603,12 +716,6 @@ class DesignClass(QWidget):
         label = IntroLabel1(main)
         label.setText("Analysis")
         label.move(400, 30)
-
-        btn_save = MainButton1(main)
-        btn_save.setText(main.tr('Save design'))
-        btn_save.move(100, 670)
-        btn_save.resize(170, 55)
-        # btn_save.clicked.connect(uisavedesign)
 
         btn_redesign = MainButton1(main)
         btn_redesign.setText(main.tr('Redesign'))
@@ -623,6 +730,7 @@ class DesignClass(QWidget):
         # btn_gotoanalysis.clicked.connect(uigotoanalysis)
 
         return main
+
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
         self.tickerbutton()
@@ -636,9 +744,9 @@ class DesignClass(QWidget):
             context = json.load(f)
         print(context)
 
-
     def exitbutton(self):
         self.parent.exit()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

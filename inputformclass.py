@@ -1,8 +1,10 @@
 import sys
-from PyQt5.QtCore import *
+from PyQt5.QtCore import Qt
+
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from labelclass import IntroLabel3
+
 
 class InputForm(QWidget):
 
@@ -36,10 +38,11 @@ class InputForm(QWidget):
                     border: none;
                 ''')
                 b.setText(elements[i][3])
+                b.setAlignment(Qt.AlignCenter)
                 c = QLabel(elements[i][1])
-                self.grid.addWidget(a, i+1, 0)
-                self.grid.addWidget(b, i+1, 1)
-                self.grid.addWidget(c, i+1, 2)
+                self.grid.addWidget(a, i + 1, 0)
+                self.grid.addWidget(b, i + 1, 1)
+                self.grid.addWidget(c, i + 1, 2)
 
                 self.input.append(b)
 
@@ -49,15 +52,35 @@ class InputForm(QWidget):
 
                 b = QComboBox()
                 b.addItems(elements[i][1])
-
-                self.grid.addWidget(a, i+1, 0)
-                self.grid.addWidget(b, i+1, 1, 1, 2)
+                b.setStyleSheet("""            
+                     QComboBox {
+                        background-color: #2C3751;
+                        selection-background-color: #555555;
+                        min-width: 2em;
+                        font-size: 16px;
+                        font-align: center;
+                    }
+                    
+                    QComboBox::drop-down {
+                        subcontrol-origin: padding;
+                        width: 5px;
+                        border: none;
+                    }
+                    
+                    QComoboBox::down-arrow {
+                        image: url(./Images/tick04.png);
+                    }
+                """
+                                )
+                self.grid.addWidget(a, i + 1, 0)
+                self.grid.addWidget(b, i + 1, 1, 1, 2)
                 self.input.append(b)
 
         # self.btn_next = QPushButton()
         # self.btn_next.setText("Next")
         # self.btn_next.clicked.connect(self.btnnext)
         # self.grid.addWidget(self.btn_next, 5, 1)
+        self.grid.setAlignment(Qt.AlignCenter)
         self.setLayout(self.grid)
 
     def btnnext(self):
@@ -66,38 +89,41 @@ class InputForm(QWidget):
 
     def getData(self):
         dict = {}
-        for i in range(1, len(self.input)+1):
+        for i in range(1, len(self.input) + 1):
             # print(self.elements[i][2], i)
             if self.elements[i][2] == "lineedit":
-                dict[self.elements[i][0]] = self.input[i-1].text()
-                print(self.input[i-1].text())
+                dict[self.elements[i][0]] = self.input[i - 1].text()
+                print(self.input[i - 1].text())
             elif self.elements[i][2] == "combobox":
-                dict[self.elements[i][0]] = self.input[i-1].currentText()
-                print(self.input[i-1].currentText())
+                dict[self.elements[i][0]] = self.input[i - 1].currentText()
+                print(self.input[i - 1].currentText())
         return dict
 
     def getValidation(self):
-        for i in range(1, len(self.input)+1):
+        for i in range(1, len(self.input) + 1):
             if self.elements[i][2] == "lineedit":
-                if self.input[i-1].text() == "":
+                if self.input[i - 1].text() == "":
                     return False
         return True
 
     def setData(self, data):
-        for i in range(1, len(self.input)+1):
-            print(data[list(data.keys())[i-1]])
+        for i in range(1, len(self.input) + 1):
+            print(data[list(data.keys())[i - 1]])
             if self.elements[i][2] == "lineedit":
-                self.input[i-1].setText(data[list(data.keys())[i-1]])
+                self.input[i - 1].setText(data[list(data.keys())[i - 1]])
             else:
-                self.input[i-1].setText(data[list(data.keys())[i-1]])
+                self.input[i - 1].setText(data[list(data.keys())[i - 1]])
         print('setData')
+
+
 class Dialog(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.setWindowTitle(self.tr("Dialog"))
 
-        b = ["System Design", ["Inlet Temperature", "dF", "lineedit", '90'], ["Flow Rate", "gpm/ton", "lineedit", '3.0'], ["Fluid type", ["Water", "Methanol"], "combobox"]]
+        b = ["System Design", ["Inlet Temperature", "dF", "lineedit", '90'],
+             ["Flow Rate", "gpm/ton", "lineedit", '3.0'], ["Fluid type", ["Water", "Methanol"], "combobox"]]
         a = InputForm(self, b)
 
         self.resize(600, 300)
