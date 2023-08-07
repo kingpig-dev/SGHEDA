@@ -47,29 +47,33 @@ class DesignClass(QWidget):
         self.combobox_selection = QComboBox(self.left_widget)
         self.icon_design = QIcon('./Images/design.png')
         self.icon_analysis = QIcon('./Images/analysis02.png')
-        self.combobox_selection.addItem(self.icon_design, '  Design ')
-        self.combobox_selection.addItem(self.icon_analysis, ' Analysis ')
-        self.combobox_selection.resize(110, 30)
+        self.combobox_selection.addItem(self.icon_design, ' Design')
+        self.combobox_selection.addItem(self.icon_analysis, 'Analysis ')
+        self.combobox_selection.resize(100, 30)
         self.combobox_selection.setCursor(QCursor(Qt.PointingHandCursor))
-        arrow_icon = QPixmap('./Images/down01.png')
         self.combobox_selection.setStyleSheet("""            
              QComboBox {
                 color: #7C8AA7;
                 background-color: #2C3751;
-                selection-background-color: #555555;
-                padding: 1px 18px 1px 3px;
-                min-width: 2em;
+                selection-background-color: red;
+                padding: 1px 1px 1px 1px;
+                min-width: 0em;
                 font-size: 16px;
             }
             
+            QComboBox:hover {
+                color: #2978FA;
+            }
+            
             QComboBox::drop-down {
-                subcontrol-origin: padding;
-                width: 5px;
+                width: 10px;
                 border: none;
             }
             
-            QComoboBox::down-arrow {
-                image: url(./Images/down01.png);
+            QComboBox::down-arrow {
+                border: 0px;
+                background-image-width: 30px;
+                border-image: url(./Images/down.png);
             }
         """
                                               )
@@ -228,6 +232,7 @@ class DesignClass(QWidget):
     # combobox
     def combobox_selection_changed(self):
         selected_text = self.combobox_selection.currentText()
+        print(selected_text)
         if selected_text == '  Design ':
             self.label_num.setText(' ' + str(self.num_design))
         else:
@@ -609,7 +614,7 @@ class DesignClass(QWidget):
         data_form_description = ['Design Description',
                                  ['Description', '', 'lineedit', 'design GHE for blockchain mining equipment']]
         form_description = InputForm(main, data_form_description)
-        form_description.move(150, 350)
+        form_description.move(250, 450)
 
         def uisavedesign():
             print("uimovenext")
