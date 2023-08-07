@@ -15,10 +15,15 @@ class InputForm(QWidget):
             color: white;
             font-size: 16px;
             padding: 5px 10px;
+            QWidget {
+                border: 2px solid red;
+            }
+            
         ''')
         self.elements = elements
         self.grid = QGridLayout(self)
         label_title = IntroLabel3(elements[0])
+        label_title.setAlignment(Qt.AlignCenter)
         self.grid.addWidget(label_title, 1, 0, 1, 3)
         self.input = []
         for i in range(1, len(elements)):
@@ -33,9 +38,12 @@ class InputForm(QWidget):
                 b.setValidator(QDoubleValidator())
                 b.setMaxLength(4)
                 b.setStyleSheet('''
-                    text-align: center;
-                    background-color: #1F2843;
-                    border: none;
+                    QLineEdit {
+                        text-align: center;
+                        background-color: #1F2843;
+                        border: none;
+                        border-bottom: 2px solid #1F8EFA;
+                    }
                 ''')
                 b.setText(elements[i][3])
                 b.setAlignment(Qt.AlignCenter)
@@ -58,20 +66,27 @@ class InputForm(QWidget):
                         selection-background-color: #555555;
                         min-width: 2em;
                         font-size: 16px;
-                        font-align: center;
+                        text-align: center;
+                    }
+                    
+                    QComboBox::hover{
+                        color: #2978FA
                     }
                     
                     QComboBox::drop-down {
                         subcontrol-origin: padding;
-                        width: 5px;
+                        width: 7px;
                         border: none;
                     }
                     
-                    QComoboBox::down-arrow {
-                        image: url(./Images/tick04.png);
+                    QComboBox::down-arrow {
+                        border: 0px;
+                        background-image-width: 30px;
+                        border-image: url(./Images/down.png);
                     }
                 """
-                                )
+                )
+
                 self.grid.addWidget(a, i + 1, 0)
                 self.grid.addWidget(b, i + 1, 1, 1, 2)
                 self.input.append(b)
@@ -119,7 +134,9 @@ class InputForm(QWidget):
 class Dialog(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-
+        self.setStyleSheet("""
+            background-color: #1F2843;
+        """)
         self.setWindowTitle(self.tr("Dialog"))
 
         b = ["System Design", ["Inlet Temperature", "dF", "lineedit", '90'],
