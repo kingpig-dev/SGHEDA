@@ -13,7 +13,7 @@ from inputformclass import InputForm
 from labelclass import IntroLabel1, TickerLabel
 from notificationclass import CustomMessageBox
 
-
+import math
 class DesignClass(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -99,20 +99,20 @@ class DesignClass(QWidget):
         """)
         self.label_num.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
-        self.btn_1 = SquareButton(self.left_widget, './Images/fluid02.png')
-        self.btn_1.setText(' Fluid')
+        self.btn_1 = SquareButton(self.left_widget, './Images/configuration01.png')
+        self.btn_1.setText(' System')
         self.btn_1.setGeometry(0, 200, 212, 50)
-        self.btn_2 = SquareButton(self.left_widget, './Images/soil01.png')
-        self.btn_2.setText(' Soil')
+        self.btn_2 = SquareButton(self.left_widget, './Images/fluid02.png')
+        self.btn_2.setText(' Fluid')
         self.btn_2.setGeometry(0, 250, 212, 50)
-        self.btn_3 = SquareButton(self.left_widget, './Images/pipe01.png')
-        self.btn_3.setText(' Piping')
+        self.btn_3 = SquareButton(self.left_widget, './Images/soil01.png')
+        self.btn_3.setText(' Soil')
         self.btn_3.setGeometry(0, 300, 212, 50)
-        self.btn_4 = SquareButton(self.left_widget, './Images/configuration01.png')
-        self.btn_4.setText(' Configuration')
+        self.btn_4 = SquareButton(self.left_widget, './Images/pipe01.png')
+        self.btn_4.setText(' Pipe')
         self.btn_4.setGeometry(0, 350, 212, 50)
         self.btn_5 = SquareButton(self.left_widget, './Images/power02.png')
-        self.btn_5.setText(' Extra Kw')
+        self.btn_5.setText(' Pump')
         self.btn_5.setGeometry(0, 400, 212, 50)
         self.btn_6 = SquareButton(self.left_widget, './Images/result01.png')
         self.btn_6.setText(' Result')
@@ -298,29 +298,19 @@ class DesignClass(QWidget):
         return main
 
     def ui2(self):
-        #         Fluid
+        #         System
         main = QWidget()
         label = IntroLabel1(main)
-        label.setText("Fluid")
+        label.setText("System")
         label.move(400, 30)
 
         data_form_fluidsystemdesign = ["System Design",
-                                       ["Inlet Temperature", "dF", "lineedit", "90.0"],
-                                       ["Flow Rate", "gpm/ton", "lineedit", '3.0'],
-                                       ["Fluid type", ["Water", "Methanol"], "combobox"]]
+                                       ["Heat Load", "W", "lineedit", "2000"],
+                                       ["Input Fluid Temperature", "dC", "lineedit", '60']]
         form_fluidsystemdesign = InputForm(main, data_form_fluidsystemdesign)
         form_fluidsystemdesign.move(200, 100)
 
-        data_form_fluidproperties = ["Fuild Properties",
-                                     ["Fluid Type",
-                                      ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol", "Sodium Chloride",
-                                       "Calcium Chloride"], "combobox"],
-                                     ["Design Outlet Temperature", "⁰F", "lineedit", "60.0"],
-                                     ["Specific Heat", "Btu/(⁰F*lbm)", "lineedit", "1.01"],
-                                     ["Density", "lb/ft^3", "lineedit", "60.6"]
-                                     ]
-        form_fluidproperties = InputForm(main, data_form_fluidproperties)
-        form_fluidproperties.move(150, 350)
+
 
         def uimovenext():
             print("uimovenext")
@@ -331,14 +321,8 @@ class DesignClass(QWidget):
                 self.btn_1_ticker.hide()
                 self.movenext()
                 return False
-            if form_fluidproperties.getValidation():
-                dict[data_form_fluidproperties[0]] = form_fluidproperties.getData()
-            else:
-                self.btn_1_ticker.hide()
-                self.movenext()
-                return False
             self.btn_1_ticker.show()
-            self.dict["fluid"] = dict
+            self.dict["System"] = dict
             self.movenext()
             return True
 
@@ -346,8 +330,7 @@ class DesignClass(QWidget):
             self.moveprevious()
 
         def setData(data):
-            form_fluidsystemdesign.setData(data['System Design'])
-            form_fluidproperties.setData(data['Fluid Properties'])
+            form_fluidsystemdesign.setData(data['System'])
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
@@ -363,43 +346,36 @@ class DesignClass(QWidget):
         return main
 
     def ui3(self):
-        #       Soil
+        #       Fluid
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Soil")
+        label.setText("Fluid")
         label.move(400, 30)
 
-        data_form_undisturbedgroundtemperature = ["Undisturbed Ground Temperature",
-                                                  ["Ground Temperature", "⁰F", "lineedit", '62.0']
-                                                  ]
-        form_undisturbedgroundtemperature = InputForm(main, data_form_undisturbedgroundtemperature)
-        form_undisturbedgroundtemperature.move(200, 100)
+        data_form_fluidproperties = ["Fuild Properties",
+                                     ["Fluid Type",
+                                      ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol", "Sodium Chloride",
+                                       "Calcium Chloride"], "combobox"],
+                                     ["Viscosity", "Pa*s", "lineedit", "0.011"],
+                                     ["Specific Heat", "K/(Kg*dC)", "lineedit", "3344"],
+                                     ["Density", "Kg/m^3", "lineedit", "1100"]
+                                     ]
+        form_fluidproperties = InputForm(main, data_form_fluidproperties)
+        form_fluidproperties.move(200, 100)
 
-        data_form_soilthermalproperties = ["Soil Thermal Properties",
-                                           ["Thermal Conductivity", "Btu/(h*ft*⁰F)", "lineedit", '0.75'],
-                                           ["Thermal Diffusivity", "ft^2/day", "lineedit", '0.62']
-                                           ]
-        form_soilthermalproperties = InputForm(main, data_form_soilthermalproperties)
-        form_soilthermalproperties.move(150, 350)
 
         def uimovenext():
             print("uimovenext")
             dict = {}
-            if form_undisturbedgroundtemperature.getValidation():
-                dict[data_form_undisturbedgroundtemperature[0]] = form_undisturbedgroundtemperature.getData()
-            else:
-                self.btn_2_ticker.hide()
-                self.movenext()
-                return False
-            if form_soilthermalproperties.getValidation():
-                dict[data_form_soilthermalproperties[0]] = form_soilthermalproperties.getData()
+            if form_fluidproperties.getValidation():
+                dict[data_form_fluidproperties[0]] = form_fluidproperties.getData()
             else:
                 self.btn_2_ticker.hide()
                 self.movenext()
                 return False
 
-            self.dict["soil"] = dict
+            self.dict["Fluid"] = dict
             self.btn_2_ticker.show()
             self.movenext()
             return True
@@ -421,35 +397,31 @@ class DesignClass(QWidget):
         return main
 
     def ui4(self):
-        # Piping
+        # Soil
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Piping")
+        label.setText("Soil")
         label.move(400, 30)
 
-        data_form_trenchlayout = ["Trench Layout",
-                                  ["Pipe Resistance", "h*ft*⁰F/Btu", "lineedit", '0.156'],
-                                  ["Pipe Size",
-                                   ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
-                                   "combobox"],
-                                  ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
-                                  ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"]
-                                  ]
-        form_trenchlayout = InputForm(main, data_form_trenchlayout)
-        form_trenchlayout.move(200, 100)
+        data_form_soilthermalproperties = ["Soil Thermal Properties",
+                                    ["Thermal Conductivity", "W/(m*K)", "lineedit", "0.07"],
+                                    ["Ground Temperature", "⁰C", "lineedit", '10']
+                                 ]
+        form_soilthermalproperties = InputForm(main, data_form_soilthermalproperties)
+        form_soilthermalproperties.move(200, 100)
 
         def uimovenext():
             print("uimovenext")
             dict = {}
-            if form_trenchlayout.getValidation():
-                dict[data_form_trenchlayout[0]] = form_trenchlayout.getData()
+            if form_soilthermalproperties.getValidation():
+                dict[data_form_soilthermalproperties[0]] = form_soilthermalproperties.getData()
             else:
                 self.btn_3_ticker.hide()
                 self.movenext()
                 return False
 
-            self.dict["Piping"] = dict
+            self.dict["Soil"] = dict
             self.btn_3_ticker.show()
             self.movenext()
             return True
@@ -472,42 +444,46 @@ class DesignClass(QWidget):
         return main
 
     def ui5(self):
-        # Configuration
+        # Pipe
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Configuration")
+        label.setText("Pipe")
         label.move(400, 30)
 
-        data_form_pipeconfiguration = ["Pipe Configuration",
-                                       ["Pipe Configuration",
-                                        ['Slinky Horizontal GHE', 'Slinky Vertical GHE', 'Earth Basket'], "combobox"]
-                                       ]
-        form_pipeconfiguration = InputForm(main, data_form_pipeconfiguration)
-        form_pipeconfiguration.move(200, 100)
+        data_form_pipeproperties = ["Pipe Properties",
+                                    ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
+                                    ["Outer Diameter", "m", "lineedit", '0.021'],
+                                    ["Inner Diameter", "m", "lineedit", '0.026'],
+                                    ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
+                                    ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"],
+                                    ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
+                                  ]
+        form_pipeproperties = InputForm(main, data_form_pipeproperties)
+        form_pipeproperties.move(200, 100)
 
-        data_form_modelingtimeperiod = ["Modeling Time Period",
-                                        ['Prediction Time', 'years', 'lineedit', '1.0']]
-        form_modelingtimeperiod = InputForm(main, data_form_modelingtimeperiod)
-        form_modelingtimeperiod.move(150, 350)
+        data_form_pipeconfiguration = ["Pipe Configuration",
+                                        ['Buried Depth', 'm', 'lineedit', '2.0']]
+        form_pipeconfiguration = InputForm(main, data_form_pipeconfiguration)
+        form_pipeconfiguration.move(150, 350)
 
         def uimovenext():
             print("uimovenext")
             dict = {}
+            if form_pipeproperties.getValidation():
+                dict[data_form_pipeproperties[0]] = form_pipeproperties.getData()
+            else:
+                self.btn_4_ticker.hide()
+                self.movenext()
+                return False
             if form_pipeconfiguration.getValidation():
                 dict[data_form_pipeconfiguration[0]] = form_pipeconfiguration.getData()
             else:
                 self.btn_4_ticker.hide()
                 self.movenext()
                 return False
-            if form_modelingtimeperiod.getValidation():
-                dict[data_form_modelingtimeperiod[0]] = form_modelingtimeperiod.getData()
-            else:
-                self.btn_4_ticker.hide()
-                self.movenext()
-                return False
 
-            self.dict["Configuration"] = dict
+            self.dict["Pipe"] = dict
             self.btn_4_ticker.show()
             self.movenext()
             return True
@@ -530,25 +506,20 @@ class DesignClass(QWidget):
         return main
 
     def ui6(self):
-        # Extra KW
+        # Pump
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Extra KW")
+        label.setText("Pump")
         label.move(400, 30)
 
-        data_form_circulationpumps = ["Circulation Pumps",
-                                      ["Required Input Power", 'KW', "lineedit", '0.0'],
-                                      ["Pump Power", "hP", 'lineedit', '0.0'],
+        data_form_circulationpumps = ["Circulation Pump",
+                                      ["Required Power", 'W', "lineedit", '600'],
+                                      ["Fluid Velocity", "m/s", 'lineedit', '1.5'],
                                       ['Pump Motor Efficiency', '%', 'lineedit', '85']
                                       ]
         form_circulationpumps = InputForm(main, data_form_circulationpumps)
         form_circulationpumps.move(200, 100)
-
-        data_form_additionalpowerrequirements = ["Modeling Power",
-                                                 ['Addtional Power', 'KW', 'lineedit', '0.0']]
-        form_additionalpowerrequirements = InputForm(main, data_form_additionalpowerrequirements)
-        form_additionalpowerrequirements.move(150, 350)
 
         def uimovenext():
             print("uimovenext")
@@ -559,14 +530,8 @@ class DesignClass(QWidget):
                 self.btn_5_ticker.hide()
                 self.movenext()
                 return False
-            if form_additionalpowerrequirements.getValidation():
-                dict[data_form_additionalpowerrequirements[0]] = form_additionalpowerrequirements.getData()
-            else:
-                self.btn_5_ticker.hide()
-                self.movenext()
-                return False
 
-            self.dict["Extra KW"] = dict
+            self.dict["Pump"] = dict
             self.btn_5_ticker.show()
             self.movenext()
             return True
@@ -752,6 +717,56 @@ class DesignClass(QWidget):
     def exitbutton(self):
         self.parent.exit()
 
+    def sizing(self):
+
+        # System
+        E_heat = self.dict['System']['Head Load']  # heat load [W*h]
+        T_in = self.dict['System']['Input Fluid Temperature']  # Hot Fluid Temperature 60~65dC, 140~150dF
+
+        # Fluid
+        mu = self.dict["Fluid"]["Viscosity"]
+        c_p = self.dict["Fluid"]["Specific Heat"]
+        rho = self.dict["Fluid"]["Density"]
+
+        # Soil
+        k_soil = self.dict["Soil"]["Thermal Conductivity"]
+        T_g = self.dict["Soil"]["Ground Temperature"]
+
+        # Pipe
+        D_i = self.dict['Pipe']['Inner Diameter']
+        D_o = self.dict['Pipe']['Outer Diameter']
+        f_type = self.dict['Pipe']['Flow Type']
+        k_pipe = self.dict['Pipe']['Pipe Conductivity']
+        d = self.dict['Pipe']['Buried Depth']
+
+        # Pump
+        V = self.dict["Pump"]["Flow Rate"]  # modify
+        p = self.dict['Pump']['Required Power']
+
+        # Resistance
+        R_e = rho * V * D_i / mu  # Reynolds number    Re<2100 laminar regime; 2100<Re<10000: transitional regime; Re>10000 turbulent regime
+        P_r = mu * c_p / k_pipe  # Prandtl number
+        h_w = 0.023 * R_e ** 0.8 * P_r ** 0.3 * k_pipe / D_i  # heat transfer coefficient [W/(m^2*k)]
+
+        R_conv = 1 / (3.14159 * D_i * h_w)
+        R_pipe = math.log(D_o / D_i) / (2 * 3.14159 * k_pipe)
+        S = 2 * 3.14159 / math.log((2 * d / D_o) + math.sqrt((2 * d / D_o) ** 2 - 1))  # conduction shape factor of the pipe
+        R_soil = 1 / (S * k_soil)
+
+        R_total = R_conv + R_pipe + R_soil
+
+        # Length calculation
+        m_w = rho * V * 3.14159 * (D_i / 2) ** 2
+        T_out = T_in - E_heat / (m_w * c_p)
+        theta_w_in = T_in - T_g
+        theta_w_out = T_out - T_g
+
+        L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
+
+        print("length of pipe:", L)
+
+        loop_diameter = 0.75
+        pitch = 0.4
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
