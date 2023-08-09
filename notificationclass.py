@@ -1,5 +1,5 @@
 from PyQt5 import QtCore
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QMessageBox, QDialog
 
@@ -71,6 +71,65 @@ class CustomMessageBox(QDialog):
         self.timer.timeout.connect(self.accept)
         self.timer.start(3000)
 
+class ExitNotification(QMessageBox):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setStyleSheet("""
+                background-color: #303E58;
+                font-size: 20px;
+                color: white;
+                
+                border-radius: 10px;
+        """)
+
+        self.setWindowTitle("Notification")
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setText("Are you sure you want to exit?")
+        self.setIcon(QMessageBox.Question)
+
+        # Customize the buttons
+        yes_button = self.addButton(QMessageBox.Yes)
+        no_button = self.addButton(QMessageBox.No)
+
+        # Apply custom styles to the buttons
+        yes_button.setStyleSheet(
+            """
+                QPushButton{
+                    background-color: #333A51;
+                    color: white;
+                    border-radius: 10px;
+                    padding: 3px 10px 3px 10px;
+                    text-align: center;
+                    text-decoration: none;
+                    margin: 4px 2px;
+                    border: 2px solid #6B963B;
+                    width: 80px;
+                }
+                QPushButton:hover {
+                    background-color: #5D7C4C;
+                }
+            """
+        )
+        no_button.setStyleSheet(
+            """
+                QPushButton{
+                    background-color: #333A51;
+                    color: white;
+                    border-radius: 10px;
+                    padding: 3px 10px 3px 10px;
+                    text-align: center;
+                    text-decoration: none;
+                    margin: 4px 2px;
+                    border: 2px solid #C03647;
+                    width: 80px;
+                }
+                QPushButton:hover {
+                    background-color: #943A4C;
+                }
+            """
+        )
+
+        self.setDefaultButton(QMessageBox.No)
 
 class Dialog(QWidget):
     def __init__(self, parent=None):

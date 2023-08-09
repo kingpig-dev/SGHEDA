@@ -6,15 +6,15 @@ import traceback
 ## UI
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMainWindow, QTabWidget, \
-    QHBoxLayout, QSizePolicy, QComboBox, QFileDialog, QScrollArea
+    QHBoxLayout, QSizePolicy, QComboBox, QFileDialog, QScrollArea, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap, QCursor, QMovie
-from PyQt5.QtCore import Qt, QSize, QTimer
+from PyQt5.QtCore import Qt, QSize, QTimer, QPoint
 
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1
 from firstpageclass import FirstPageClass
 from inputformclass import InputForm, InputDescription, CustomQTextEdit
 from labelclass import IntroLabel1, TickerLabel, IntroLabel3
-from notificationclass import CustomMessageBox
+from notificationclass import CustomMessageBox, ExitNotification
 import pyqtgraph as pg
 
 ## Calculation
@@ -42,6 +42,7 @@ class DesignClass(QWidget):
 
         # Set the background color of the main window
         self.setStyleSheet("background-color: #1F2843; border: none")
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
 
         # add all widgets
 
@@ -185,6 +186,7 @@ class DesignClass(QWidget):
         self.btn_exit = ExitButton(self.left_widget)
         self.btn_exit.setText(' Exit')
         self.btn_exit.setGeometry(0, 700, 200, 50)
+        self.btn_exit.clicked.connect(self.btnexit)
 
         # add tabs
         self.tab1 = self.ui1()
@@ -233,6 +235,21 @@ class DesignClass(QWidget):
         main_layout.setStretch(1, 100)
         self.setLayout(main_layout)
 
+        self.is_dragging = False
+        self.offset = QPoint()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.is_dragging = True
+            self.offset = event.pos()
+
+    def mouseMoveEvent(self, event):
+        if self.is_dragging:
+            self.move(event.globalPos() - self.offset)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.is_dragging = False
     # -----------------
     # ticker button
     def tickerbutton(self):
@@ -951,6 +968,17 @@ class DesignClass(QWidget):
         self.plt_gfunction.plot(x, y, pen='b')
 
         self.movenext()
+
+    def btnexit(self):
+        self.setEnabled(False)
+        notification = ExitNotification(self)
+        result = notification.exec_()
+
+        if result == QMessageBox.Yes:
+            self.close()
+
+        elif result == QMessageBox.No:
+            self.setEnabled(True)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
