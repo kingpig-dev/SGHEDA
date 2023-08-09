@@ -209,7 +209,9 @@ class DesignClass(QWidget):
         self.right_widget.addTab(self.tab7, '')
         self.right_widget.addTab(self.tab8, '')
 
-        self.button0()
+        self.tab1.loadtable()
+        self.right_widget.setCurrentIndex(0)
+
         self.right_widget.setStyleSheet('''
             QTabWidget {
                 border: none;
@@ -254,6 +256,25 @@ class DesignClass(QWidget):
     # buttons
     def button0(self):
         print("button0")
+        self.right_widget.clear()
+        self.tab1 = self.ui1()
+        self.tab2 = self.ui2()
+        self.tab3 = self.ui3()
+        self.tab4 = self.ui4()
+        self.tab5 = self.ui5()
+        self.tab6 = self.ui6()
+        self.tab7 = self.ui7()
+        self.tab8 = self.ui8()
+
+        self.right_widget.addTab(self.tab1, '')
+        self.right_widget.addTab(self.tab2, '')
+        self.right_widget.addTab(self.tab3, '')
+        self.right_widget.addTab(self.tab4, '')
+        self.right_widget.addTab(self.tab5, '')
+        self.right_widget.addTab(self.tab6, '')
+        self.right_widget.addTab(self.tab7, '')
+        self.right_widget.addTab(self.tab8, '')
+
         self.tab1.loadtable()
         self.right_widget.setCurrentIndex(0)
         self.tickerbutton()
