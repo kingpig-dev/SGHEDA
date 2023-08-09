@@ -5,7 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from labelclass import IntroLabel3
 
-
+import traceback
 class InputForm(QWidget):
 
     def __init__(self, parent, elements):
@@ -36,7 +36,7 @@ class InputForm(QWidget):
                 ''')
                 b = QLineEdit()
                 b.setValidator(QDoubleValidator())
-                b.setMaxLength(4)
+                b.setMaxLength(10)
                 b.setStyleSheet('''
                     QLineEdit {
                         text-align: center;
@@ -45,7 +45,7 @@ class InputForm(QWidget):
                         border-bottom: 2px solid #1F8EFA;
                     }
                 ''')
-                b.setText(elements[i][3])
+                b.setPlaceholderText(elements[i][3])
                 b.setAlignment(Qt.AlignCenter)
                 c = QLabel(elements[i][1])
                 self.grid.addWidget(a, i + 1, 0)
@@ -122,13 +122,60 @@ class InputForm(QWidget):
         return True
 
     def setData(self, data):
-        for i in range(1, len(self.input) + 1):
-            print(data[list(data.keys())[i - 1]])
-            if self.elements[i][2] == "lineedit":
-                self.input[i - 1].setText(data[list(data.keys())[i - 1]])
-            else:
-                self.input[i - 1].setText(data[list(data.keys())[i - 1]])
         print('setData')
+        try:
+            for i in range(1, len(self.input) + 1):
+                if self.elements[i][2] == "lineedit":
+                    self.input[i - 1].setText(data[i][3])
+                else:
+                    self.input[i - 1].setText(data[i][2])
+        except Exception as e:
+            print('setData expeption: ', traceback.format_exc())
+
+    def setReadOnly(self, data):
+        for i in range(1, len(self.input)+1):
+            self.input[i-1].setReadOnly(data)
+
+class InputDescription(QWidget):
+    def __init__(self, parent, elements):
+        super().__init__(parent)
+        self.setStyleSheet('''
+            background-color: #1F2843;
+            color: white;
+            font-size: 16px;
+            padding: 5px 10px;
+            QWidget {
+                border: 2px solid red;
+            }
+
+        ''')
+        self.elements = elements
+        self.grid = QGridLayout(self)
+        label_title = IntroLabel3(elements[0])
+        label_title.setAlignment(Qt.AlignCenter)
+        self.grid.addWidget(label_title, 1, 0, 1, 3)
+
+        self.description = CustomQTextEdit(self)
+        self.description.setText(elements[1])
+        self.grid.addWidget(self.description, 2, 0, 3, 3)
+    def getData(self):
+        return self.description.toPlainText()
+
+    def getValidation(self):
+        if self.description.toPlainText() == '':
+            return False
+        else:
+            return True
+class CustomQTextEdit(QTextEdit):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setStyleSheet("""
+            background-color: #2C3751;
+            color: #7C8AA7;
+            font-size: 16px;
+            padding: 4px 3px 4px 2px;
+        """)
+
 
 
 class Dialog(QWidget):
@@ -143,6 +190,9 @@ class Dialog(QWidget):
              ["Flow Rate", "gpm/ton", "lineedit", '3.0'], ["Fluid type", ["Water", "Methanol"], "combobox"]]
         a = InputForm(self, b)
 
+        c = CustomQTextEdit(self)
+        c.setText("Initial")
+        print(c.toPlainText())
         self.resize(600, 300)
 
 
