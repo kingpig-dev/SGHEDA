@@ -40,7 +40,7 @@ class DesignClass(QWidget):
         """)
 
         # Image button
-        self.btn_home = ImageButton(self.left_widget, './Images/logo03.png')
+        self.btn_home = ImageButton(self.left_widget, './Images/logo03_glowed.png')
         self.btn_home.move(20, 20)
         self.btn_home.clicked.connect(self.button0)
 
