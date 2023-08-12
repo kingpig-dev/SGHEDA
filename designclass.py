@@ -1,22 +1,34 @@
 import json
 import sys
+import time
+import traceback
 
+## UI
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMainWindow, QTabWidget, \
-    QHBoxLayout, QSizePolicy, QComboBox, QFileDialog
-from PyQt5.QtGui import QIcon, QPixmap, QCursor
-from PyQt5.QtCore import Qt, QSize
+    QHBoxLayout, QSizePolicy, QComboBox, QFileDialog, QScrollArea
+from PyQt5.QtGui import QIcon, QPixmap, QCursor, QMovie
+from PyQt5.QtCore import Qt, QSize, QTimer
 
-from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1
+from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1
 from firstpageclass import FirstPageClass
-from inputformclass import InputForm
-from labelclass import IntroLabel1, TickerLabel
+from inputformclass import InputForm, InputDescription, CustomQTextEdit
+from labelclass import IntroLabel1, TickerLabel, IntroLabel3
 from notificationclass import CustomMessageBox
+import pyqtgraph as pg
 
+## Calculation
+import numpy as np
+from scipy.special import erfc
+from scipy.integrate import dblquad
 import math
+from decimal import *
+getcontext().prec = 4
+
 class DesignClass(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.plt_gfunction = None
         self.parent = parent
         self.tabstack = []
         self.dict = {}
@@ -197,7 +209,9 @@ class DesignClass(QWidget):
         self.right_widget.addTab(self.tab7, '')
         self.right_widget.addTab(self.tab8, '')
 
-        self.button0()
+        self.tab1.loadtable()
+        self.right_widget.setCurrentIndex(0)
+
         self.right_widget.setStyleSheet('''
             QTabWidget {
                 border: none;
@@ -242,6 +256,25 @@ class DesignClass(QWidget):
     # buttons
     def button0(self):
         print("button0")
+        self.right_widget.clear()
+        self.tab1 = self.ui1()
+        self.tab2 = self.ui2()
+        self.tab3 = self.ui3()
+        self.tab4 = self.ui4()
+        self.tab5 = self.ui5()
+        self.tab6 = self.ui6()
+        self.tab7 = self.ui7()
+        self.tab8 = self.ui8()
+
+        self.right_widget.addTab(self.tab1, '')
+        self.right_widget.addTab(self.tab2, '')
+        self.right_widget.addTab(self.tab3, '')
+        self.right_widget.addTab(self.tab4, '')
+        self.right_widget.addTab(self.tab5, '')
+        self.right_widget.addTab(self.tab6, '')
+        self.right_widget.addTab(self.tab7, '')
+        self.right_widget.addTab(self.tab8, '')
+
         self.tab1.loadtable()
         self.right_widget.setCurrentIndex(0)
         self.tickerbutton()
@@ -316,7 +349,7 @@ class DesignClass(QWidget):
             print("uimovenext")
             dict = {}
             if form_fluidsystemdesign.getValidation():
-                dict[data_form_fluidsystemdesign[0]] = form_fluidsystemdesign.getData()
+                dict = form_fluidsystemdesign.getData()
             else:
                 self.btn_1_ticker.hide()
                 self.movenext()
@@ -369,7 +402,7 @@ class DesignClass(QWidget):
             print("uimovenext")
             dict = {}
             if form_fluidproperties.getValidation():
-                dict[data_form_fluidproperties[0]] = form_fluidproperties.getData()
+                dict = form_fluidproperties.getData()
             else:
                 self.btn_2_ticker.hide()
                 self.movenext()
@@ -415,7 +448,7 @@ class DesignClass(QWidget):
             print("uimovenext")
             dict = {}
             if form_soilthermalproperties.getValidation():
-                dict[data_form_soilthermalproperties[0]] = form_soilthermalproperties.getData()
+                dict = form_soilthermalproperties.getData()
             else:
                 self.btn_3_ticker.hide()
                 self.movenext()
@@ -465,19 +498,19 @@ class DesignClass(QWidget):
         data_form_pipeconfiguration = ["Pipe Configuration",
                                         ['Buried Depth', 'm', 'lineedit', '2.0']]
         form_pipeconfiguration = InputForm(main, data_form_pipeconfiguration)
-        form_pipeconfiguration.move(150, 350)
+        form_pipeconfiguration.move(230, 450)
 
         def uimovenext():
             print("uimovenext")
             dict = {}
             if form_pipeproperties.getValidation():
-                dict[data_form_pipeproperties[0]] = form_pipeproperties.getData()
+                dict = form_pipeproperties.getData()
             else:
                 self.btn_4_ticker.hide()
                 self.movenext()
                 return False
             if form_pipeconfiguration.getValidation():
-                dict[data_form_pipeconfiguration[0]] = form_pipeconfiguration.getData()
+                dict.update(form_pipeconfiguration.getData())
             else:
                 self.btn_4_ticker.hide()
                 self.movenext()
@@ -521,23 +554,52 @@ class DesignClass(QWidget):
         form_circulationpumps = InputForm(main, data_form_circulationpumps)
         form_circulationpumps.move(200, 100)
 
+        timer = QTimer()
+
         def uimovenext():
-            print("uimovenext")
+            print("Design")
             dict = {}
             if form_circulationpumps.getValidation():
-                dict[data_form_circulationpumps[0]] = form_circulationpumps.getData()
+                dict = form_circulationpumps.getData()
             else:
-                self.btn_5_ticker.hide()
-                self.movenext()
                 return False
 
             self.dict["Pump"] = dict
             self.btn_5_ticker.show()
-            self.movenext()
+
+            if len(self.dict.keys()) == 5:
+                self.result()
+            else:
+                print("notification")
+                return False
             return True
 
         def uimoveprevious():
             self.moveprevious()
+
+        def end_loading():
+
+            self.left_widget.setEnabled(True)
+            loading_label.setVisible(False)
+            btn_loading_stop.setVisible(False)
+            movie.stop()
+            timer.stop()
+            uimovenext()
+
+        def start_loading():
+            loading_label.setVisible(True)
+            self.left_widget.setEnabled(False)
+            btn_loading_stop.setVisible(True)
+            movie.start()
+            timer.timeout.connect(end_loading)
+            timer.start(2000)
+
+        def loading_stop():
+            self.left_widget.setEnabled(True)
+            loading_label.setVisible(False)
+            btn_loading_stop.setVisible(False)
+            movie.stop()
+            timer.stop()
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
@@ -549,44 +611,63 @@ class DesignClass(QWidget):
         btn_next.setText(main.tr('Design'))
         btn_next.move(550, 670)
         btn_next.resize(170, 55)
-        btn_next.clicked.connect(uimovenext)
+        btn_next.clicked.connect(start_loading)
+
+        movie = QMovie('./Images/loading.gif')
+        loading_label = QLabel(main)
+        loading_label.setAlignment(Qt.AlignCenter)
+        loading_label.setFixedSize(800, 800)
+        loading_label.setVisible(False)
+        loading_label.setMovie(movie)
+        loading_label.move(100, 0)
+
+        btn_loading_stop = ImageButton1(main, './Images/x02.png')
+        btn_loading_stop.setToolTip('Cancel Calculation')
+        btn_loading_stop.move(900, 30)
+        btn_loading_stop.clicked.connect(loading_stop)
+        btn_loading_stop.setVisible(False)
 
         return main
 
     def ui7(self):
-        # Results
+        # Result
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Results")
+        label.setText("Result")
         label.move(400, 30)
 
         main.setStyleSheet('''
             color: white;
         ''')
         data_form_designdimensions = ["Design Dimensions",
-                                      ["Trench Length", 'ft', "lineedit", '20'],
-                                      ["Total Pipe Length", "ft", 'lineedit', '60'],
+                                      ["Pipe Length", 'm', "lineedit", '200'],
                                       ['Inlet Temperature', '⁰F', 'lineedit', '70'],
                                       ["Outlet Temperature", '⁰F', "lineedit", '40'],
-                                      ["Peak Load", "Kbtu/Hr", 'lineedit', '30'],
-                                      ['Power Consumption', 'KWh/day', 'lineedit', '10'],
                                       ['System Flow Rate', 'gpm', 'lineedit', '10']
                                       ]
-        form_designdimensions = InputForm(main, data_form_designdimensions)
-        form_designdimensions.move(200, 100)
+        self.form_designdimensions = InputForm(main, data_form_designdimensions)
+        self.form_designdimensions.move(200, 100)
 
-        data_form_description = ['Design Description',
-                                 ['Description', '', 'lineedit', 'design GHE for blockchain mining equipment']]
-        form_description = InputForm(main, data_form_description)
-        form_description.move(250, 450)
+        label_description = IntroLabel3(main)
+        label_description.setText('Description')
+        label_description.setAlignment(Qt.AlignCenter)
+        label_description.move(300, 400)
 
+        textedit_description = CustomQTextEdit(main)
+        # textedit_description.place
+        textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
+        textedit_description.setGeometry(150, 450, 700, 150)
+
+
+
+        timer = QTimer()
         def uisavedesign():
             print("uimovenext")
             dict = {}
 
-            if form_designdimensions.getValidation():
-                dict[data_form_designdimensions[0]] = form_designdimensions.getData()
+            if self.form_designdimensions.getValidation():
+                dict[data_form_designdimensions[0]] = self.form_designdimensions.getData()
             else:
                 icon = QIcon('./Images/logo03.png')
                 custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
@@ -594,19 +675,10 @@ class DesignClass(QWidget):
                 custom_message_box.setGeometry(900, 20, 300, 70)
                 custom_message_box.show()
                 return False
-            print('1')
-            if form_description.getValidation():
-                description = form_description.getData()
-            else:
-                # notification
-                icon = QIcon('./Images/logo03.png')
-                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
-                                                                              '    parameter.', self)
-                custom_message_box.setGeometry(900, 20, 300, 70)
-                custom_message_box.show()
-                return False
 
-            self.dict["Results"] = dict
+            if textedit_description.toPlainText() == "":
+                textedit_description.setText('Design GHE for blockchain mining equipment')
+            description = textedit_description.toPlainText()
             self.dict["Description"] = description
             # self.movenext()
             options = QFileDialog.Options()
@@ -628,11 +700,11 @@ class DesignClass(QWidget):
             return True
 
         def gotoanalysis():
-            print("uimovenext")
+            print("gotoanalysis")
             dict = {}
 
-            if form_designdimensions.getValidation():
-                dict[data_form_designdimensions[0]] = form_designdimensions.getData()
+            if self.form_designdimensions.getValidation():
+                dict[data_form_designdimensions[0]] = self.form_designdimensions.getData()
             else:
                 self.btn_6_ticker.hide()
                 icon = QIcon('./Images/logo03.png')
@@ -642,50 +714,94 @@ class DesignClass(QWidget):
                 custom_message_box.show()
                 return False
             print('1')
-            if form_description.getValidation():
-                description = form_description.getData()
-            else:
-                self.btn_6_ticker.hide()
-                # notification
-                icon = QIcon('./Images/logo03.png')
-                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
-                                                                              '    parameter.', self)
-                custom_message_box.setGeometry(900, 20, 300, 70)
-                custom_message_box.show()
-                return False
-
+            if textedit_description.toPlainText() == "":
+                textedit_description.setText('Design GHE for blockchain mining equipment')
+            description = textedit_description.toPlainText()
             self.dict["Results"] = dict
             self.dict["Description"] = description
             self.btn_6_ticker.show()
             self.button7()
 
+        def end_loading():
+
+            self.left_widget.setEnabled(True)
+            loading_label.setVisible(False)
+            btn_loading_stop.setVisible(False)
+            movie.stop()
+            timer.stop()
+            # Validation
+            self.analysis()
+
+        def start_loading():
+            loading_label.setVisible(True)
+            self.left_widget.setEnabled(False)
+            btn_loading_stop.setVisible(True)
+            movie.start()
+            timer.timeout.connect(end_loading)
+            timer.start(2000)
+
+        def loading_stop():
+            self.left_widget.setEnabled(True)
+            loading_label.setVisible(False)
+            btn_loading_stop.setVisible(False)
+            movie.stop()
+            timer.stop()
+
         btn_save = MainButton1(main)
         btn_save.setText(main.tr('Save design'))
-        btn_save.move(100, 670)
+        btn_save.move(150, 670)
         btn_save.resize(170, 55)
         btn_save.clicked.connect(uisavedesign)
 
         btn_redesign = MainButton1(main)
         btn_redesign.setText(main.tr('Redesign'))
-        btn_redesign.move(362, 670)
+        btn_redesign.move(412, 670)
         btn_redesign.resize(170, 55)
         btn_redesign.clicked.connect(self.button0)
 
         btn_gotoanalysis = MainButton1(main)
         btn_gotoanalysis.setText(main.tr('Go to Analysis'))
-        btn_gotoanalysis.move(625, 670)
+        btn_gotoanalysis.move(675, 670)
         btn_gotoanalysis.resize(170, 55)
-        btn_gotoanalysis.clicked.connect(gotoanalysis)
+        btn_gotoanalysis.clicked.connect(start_loading)
+
+        movie = QMovie('./Images/loading.gif')
+        loading_label = QLabel(main)
+        loading_label.setAlignment(Qt.AlignCenter)
+        loading_label.setFixedSize(800, 800)
+        loading_label.setVisible(False)
+        loading_label.setMovie(movie)
+        loading_label.move(100, 0)
+
+        btn_loading_stop = ImageButton1(main, './Images/x02.png')
+        btn_loading_stop.setToolTip('Cancel Calculation')
+        btn_loading_stop.move(900, 30)
+        btn_loading_stop.clicked.connect(loading_stop)
+        btn_loading_stop.setVisible(False)
 
         return main
 
     def ui8(self):
         # Analysis
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
+
         main = QWidget()
 
         label = IntroLabel1(main)
         label.setText("Analysis")
         label.move(400, 30)
+        
+        self.plt_gfunction = pg.PlotWidget(main)
+        self.plt_gfunction.setTitle("G-function")
+        self.plt_gfunction.setLabel('left', 'g-function')
+        self.plt_gfunction.setLabel('bottom', 'Time')
+        self.plt_gfunction.setBackground('#2C3751')
+        self.plt_gfunction.setGeometry(150, 100, 700, 400)
+
+        self.plt_temperaturepertubation = pg.PlotWidget(main)
+
 
         btn_redesign = MainButton1(main)
         btn_redesign.setText(main.tr('Redesign'))
@@ -693,13 +809,14 @@ class DesignClass(QWidget):
         btn_redesign.resize(170, 55)
         # btn_redesign.clicked.connect(uiredesign)
 
-        btn_gotoanalysis = MainButton1(main)
-        btn_gotoanalysis.setText(main.tr('Go to Analysis'))
-        btn_gotoanalysis.move(625, 670)
-        btn_gotoanalysis.resize(170, 55)
-        # btn_gotoanalysis.clicked.connect(uigotoanalysis)
+        # btn_gotoanalysis = MainButton1(main)
+        # btn_gotoanalysis.setText(main.tr('Go to Analysis'))
+        # btn_gotoanalysis.move(625, 670)
+        # btn_gotoanalysis.resize(170, 55)
+        # # btn_gotoanalysis.clicked.connect(uigotoanalysis)
 
-        return main
+        scroll_area.setWidget(main)
+        return scroll_area
 
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
@@ -718,55 +835,122 @@ class DesignClass(QWidget):
         self.parent.exit()
 
     def sizing(self):
-
         # System
-        E_heat = self.dict['System']['Head Load']  # heat load [W*h]
-        T_in = self.dict['System']['Input Fluid Temperature']  # Hot Fluid Temperature 60~65dC, 140~150dF
+        try:
+            E_heat = float(self.dict['System']['Heat Load'])  # heat load [W*h]
+            T_in = float(self.dict['System']['Input Fluid Temperature'])  # Hot Fluid Temperature 60~65dC, 140~150dF
 
-        # Fluid
-        mu = self.dict["Fluid"]["Viscosity"]
-        c_p = self.dict["Fluid"]["Specific Heat"]
-        rho = self.dict["Fluid"]["Density"]
+            # Fluid
+            mu = float(self.dict["Fluid"]["Viscosity"])
+            c_p = float(self.dict["Fluid"]["Specific Heat"])
+            rho = float(self.dict["Fluid"]["Density"])
 
-        # Soil
-        k_soil = self.dict["Soil"]["Thermal Conductivity"]
-        T_g = self.dict["Soil"]["Ground Temperature"]
+            # Soil
+            k_soil = float(self.dict["Soil"]["Thermal Conductivity"])
+            T_g = float(self.dict["Soil"]["Ground Temperature"])
 
-        # Pipe
-        D_i = self.dict['Pipe']['Inner Diameter']
-        D_o = self.dict['Pipe']['Outer Diameter']
-        f_type = self.dict['Pipe']['Flow Type']
-        k_pipe = self.dict['Pipe']['Pipe Conductivity']
-        d = self.dict['Pipe']['Buried Depth']
+            print(E_heat, T_in, mu, c_p, rho, k_soil, T_g)
 
-        # Pump
-        V = self.dict["Pump"]["Flow Rate"]  # modify
-        p = self.dict['Pump']['Required Power']
+            # Pipe
+            D_i = float(self.dict['Pipe']['Inner Diameter'])
+            D_o = float(self.dict['Pipe']['Outer Diameter'])
+            f_type = self.dict['Pipe']['Flow Type']
+            k_pipe = float(self.dict['Pipe']['Pipe Conductivity'])
+            d = float(self.dict['Pipe']['Buried Depth'])
 
+            # Pump
+            V = float(self.dict["Pump"]["Fluid Velocity"])  # modify
+            p = float(self.dict['Pump']['Required Power'])
+
+        except Exception as e:
+            print('Exception: ', traceback.format_exc())
+            return False
+        print('after input variable')
+        try:
         # Resistance
-        R_e = rho * V * D_i / mu  # Reynolds number    Re<2100 laminar regime; 2100<Re<10000: transitional regime; Re>10000 turbulent regime
-        P_r = mu * c_p / k_pipe  # Prandtl number
-        h_w = 0.023 * R_e ** 0.8 * P_r ** 0.3 * k_pipe / D_i  # heat transfer coefficient [W/(m^2*k)]
+            R_e = rho * V * D_i / mu  # Reynolds number    Re<2100 laminar regime; 2100<Re<10000: transitional regime;
+            # Re>10000 turbulent regime
+            P_r = mu * c_p / k_pipe  # Prandtl number
+            h_w = 0.023 * R_e ** 0.8 * P_r ** 0.3 * k_pipe / D_i  # heat transfer coefficient [W/(m^2*k)]
 
-        R_conv = 1 / (3.14159 * D_i * h_w)
-        R_pipe = math.log(D_o / D_i) / (2 * 3.14159 * k_pipe)
-        S = 2 * 3.14159 / math.log((2 * d / D_o) + math.sqrt((2 * d / D_o) ** 2 - 1))  # conduction shape factor of the pipe
-        R_soil = 1 / (S * k_soil)
+            R_conv = 1 / (3.14159 * D_i * h_w)
+            R_pipe = math.log(D_o / D_i) / (2 * 3.14159 * k_pipe)
+            S = 2 * 3.14159 / math.log((2 * d / D_o) + math.sqrt((2 * d / D_o) ** 2 - 1))  # conduction shape factor of
+            # the pipe
+            R_soil = 1 / (S * k_soil)
 
-        R_total = R_conv + R_pipe + R_soil
+            R_total = R_conv + R_pipe + R_soil
 
-        # Length calculation
-        m_w = rho * V * 3.14159 * (D_i / 2) ** 2
-        T_out = T_in - E_heat / (m_w * c_p)
-        theta_w_in = T_in - T_g
-        theta_w_out = T_out - T_g
+            # Length calculation
+            m_w = rho * V * 3.14159 * (D_i / 2) ** 2
+            T_out = T_in - E_heat / (m_w * c_p)
+            theta_w_in = T_in - T_g
+            theta_w_out = T_out - T_g
 
-        L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
+            L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
 
-        print("length of pipe:", L)
+            print("length of pipe:", L)
+            self.dict['Result'] = {'Pipe Length': str(L)}
+            loop_diameter = 0.75
+            pitch = 0.4
+            return True
+        except Exception as e:
+            print('Size Calculation Error:', traceback.format_exc())
+            return False
 
-        loop_diameter = 0.75
-        pitch = 0.4
+    def result(self):
+        if self.sizing():
+            data_form_designdimensions = ["Design Dimensions",
+                                          ["Pipe Length", 'm', "lineedit", self.dict['Result']['Pipe Length']],
+                                          ['Inlet Temperature', '⁰F', 'lineedit', '70'],
+                                          ["Outlet Temperature", '⁰F', "lineedit", '40'],
+                                          ['System Flow Rate', 'gpm', 'lineedit', '10']
+                                          ]
+            self.form_designdimensions.setData(data_form_designdimensions)
+            self.form_designdimensions.setReadOnly(True)
+            self.movenext()
+        else:
+            print('Show Notification')
+    def analysis(self):
+        print('Analysis')
+        # N_ring = 5
+        # R = 1  # m
+        # pitch = 0.2  # m
+        # alpha = 1e-6  # m2/s
+        # t_series = np.arange(10000, 3e7 + 1, 1e6)
+        # t_1 = int(1e6)
+        # h = 2  # m
+        #
+        # # gs_series = []
+        # # for N_ring in N_ring_series:
+        # gs_series = []
+        # for t in t_series:
+        #     gs = Decimal(0)
+        #     for i in range(1, N_ring + 1):
+        #         for j in range(1, N_ring + 1):
+        #             if i != j:
+        #                 def d(w, phi):
+        #                     return np.sqrt((pitch * (i - j) + R * (np.cos(phi) - np.cos(w))) ** 2 +
+        #                                    (R * (np.sin(phi) - np.sin(w))) ** 2)
+        #
+        #                 def fun(w, phi):
+        #                     return erfc(d(w, phi) / (2 * np.sqrt(alpha * t))) / d(w, phi) - erfc(
+        #                         np.sqrt(d(w, phi) ** 2 + 4 * h ** 2) / (2 * np.sqrt(alpha * t))) / np.sqrt(
+        #                         d(w, phi) ** 2 + 4 * h ** 2)
+        #
+        #                 b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2,
+        #                                epsrel=1e-2)
+        #                 print(b)
+        #                 gs += Decimal(b)
+        #
+        #     print(f"gs: {gs}")
+        #     gs_series.append(gs)
+        x = np.linspace(0, 2*np.pi, 1000)
+        y = np.sin(x)
+        self.plt_gfunction.clear()
+        self.plt_gfunction.plot(x, y, pen='b')
+
+        self.movenext()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -165,6 +165,30 @@ class ImageButton(QtWidgets.QPushButton):
     def leaveEvent(self, event):
         self.setIconSize(QSize(150, 130))
 
+class ImageButton1(QtWidgets.QPushButton):
+    def __init__(self, parent, path):
+        super().__init__(parent)
+        self.icon = QtGui.QIcon(path)
+        self.setIcon(self.icon)
+        self.setIconSize(QSize(30, 30))
+
+        self.setStyleSheet(
+            """
+        QPushButton{
+            font-size: 20px;
+            margin: 4px 2px;
+            border: none;
+        }
+        """
+        )
+        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+
+    def enterEvent(self, event):
+        self.setIconSize(QSize(35, 35))
+
+    def leaveEvent(self, event):
+        self.setIconSize(QSize(30, 30))
+
 class ExtraButton(QtWidgets.QPushButton):
     def __init__(self, parent, path):
         super().__init__(parent)
