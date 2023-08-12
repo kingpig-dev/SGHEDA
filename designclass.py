@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLay
 from PyQt5.QtGui import QIcon, QPixmap, QCursor, QMovie
 from PyQt5.QtCore import Qt, QSize, QTimer, QPoint
 
-from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1
+from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1, TextButton
 from firstpageclass import FirstPageClass
 from inputformclass import InputForm, InputDescription, CustomQTextEdit
 from labelclass import IntroLabel1, TickerLabel, IntroLabel3
@@ -42,7 +42,7 @@ class DesignClass(QWidget):
 
         # Set the background color of the main window
         self.setStyleSheet("background-color: #1F2843; border: none")
-        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        # self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
 
         # add all widgets
 
@@ -113,24 +113,24 @@ class DesignClass(QWidget):
         self.label_num.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
         self.btn_1 = SquareButton(self.left_widget, './Images/configuration01.png')
-        self.btn_1.setText(' System')
+        self.btn_1.setText(' System Design ')
         self.btn_1.setGeometry(0, 200, 212, 50)
         self.btn_2 = SquareButton(self.left_widget, './Images/fluid02.png')
-        self.btn_2.setText(' Fluid')
+        self.btn_2.setText(' Fluid Properties ')
         self.btn_2.setGeometry(0, 250, 212, 50)
         self.btn_3 = SquareButton(self.left_widget, './Images/soil01.png')
-        self.btn_3.setText(' Soil')
+        self.btn_3.setText(' Soil Properties ')
         self.btn_3.setGeometry(0, 300, 212, 50)
         self.btn_4 = SquareButton(self.left_widget, './Images/pipe01.png')
-        self.btn_4.setText(' Pipe')
+        self.btn_4.setText(' Pipe Configuration ')
         self.btn_4.setGeometry(0, 350, 212, 50)
         self.btn_5 = SquareButton(self.left_widget, './Images/power02.png')
-        self.btn_5.setText(' Pump')
+        self.btn_5.setText(' Pump Info ')
         self.btn_5.setGeometry(0, 400, 212, 50)
         self.btn_6 = SquareButton(self.left_widget, './Images/result01.png')
-        self.btn_6.setText(' Result')
+        self.btn_6.setText(' Design Result')
         self.btn_6.setGeometry(0, 450, 212, 50)
-        self.btn_7 = SquareButton(self.left_widget, './Images/analysis05.png')
+        self.btn_7 = SquareButton(self.left_widget, './Images/analysis11.png')
         self.btn_7.setText(' Analysis')
         self.btn_7.setGeometry(0, 500, 212, 50)
 
@@ -171,19 +171,27 @@ class DesignClass(QWidget):
         self.btn_6.clicked.connect(self.button6)
         self.btn_7.clicked.connect(self.button7)
 
-        self.btn_setting = ExtraButton(self.left_widget, './Images/setting02.png')
-        self.btn_setting.setText(' Setting')
-        self.btn_setting.setGeometry(0, 550, 200, 50)
+        self.btn_setting = ExtraButton(self.left_widget, './Images/setting.png')
+        self.btn_setting.setText(' Settings')
+        self.btn_setting.setGeometry(0, 590, 200, 50)
+        self.btn_setting.clicked.connect(self.btnsetting)
 
-        self.btn_license = ExtraButton(self.left_widget, './Images/license01.png')
-        self.btn_license.setText(' License')
-        self.btn_license.setGeometry(0, 600, 200, 50)
+        self.line = QLabel(self.left_widget)
+        self.line.setStyleSheet('''
+            QLabel {background-color: #ACACBF;;}
+        ''')
+        self.line.setGeometry(25, 646, 150, 1)
 
-        self.btn_help = ExtraButton(self.left_widget, './Images/help.png')
+
+        self.btn_license = TextButton(self.left_widget)
+        self.btn_license.setText(' Feedback')
+        self.btn_license.setGeometry(50, 650, 100, 20)
+
+        self.btn_help = TextButton(self.left_widget)
         self.btn_help.setText('  Help  ')
-        self.btn_help.setGeometry(0, 650, 200, 50)
+        self.btn_help.setGeometry(50, 675, 100, 20)
 
-        self.btn_exit = ExitButton(self.left_widget)
+        self.btn_exit = ExitButton(self.left_widget, './Images/end01.png')
         self.btn_exit.setText(' Exit')
         self.btn_exit.setGeometry(0, 700, 200, 50)
         self.btn_exit.clicked.connect(self.btnexit)
@@ -197,6 +205,7 @@ class DesignClass(QWidget):
         self.tab6 = self.ui6()
         self.tab7 = self.ui7()
         self.tab8 = self.ui8()
+        self.tab9 = self.ui9()
 
         # right widget
         self.right_widget = QTabWidget()
@@ -210,12 +219,13 @@ class DesignClass(QWidget):
         self.right_widget.addTab(self.tab6, '')
         self.right_widget.addTab(self.tab7, '')
         self.right_widget.addTab(self.tab8, '')
+        self.right_widget.addTab(self.tab9, '')
 
         self.tab1.loadtable()
         self.right_widget.setCurrentIndex(0)
 
         self.right_widget.setStyleSheet('''
-            QTabWidget {
+            QTabWidget::pane {
                 border: none;
             }
         
@@ -235,21 +245,21 @@ class DesignClass(QWidget):
         main_layout.setStretch(1, 100)
         self.setLayout(main_layout)
 
-        self.is_dragging = False
-        self.offset = QPoint()
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.is_dragging = True
-            self.offset = event.pos()
-
-    def mouseMoveEvent(self, event):
-        if self.is_dragging:
-            self.move(event.globalPos() - self.offset)
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.is_dragging = False
+    #     self.is_dragging = False
+    #     self.offset = QPoint()
+    #
+    # def mousePressEvent(self, event):
+    #     if event.button() == Qt.LeftButton:
+    #         self.is_dragging = True
+    #         self.offset = event.pos()
+    #
+    # def mouseMoveEvent(self, event):
+    #     if self.is_dragging:
+    #         self.move(event.globalPos() - self.offset)
+    #
+    # def mouseReleaseEvent(self, event):
+    #     if event.button() == Qt.LeftButton:
+    #         self.is_dragging = False
     # -----------------
     # ticker button
     def tickerbutton(self):
@@ -264,7 +274,7 @@ class DesignClass(QWidget):
     def combobox_selection_changed(self):
         selected_text = self.combobox_selection.currentText()
         print(selected_text)
-        if selected_text == '  Design ':
+        if selected_text == '  Design':
             self.label_num.setText(' ' + str(self.num_design))
         else:
             self.label_num.setText(' ' + str(self.num_analysis))
@@ -338,7 +348,8 @@ class DesignClass(QWidget):
             custom_message_box.setGeometry(900, 20, 300, 70)
             custom_message_box.show()
             print("notification")
-
+    def btnsetting(self):
+        self.right_widget.setCurrentIndex(8)
     # -----------------
     # pages
 
@@ -352,13 +363,13 @@ class DesignClass(QWidget):
         main = QWidget()
         label = IntroLabel1(main)
         label.setText("System")
-        label.move(400, 30)
+        label.move(410, 30)
 
         data_form_fluidsystemdesign = ["System Design",
                                        ["Heat Load", "W", "lineedit", "2000"],
                                        ["Input Fluid Temperature", "dC", "lineedit", '60']]
         form_fluidsystemdesign = InputForm(main, data_form_fluidsystemdesign)
-        form_fluidsystemdesign.move(200, 100)
+        form_fluidsystemdesign.move(240, 100)
 
 
 
@@ -401,7 +412,7 @@ class DesignClass(QWidget):
 
         label = IntroLabel1(main)
         label.setText("Fluid")
-        label.move(400, 30)
+        label.move(410, 30)
 
         data_form_fluidproperties = ["Fuild Properties",
                                      ["Fluid Type",
@@ -412,7 +423,7 @@ class DesignClass(QWidget):
                                      ["Density", "Kg/m^3", "lineedit", "1100"]
                                      ]
         form_fluidproperties = InputForm(main, data_form_fluidproperties)
-        form_fluidproperties.move(200, 100)
+        form_fluidproperties.move(240, 100)
 
 
         def uimovenext():
@@ -452,14 +463,14 @@ class DesignClass(QWidget):
 
         label = IntroLabel1(main)
         label.setText("Soil")
-        label.move(400, 30)
+        label.move(425, 30)
 
         data_form_soilthermalproperties = ["Soil Thermal Properties",
                                     ["Thermal Conductivity", "W/(m*K)", "lineedit", "0.07"],
                                     ["Ground Temperature", "⁰C", "lineedit", '10']
                                  ]
         form_soilthermalproperties = InputForm(main, data_form_soilthermalproperties)
-        form_soilthermalproperties.move(200, 100)
+        form_soilthermalproperties.move(240, 100)
 
         def uimovenext():
             print("uimovenext")
@@ -499,7 +510,7 @@ class DesignClass(QWidget):
 
         label = IntroLabel1(main)
         label.setText("Pipe")
-        label.move(400, 30)
+        label.move(425, 30)
 
         data_form_pipeproperties = ["Pipe Properties",
                                     ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
@@ -510,12 +521,12 @@ class DesignClass(QWidget):
                                     ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
                                   ]
         form_pipeproperties = InputForm(main, data_form_pipeproperties)
-        form_pipeproperties.move(200, 100)
+        form_pipeproperties.move(230, 100)
 
         data_form_pipeconfiguration = ["Pipe Configuration",
                                         ['Buried Depth', 'm', 'lineedit', '2.0']]
         form_pipeconfiguration = InputForm(main, data_form_pipeconfiguration)
-        form_pipeconfiguration.move(230, 450)
+        form_pipeconfiguration.move(270, 450)
 
         def uimovenext():
             print("uimovenext")
@@ -561,7 +572,7 @@ class DesignClass(QWidget):
 
         label = IntroLabel1(main)
         label.setText("Pump")
-        label.move(400, 30)
+        label.move(425, 30)
 
         data_form_circulationpumps = ["Circulation Pump",
                                       ["Required Power", 'W', "lineedit", '600'],
@@ -569,7 +580,7 @@ class DesignClass(QWidget):
                                       ['Pump Motor Efficiency', '%', 'lineedit', '85']
                                       ]
         form_circulationpumps = InputForm(main, data_form_circulationpumps)
-        form_circulationpumps.move(200, 100)
+        form_circulationpumps.move(250, 100)
 
         timer = QTimer()
 
@@ -652,7 +663,7 @@ class DesignClass(QWidget):
 
         label = IntroLabel1(main)
         label.setText("Result")
-        label.move(400, 30)
+        label.move(425, 30)
 
         main.setStyleSheet('''
             color: white;
@@ -664,12 +675,12 @@ class DesignClass(QWidget):
                                       ['System Flow Rate', 'gpm', 'lineedit', '10']
                                       ]
         self.form_designdimensions = InputForm(main, data_form_designdimensions)
-        self.form_designdimensions.move(200, 100)
+        self.form_designdimensions.move(260, 100)
 
         label_description = IntroLabel3(main)
         label_description.setText('Description')
         label_description.setAlignment(Qt.AlignCenter)
-        label_description.move(300, 400)
+        label_description.move(420, 420)
 
         textedit_description = CustomQTextEdit(main)
         # textedit_description.place
@@ -834,6 +845,42 @@ class DesignClass(QWidget):
 
         scroll_area.setWidget(main)
         return scroll_area
+
+    def ui9(self):
+        # Settings
+        main = QWidget()
+
+        label = IntroLabel1(main)
+        label.setText("Settings")
+        label.move(425, 30)
+
+        # data_form_designdimensions = ["Design Dimensions",
+        #                               ["Pipe Length", 'm', "lineedit", '200'],
+        #                               ['Inlet Temperature', '⁰F', 'lineedit', '70'],
+        #                               ["Outlet Temperature", '⁰F', "lineedit", '40'],
+        #                               ['System Flow Rate', 'gpm', 'lineedit', '10']
+        #                               ]
+        # self.form_designdimensions = InputForm(main, data_form_designdimensions)
+        # self.form_designdimensions.move(260, 100)
+
+        # self.data_license_info = ["1010101010101010", '1010101010101010']
+        # self.license_info = LicenseForm(main, self.data_license_info)
+        # self.license_info.move(260, 100)
+        #
+        # self.data_time_setting = ['Time Setting',
+        #                           ['Prediction Time', '1 year']]
+        #
+        # self.time_setting = InputForm(main, self.data_time_setting)
+        # self.time_setting.move(260, 300)
+        #
+        # self.personal_setting = PersonalForm(main)
+        # self.personal_setting.move(260, 400)
+        #
+        # self.data_userinfo = ['Lyle Rowe', 'default@gmail.com', 'Canada', '1000110']
+        # self.userinfo = UserInfoForm(main)
+        # self.userinfo.setData()
+
+        return main
 
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
