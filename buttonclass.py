@@ -121,7 +121,7 @@ class SquareButton(QtWidgets.QPushButton):
             font-size: 16px;
             padding: 0px 15px;
             border: none;
-            font-weight: bold;
+            letter-spacing: .05em;
         }
         """
             % (background.name())
@@ -200,10 +200,12 @@ class ExtraButton(QtWidgets.QPushButton):
         """
             QPushButton{
                 background-color: #2C3751;
+                color: #ACACBF;
                 text-decoration: none;
                 padding: 0px 50px;
-                font-size: 16px;
+                font-size: 18px;
                 border: none;
+                font-style: italic;
             }
             QPushButton:hover {
                 text-decoration: underline;
@@ -219,33 +221,59 @@ class ExtraButton(QtWidgets.QPushButton):
     # def leaveEvent(self, event):
     #     self.setIconSize(QSize(150, 130))
 
-class ExitButton(QtWidgets.QPushButton):
+class TextButton(QtWidgets.QPushButton):
     def __init__(self, parent):
         super().__init__(parent)
-        # self.icon = QtGui.QIcon(path)
-        # self.setIcon(self.icon)
-        # self.setIconSize(QSize(150, 130))
+        self.setStyleSheet(
+            """
+            QPushButton{
+                background-color: #2C3751;
+                text-align: center;
+                text-decoration: none;
+                font-size: 14px;
+                border: none;
+                font-weight: bold;
+                color: #ACACBF;
+            }
+            
+            QPushButton:hover{
+                text-decoration: underline;
+            }
+            """
+        )
+
+class ExitButton(QtWidgets.QPushButton):
+    def __init__(self, parent, path=None):
+        super().__init__(parent)
+        self.icon = QtGui.QIcon(path)
+        self.setIcon(self.icon)
+        self.setIconSize(QSize(30, 30))
 
         self.setStyleSheet(
             """
-        QPushButton{
-            background-color: #2C3751;
-            text-align: center;
-            text-decoration: none;
-            font-size: 20px;
-            margin: 4px 2px;
-            border: none;
-            font-weight: bold;
-        }
+            QPushButton{
+                background-color: #2C3751;
+                text-align: center;
+                text-decoration: none;
+                font-size: 20px;
+                margin: 4px 2px;
+                border: none;
+                font-weight: bold;
+                color: #ACACBF;
+            }
+            
+            QPushButton:hover {
+                color: red;
+            }
         """
         )
         self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
     def enterEvent(self, event):
-        self.setIconSize(QSize(165, 140))
+        self.setIconSize(QSize(35, 35))
 
     def leaveEvent(self, event):
-        self.setIconSize(QSize(150, 130))
+        self.setIconSize(QSize(30, 30))
 
 class Dialog(QtWidgets.QDialog):
     def __init__(self, parent=None):

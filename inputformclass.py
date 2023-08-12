@@ -6,19 +6,22 @@ from PyQt5.QtWidgets import *
 from labelclass import IntroLabel3
 
 import traceback
-class InputForm(QWidget):
+class InputForm(QGroupBox):
 
     def __init__(self, parent, elements):
         super().__init__(parent)
         self.setStyleSheet('''
-            background-color: #1F2843;
-            color: white;
-            font-size: 16px;
-            padding: 5px 10px;
-            QWidget {
-                border: 2px solid red;
+            * {
+                background-color: #1F2843;
+                color: white;
+                font-size: 16px;
+                padding: 5px 10px;
             }
             
+            QGroupBox {
+                border: 1px solid white;
+                border-radius: 30%;
+            }
         ''')
         self.elements = elements
         self.grid = QGridLayout(self)
@@ -45,7 +48,7 @@ class InputForm(QWidget):
                         border-bottom: 2px solid #1F8EFA;
                     }
                 ''')
-                b.setText(elements[i][3])
+                b.setPlaceholderText(elements[i][3])
                 b.setAlignment(Qt.AlignCenter)
                 c = QLabel(elements[i][1])
                 self.grid.addWidget(a, i + 1, 0)
@@ -176,7 +179,17 @@ class CustomQTextEdit(QTextEdit):
             padding: 4px 3px 4px 2px;
         """)
 
-
+class LicenseForm(QGroupBox):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setStyleSheet('''
+            * {
+                background-color: #1F2843;
+                color: white;
+                font-size: 16px;
+                padding: 5px 10px;
+            }
+        ''')
 
 class Dialog(QWidget):
     def __init__(self, parent=None):
