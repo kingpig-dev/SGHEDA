@@ -150,17 +150,16 @@ class InputDescription(QWidget):
             QWidget {
                 border: 2px solid red;
             }
-
         ''')
         self.elements = elements
         self.grid = QGridLayout(self)
         label_title = IntroLabel3(elements[0])
         label_title.setAlignment(Qt.AlignCenter)
-        self.grid.addWidget(label_title, 1, 0, 1, 3)
+        self.grid.addWidget(label_title, 1, 0)
 
         self.description = CustomQTextEdit(self)
         self.description.setText(elements[1])
-        self.grid.addWidget(self.description, 2, 0, 3, 3)
+        self.grid.addWidget(self.description, 2, 0)
     def getData(self):
         return self.description.toPlainText()
 
@@ -176,7 +175,8 @@ class CustomQTextEdit(QTextEdit):
             background-color: #2C3751;
             color: #7C8AA7;
             font-size: 16px;
-            padding: 4px 3px 4px 2px;
+            padding: 10px 20px 10px 20px;
+            border-radius: 10px solid white;
         """)
 
 class LicenseForm(QGroupBox):
@@ -189,7 +189,136 @@ class LicenseForm(QGroupBox):
                 font-size: 16px;
                 padding: 5px 10px;
             }
+            
+            QGroupBox {
+                border: 1px solid white;
+                border-radius: 30%;
+            }
         ''')
+        self.grid = QGridLayout(self)
+
+        self.label_title = IntroLabel3('License Information(2023.8.10~2024.2.10)')
+        self.label_title.setAlignment(Qt.AlignCenter)
+        self.grid.addWidget(self.label_title, 1, 1, 1, 2)
+
+        self.label_machinenumber = QLabel('Machine Number')
+        self.label_machinenumber.setStyleSheet('''
+                    QLabel {
+                        text-align: center;
+                    }
+                ''')
+        self.machinenumber = QLineEdit(self)
+        self.machinenumber.setAlignment(Qt.AlignCenter)
+        self.machinenumber.setStyleSheet('''
+                            QLineEdit {
+                                text-align: center;
+                                background-color: #1F2843;
+                                border: none;
+                                border-bottom: 2px solid #1F8EFA;
+                            }
+                        ''')
+
+        self.grid.addWidget(self.label_machinenumber, 2, 1)
+        self.grid.addWidget(self.machinenumber, 2, 2)
+
+        self.label_serialnumber = QLabel('Serial Number')
+        self.label_serialnumber.setStyleSheet('''
+                            QLabel {
+                                text-align: center;
+                            }
+                        ''')
+        self.serialnumber = QLineEdit(self)
+        self.serialnumber.setAlignment(Qt.AlignCenter)
+        self.serialnumber.setStyleSheet('''
+                            QLineEdit {
+                                text-align: center;
+                                background-color: #1F2843;
+                                border: none;
+                                border-bottom: 2px solid #1F8EFA;
+                            }
+                        ''')
+
+        self.grid.addWidget(self.label_serialnumber, 3, 1)
+        self.grid.addWidget(self.serialnumber, 3, 2)
+
+        self.btn_confirm = QPushButton(self)
+        self.btn_confirm.setText('Confirm')
+        self.btn_confirm.setStyleSheet("""
+                QPushButton{
+                    background-color: #333A51;
+                    color: white;
+                    border-radius: 10px;
+                    padding: 3px 10px 3px 10px;
+                    text-align: center;
+                    text-decoration: none;
+                    margin: 4px 2px;
+                    border: 2px solid #6B963B;
+                    width: 80px;
+                }
+                QPushButton:hover {
+                    background-color: #5D7C4C;
+                }
+            """)
+        self.grid.addWidget(self.btn_confirm, 4, 2)
+
+        self.btn_get_license = QPushButton(self)
+        self.btn_get_license.setText('Get License')
+        self.btn_get_license.setStyleSheet("""
+                        QPushButton{
+                            background-color: #333A51;
+                            color: white;
+                            border-radius: 10px;
+                            padding: 3px 10px 3px 10px;
+                            text-align: center;
+                            text-decoration: none;
+                            margin: 4px 2px;
+                            border: 2px solid #6B963B;
+                            width: 80px;
+                        }
+                        QPushButton:hover {
+                            background-color: #5D7C4C;
+                        }
+                    """)
+        self.grid.addWidget(self.btn_get_license, 4, 1)
+
+        self.machinenumber.setReadOnly(True)
+        self.setData()
+
+    def setData(self):
+        self.machinenumber.setText('1010101010101010101010')
+
+
+class PersonalForm(QGroupBox):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setStyleSheet('''
+            * {
+                background-color: #1F2843;
+                color: white;
+                font-size: 16px;
+                padding: 5px 10px;
+            }
+
+            QGroupBox {
+                border: 1px solid white;
+                border-radius: 30%;
+            }
+        ''')
+        self.grid = QGridLayout(self)
+
+        self.label_title = IntroLabel3('Personal Setting')
+        self.label_title.setAlignment(Qt.AlignCenter)
+        self.grid.addWidget(self.label_title, 1, 1)
+
+        self.includedesignerdetails = QCheckBox('Include Designer Details')
+        self.grid.addWidget(self.includedesignerdetails, 2, 1)
+
+        self.automateupgrate = QCheckBox('Automate Upgrade')
+        self.grid.addWidget(self.automateupgrate, 3, 1)
+
+
+    # def setData(self):
+    #     self.machinenumber.setText('1010101010101010')
 
 class Dialog(QWidget):
     def __init__(self, parent=None):
@@ -199,12 +328,15 @@ class Dialog(QWidget):
         """)
         self.setWindowTitle(self.tr("Dialog"))
 
-        b = ["System Design", ["Inlet Temperature", "dF", "lineedit", '90'],
-             ["Flow Rate", "gpm/ton", "lineedit", '3.0'], ["Fluid type", ["Water", "Methanol"], "combobox"]]
-        a = InputForm(self, b)
+        # b = ["System Design", ["Inlet Temperature", "dF", "lineedit", '90'],
+        #      ["Flow Rate", "gpm/ton", "lineedit", '3.0'], ["Fluid type", ["Water", "Methanol"], "combobox"]]
+        # a = InputForm(self, b)
 
         c = CustomQTextEdit(self)
         c.setText("Initial")
+
+        d = LicenseForm(self)
+
         print(c.toPlainText())
         self.resize(600, 300)
 
