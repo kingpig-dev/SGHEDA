@@ -78,18 +78,15 @@ class ExitNotification(QMessageBox):
                 background-color: #303E58;
                 font-size: 20px;
                 color: white;
-                
-                border-radius: 10px;
         """)
 
         self.setWindowTitle("Notification")
         self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setText("Are you sure you want to exit?")
-        self.setIcon(QMessageBox.Question)
+        self.setText('<center>Close the tool?</center>')
 
         # Customize the buttons
-        yes_button = self.addButton(QMessageBox.Yes)
         no_button = self.addButton(QMessageBox.No)
+        yes_button = self.addButton(QMessageBox.Yes)
 
         # Apply custom styles to the buttons
         yes_button.setStyleSheet(
@@ -97,14 +94,14 @@ class ExitNotification(QMessageBox):
                 QPushButton{
                     background-color: #333A51;
                     color: white;
-                    border-radius: 10px;
+                    border-radius: 15px;
                     padding: 3px 10px 3px 10px;
                     text-align: center;
                     text-decoration: none;
-                    margin: 4px 2px;
+                    margin: 0px 35px 10px 15px;
                     border: 2px solid #6B963B;
-                    width: 80px;
-                }
+                    width: 60px;
+                }   
                 QPushButton:hover {
                     background-color: #5D7C4C;
                 }
@@ -115,13 +112,13 @@ class ExitNotification(QMessageBox):
                 QPushButton{
                     background-color: #333A51;
                     color: white;
-                    border-radius: 10px;
+                    border-radius: 15px;
                     padding: 3px 10px 3px 10px;
                     text-align: center;
                     text-decoration: none;
-                    margin: 4px 2px;
+                    margin: 0px 15px 10px 35px;
                     border: 2px solid #C03647;
-                    width: 80px;
+                    width: 60px;
                 }
                 QPushButton:hover {
                     background-color: #943A4C;

@@ -53,7 +53,7 @@ class DesignClass(QWidget):
         """)
 
         # Image button
-        self.btn_home = ImageButton(self.left_widget, './Images/logo03.png')
+        self.btn_home = ImageButton(self.left_widget, './Images/logo03_glowed.png')
         self.btn_home.move(20, 20)
         self.btn_home.clicked.connect(self.button0)
 
@@ -104,7 +104,8 @@ class DesignClass(QWidget):
                 background-color: #374866;
                 color: white;
                 font-size: 16px;
-                border-radius: 13px
+                border-radius: 13px;
+                transition: background-color 0.9s ease-in-out;
             }
             QPushButton:hover {
                 background-color: #5A6B90;
@@ -112,25 +113,25 @@ class DesignClass(QWidget):
         """)
         self.label_num.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
-        self.btn_1 = SquareButton(self.left_widget, './Images/configuration01.png')
+        self.btn_1 = SquareButton(self.left_widget, './Images/configuration01_b.png', './Images/configuration01.png')
         self.btn_1.setText(' System Design ')
         self.btn_1.setGeometry(0, 200, 212, 50)
-        self.btn_2 = SquareButton(self.left_widget, './Images/fluid02.png')
+        self.btn_2 = SquareButton(self.left_widget, './Images/fluid02_b.png', './Images/fluid02.png')
         self.btn_2.setText(' Fluid Properties ')
         self.btn_2.setGeometry(0, 250, 212, 50)
-        self.btn_3 = SquareButton(self.left_widget, './Images/soil01.png')
+        self.btn_3 = SquareButton(self.left_widget, './Images/soil01_b.png', './Images/soil01.png')
         self.btn_3.setText(' Soil Properties ')
         self.btn_3.setGeometry(0, 300, 212, 50)
-        self.btn_4 = SquareButton(self.left_widget, './Images/pipe01.png')
+        self.btn_4 = SquareButton(self.left_widget, './Images/pipe01_b.png', './Images/pipe01.png')
         self.btn_4.setText(' Pipe Configuration ')
         self.btn_4.setGeometry(0, 350, 212, 50)
-        self.btn_5 = SquareButton(self.left_widget, './Images/power02.png')
+        self.btn_5 = SquareButton(self.left_widget, './Images/power02_b.png', './Images/power02.png')
         self.btn_5.setText(' Pump Info ')
         self.btn_5.setGeometry(0, 400, 212, 50)
-        self.btn_6 = SquareButton(self.left_widget, './Images/result01.png')
+        self.btn_6 = SquareButton(self.left_widget, './Images/result01_b.png', './Images/result01.png')
         self.btn_6.setText(' Design Result')
         self.btn_6.setGeometry(0, 450, 212, 50)
-        self.btn_7 = SquareButton(self.left_widget, './Images/analysis11.png')
+        self.btn_7 = SquareButton(self.left_widget, './Images/analysis11_b.png', './Images/analysis11.png')
         self.btn_7.setText(' Analysis')
         self.btn_7.setGeometry(0, 500, 212, 50)
 
@@ -171,7 +172,7 @@ class DesignClass(QWidget):
         self.btn_6.clicked.connect(self.button6)
         self.btn_7.clicked.connect(self.button7)
 
-        self.btn_setting = ExtraButton(self.left_widget, './Images/setting.png')
+        self.btn_setting = ExtraButton(self.left_widget, './Images/setting_b.png', './Images/setting.png')
         self.btn_setting.setText(' Settings')
         self.btn_setting.setGeometry(0, 590, 200, 50)
         self.btn_setting.clicked.connect(self.btnsetting)
@@ -180,20 +181,21 @@ class DesignClass(QWidget):
         self.line.setStyleSheet('''
             QLabel {background-color: #ACACBF;;}
         ''')
-        self.line.setGeometry(25, 646, 150, 1)
+        self.line.setGeometry(25, 640, 150, 1)
 
 
         self.btn_license = TextButton(self.left_widget)
-        self.btn_license.setText(' Feedback')
+        self.btn_license.setText(' Feedback ')
         self.btn_license.setGeometry(50, 650, 100, 20)
 
         self.btn_help = TextButton(self.left_widget)
         self.btn_help.setText('  Help  ')
-        self.btn_help.setGeometry(50, 675, 100, 20)
+        self.btn_help.setGeometry(50, 670, 100, 20)
 
-        self.btn_exit = ExitButton(self.left_widget, './Images/end01.png')
+
+        self.btn_exit = ExitButton(self.left_widget, './Images/end01.png', './Images/end01_r.png')
         self.btn_exit.setText(' Exit')
-        self.btn_exit.setGeometry(0, 700, 200, 50)
+        self.btn_exit.setGeometry(0, 695, 200, 50)
         self.btn_exit.clicked.connect(self.btnexit)
 
         # add tabs
@@ -1021,11 +1023,11 @@ class DesignClass(QWidget):
         notification = ExitNotification(self)
         result = notification.exec_()
 
-        if result == QMessageBox.Yes:
-            self.close()
-
-        elif result == QMessageBox.No:
+        if result == QMessageBox.No:
             self.setEnabled(True)
+        
+        elif result == QMessageBox.Yes:
+            self.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
