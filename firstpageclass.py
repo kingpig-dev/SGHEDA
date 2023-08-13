@@ -87,7 +87,7 @@ class FirstPageClass(QWidget):
 
     def btnopen(self):
         selected_items = self.tableWidget.selectedItems()
-        print('btnopen slected item: ', selected_items)
+        print('debug btnopen selected item: ', selected_items)
         if len(selected_items) == 2:
             selected_row = selected_items[1].row()
             filepath = self.tableWidget.item(selected_row, 0).text()

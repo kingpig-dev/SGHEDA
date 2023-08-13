@@ -17,10 +17,10 @@ class Dashboard(QWidget):
 
         # Set the window title
         self.setWindowTitle('Slinky GHE Design & Analysis')
-        self.setWindowIcon(QIcon("./Images/logo03.png"))
+        self.setWindowIcon(QIcon("./Images/logo03_glowed.png"))
 
         # Add logo
-        logo_pix = QPixmap('./Images/logo03.png')
+        logo_pix = QPixmap('./Images/logo03_glowed_white.png')
         logo_pix.scaled(100, 100)
         logo_label = QLabel(self)
         logo_label.setPixmap(logo_pix.scaled(400, 300))
@@ -46,9 +46,9 @@ class Dashboard(QWidget):
 
         # Add a button to the layout
         design_button = MainButton(self)
-        design_button.setText(self.tr('Open Design & Analysis'))
+        design_button.setText('Open Design && Analysis')
         design_button.show()
-        design_button.move(700, 650)
+        design_button.move(450, 650)
         design_button.clicked.connect(self.designUI)
         #
         # # Add another button to the layout

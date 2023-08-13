@@ -54,7 +54,7 @@ class DesignClass(QWidget):
         """)
 
         # Image button
-        self.btn_home = ImageButton(self.left_widget, './Images/logo03_glowed.png')
+        self.btn_home = ImageButton(self.left_widget, './Images/logo03_glowed_white.png')
         self.btn_home.move(20, 20)
         self.btn_home.clicked.connect(self.button0)
 
@@ -279,7 +279,7 @@ class DesignClass(QWidget):
     def combobox_selection_changed(self):
         selected_text = self.combobox_selection.currentText()
         print(selected_text)
-        if selected_text == '  Design':
+        if selected_text == ' Design':
             self.label_num.setText(' ' + str(self.num_design))
         else:
             self.label_num.setText(' ' + str(self.num_analysis))
@@ -297,6 +297,7 @@ class DesignClass(QWidget):
         self.tab6 = self.ui6()
         self.tab7 = self.ui7()
         self.tab8 = self.ui8()
+        self.tab9 = self.ui9()
 
         self.right_widget.addTab(self.tab1, '')
         self.right_widget.addTab(self.tab2, '')
@@ -306,6 +307,7 @@ class DesignClass(QWidget):
         self.right_widget.addTab(self.tab6, '')
         self.right_widget.addTab(self.tab7, '')
         self.right_widget.addTab(self.tab8, '')
+        self.right_widget.addTab(self.tab9, '')
 
         self.tab1.loadtable()
         self.right_widget.setCurrentIndex(0)
@@ -370,19 +372,19 @@ class DesignClass(QWidget):
         label.setText("System")
         label.move(410, 30)
 
-        data_form_fluidsystemdesign = ["System Design",
+        self.data_form_systemdesign = ["System Design",
                                        ["Heat Load", "W", "lineedit", "2000"],
                                        ["Input Fluid Temperature", "dC", "lineedit", '60']]
-        form_fluidsystemdesign = InputForm(main, data_form_fluidsystemdesign)
-        form_fluidsystemdesign.move(240, 100)
+        self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
+        self.form_systemdesign.move(240, 100)
 
 
 
         def uimovenext():
             print("uimovenext")
             dict = {}
-            if form_fluidsystemdesign.getValidation():
-                dict = form_fluidsystemdesign.getData()
+            if self.form_fluidsystemdesign.getValidation():
+                dict = self.form_fluidsystemdesign.getData()
             else:
                 self.btn_1_ticker.hide()
                 self.movenext()
@@ -396,7 +398,7 @@ class DesignClass(QWidget):
             self.moveprevious()
 
         def setData(data):
-            form_fluidsystemdesign.setData(data['System'])
+            self.form_fluidsystemdesign.setData(data['System'])
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
@@ -419,7 +421,7 @@ class DesignClass(QWidget):
         label.setText("Fluid")
         label.move(410, 30)
 
-        data_form_fluidproperties = ["Fuild Properties",
+        self.data_form_fluidproperties = ["Fuild Properties",
                                      ["Fluid Type",
                                       ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol", "Sodium Chloride",
                                        "Calcium Chloride"], "combobox"],
@@ -427,15 +429,15 @@ class DesignClass(QWidget):
                                      ["Specific Heat", "K/(Kg*dC)", "lineedit", "3344"],
                                      ["Density", "Kg/m^3", "lineedit", "1100"]
                                      ]
-        form_fluidproperties = InputForm(main, data_form_fluidproperties)
-        form_fluidproperties.move(240, 100)
+        self.form_fluidproperties = InputForm(main, self.data_form_fluidproperties)
+        self.form_fluidproperties.move(240, 100)
 
 
         def uimovenext():
             print("uimovenext")
             dict = {}
-            if form_fluidproperties.getValidation():
-                dict = form_fluidproperties.getData()
+            if self.form_fluidproperties.getValidation():
+                dict = self.form_fluidproperties.getData()
             else:
                 self.btn_2_ticker.hide()
                 self.movenext()
@@ -470,18 +472,18 @@ class DesignClass(QWidget):
         label.setText("Soil")
         label.move(425, 30)
 
-        data_form_soilthermalproperties = ["Soil Thermal Properties",
+        self.data_form_soilthermalproperties = ["Soil Thermal Properties",
                                     ["Thermal Conductivity", "W/(m*K)", "lineedit", "0.07"],
                                     ["Ground Temperature", "⁰C", "lineedit", '10']
                                  ]
-        form_soilthermalproperties = InputForm(main, data_form_soilthermalproperties)
-        form_soilthermalproperties.move(240, 100)
+        self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
+        self.form_soilthermalproperties.move(240, 100)
 
         def uimovenext():
             print("uimovenext")
             dict = {}
-            if form_soilthermalproperties.getValidation():
-                dict = form_soilthermalproperties.getData()
+            if self.form_soilthermalproperties.getValidation():
+                dict = self.form_soilthermalproperties.getData()
             else:
                 self.btn_3_ticker.hide()
                 self.movenext()
@@ -517,7 +519,7 @@ class DesignClass(QWidget):
         label.setText("Pipe")
         label.move(425, 30)
 
-        data_form_pipeproperties = ["Pipe Properties",
+        self.data_form_pipeproperties = ["Pipe Properties",
                                     ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
                                     ["Outer Diameter", "m", "lineedit", '0.021'],
                                     ["Inner Diameter", "m", "lineedit", '0.026'],
@@ -525,25 +527,25 @@ class DesignClass(QWidget):
                                     ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"],
                                     ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
                                   ]
-        form_pipeproperties = InputForm(main, data_form_pipeproperties)
-        form_pipeproperties.move(230, 100)
+        self.form_pipeproperties = InputForm(main, self.data_form_pipeproperties)
+        self.form_pipeproperties.move(230, 100)
 
-        data_form_pipeconfiguration = ["Pipe Configuration",
+        self.data_form_pipeconfiguration = ["Pipe Configuration",
                                         ['Buried Depth', 'm', 'lineedit', '2.0']]
-        form_pipeconfiguration = InputForm(main, data_form_pipeconfiguration)
-        form_pipeconfiguration.move(270, 450)
+        self.form_pipeconfiguration = InputForm(main, self.data_form_pipeconfiguration)
+        self.form_pipeconfiguration.move(270, 450)
 
         def uimovenext():
             print("uimovenext")
             dict = {}
-            if form_pipeproperties.getValidation():
-                dict = form_pipeproperties.getData()
+            if self.form_pipeproperties.getValidation():
+                dict = self.form_pipeproperties.getData()
             else:
                 self.btn_4_ticker.hide()
                 self.movenext()
                 return False
-            if form_pipeconfiguration.getValidation():
-                dict.update(form_pipeconfiguration.getData())
+            if self.form_pipeconfiguration.getValidation():
+                dict.update(self.form_pipeconfiguration.getData())
             else:
                 self.btn_4_ticker.hide()
                 self.movenext()
@@ -579,21 +581,21 @@ class DesignClass(QWidget):
         label.setText("Pump")
         label.move(425, 30)
 
-        data_form_circulationpumps = ["Circulation Pump",
+        self.data_form_circulationpumps = ["Circulation Pump",
                                       ["Required Power", 'W', "lineedit", '600'],
                                       ["Fluid Velocity", "m/s", 'lineedit', '1.5'],
                                       ['Pump Motor Efficiency', '%', 'lineedit', '85']
                                       ]
-        form_circulationpumps = InputForm(main, data_form_circulationpumps)
-        form_circulationpumps.move(250, 100)
+        self.form_circulationpumps = InputForm(main, self.data_form_circulationpumps)
+        self.form_circulationpumps.move(250, 100)
 
         timer = QTimer()
 
         def uimovenext():
             print("Design")
             dict = {}
-            if form_circulationpumps.getValidation():
-                dict = form_circulationpumps.getData()
+            if self.form_circulationpumps.getValidation():
+                dict = self.form_circulationpumps.getData()
             else:
                 return False
 
@@ -673,13 +675,13 @@ class DesignClass(QWidget):
         main.setStyleSheet('''
             color: white;
         ''')
-        data_form_designdimensions = ["Design Dimensions",
+        self.data_form_designdimensions = ["Design Dimensions",
                                       ["Pipe Length", 'm', "lineedit", '200'],
                                       ['Inlet Temperature', '⁰F', 'lineedit', '70'],
                                       ["Outlet Temperature", '⁰F', "lineedit", '40'],
                                       ['System Flow Rate', 'gpm', 'lineedit', '10']
                                       ]
-        self.form_designdimensions = InputForm(main, data_form_designdimensions)
+        self.form_designdimensions = InputForm(main, self.data_form_designdimensions)
         self.form_designdimensions.move(260, 100)
 
         label_description = IntroLabel3(main)
@@ -687,10 +689,10 @@ class DesignClass(QWidget):
         label_description.setAlignment(Qt.AlignCenter)
         label_description.move(420, 420)
 
-        textedit_description = CustomQTextEdit(main)
+        self.textedit_description = CustomQTextEdit(main)
         # textedit_description.place
-        textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
-        textedit_description.setGeometry(150, 450, 700, 150)
+        self.textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
+        self.textedit_description.setGeometry(150, 450, 700, 150)
 
 
 
@@ -700,7 +702,7 @@ class DesignClass(QWidget):
             dict = {}
 
             if self.form_designdimensions.getValidation():
-                dict[data_form_designdimensions[0]] = self.form_designdimensions.getData()
+                dict[self.data_form_designdimensions[0]] = self.form_designdimensions.getData()
             else:
                 icon = QIcon('./Images/logo03.png')
                 custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
@@ -709,9 +711,9 @@ class DesignClass(QWidget):
                 custom_message_box.show()
                 return False
 
-            if textedit_description.toPlainText() == "":
-                textedit_description.setText('Design GHE for blockchain mining equipment')
-            description = textedit_description.toPlainText()
+            if self.textedit_description.toPlainText() == "":
+                self.textedit_description.setText('Design GHE for blockchain mining equipment')
+            description = self.textedit_description.toPlainText()
             self.dict["Description"] = description
             # self.movenext()
             options = QFileDialog.Options()
@@ -737,7 +739,7 @@ class DesignClass(QWidget):
             dict = {}
 
             if self.form_designdimensions.getValidation():
-                dict[data_form_designdimensions[0]] = self.form_designdimensions.getData()
+                dict[self.data_form_designdimensions[0]] = self.form_designdimensions.getData()
             else:
                 self.btn_6_ticker.hide()
                 icon = QIcon('./Images/logo03.png')
@@ -747,9 +749,9 @@ class DesignClass(QWidget):
                 custom_message_box.show()
                 return False
             print('1')
-            if textedit_description.toPlainText() == "":
-                textedit_description.setText('Design GHE for blockchain mining equipment')
-            description = textedit_description.toPlainText()
+            if self.textedit_description.toPlainText() == "":
+                self.textedit_description.setText('Design GHE for blockchain mining equipment')
+            description = self.textedit_description.toPlainText()
             self.dict["Results"] = dict
             self.dict["Description"] = description
             self.btn_6_ticker.show()
@@ -908,6 +910,10 @@ class DesignClass(QWidget):
     def loaddata(self):
         with open(self.currentgldpath, 'r') as f:
             context = json.load(f)
+        self.form_systemdesign.setData(context['System'].values())
+        self.form_fluidproperties.setData(context['Fluid'].values())
+        self.form_soilthermalproperties.setData(context['Soil'].values())
+        self
         print(context)
 
     def redirect_to_feedback(self):
@@ -1046,7 +1052,7 @@ class DesignClass(QWidget):
             self.setEnabled(True)
         
         elif result == QMessageBox.Yes:
-            self.close()
+            sys.exit()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

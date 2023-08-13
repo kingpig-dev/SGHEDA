@@ -44,6 +44,7 @@ class InputForm(QGroupBox):
                     QLineEdit {
                         text-align: center;
                         background-color: #1F2843;
+                        color: white;
                         border: none;
                         border-bottom: 2px solid #1F8EFA;
                     }
@@ -131,9 +132,19 @@ class InputForm(QGroupBox):
                 if self.elements[i][2] == "lineedit":
                     self.input[i - 1].setText(data[i][3])
                 else:
-                    self.input[i - 1].setText(data[i][2])
+                    self.input[i - 1].setCurrentText(data[i][2])
         except Exception as e:
             print('setData expeption: ', traceback.format_exc())
+
+    def setData1(self, data):
+        try:
+            for i in range(1, len(self.input) + 1):
+                if self.elements[i][2] == "lineedit":
+                    self.input[i-1].setText(data[i-1])
+                else:
+                    self.input[i-1].setCurrentText(data[i-1])
+        except Exception as e:
+            print("setData exception: ", traceback.format_exc())
 
     def setReadOnly(self, data):
         for i in range(1, len(self.input)+1):
