@@ -72,19 +72,22 @@ class FirstPageClass(QWidget):
         btn_next.clicked.connect(self.btnnext)
 
     def loadtable(self):
-        with open(self.path2, 'r') as f:
-            data = json.load(f)
-
-        for i in range(0, len(data)):
-            key = list(data.keys())[len(data) - 1 - i]
-            print(key, data[key])
-            nameitem = QTableWidgetItem(key)
-            nameitem.setTextAlignment(Qt.AlignCenter)
-            self.tableWidget.setItem(i, 0, nameitem)
-            desitem = QTableWidgetItem(data[key])
-            desitem.setTextAlignment(Qt.AlignCenter)
-            self.tableWidget.setItem(i, 1, desitem)
-
+        print('loadtable')
+        try:
+            with open(self.path2, 'r') as f:
+                data = json.load(f)
+            print(data)
+            for i in range(0, len(data)):
+                key = list(data.keys())[len(data) - 1 - i]
+                print(key, data[key])
+                nameitem = QTableWidgetItem(key)
+                nameitem.setTextAlignment(Qt.AlignCenter)
+                self.tableWidget.setItem(i, 0, nameitem)
+                desitem = QTableWidgetItem(data[key])
+                desitem.setTextAlignment(Qt.AlignCenter)
+                self.tableWidget.setItem(i, 1, desitem)
+        except Exception as e:
+            print('there is not design files')
     def btnopen(self):
         selected_items = self.tableWidget.selectedItems()
         print('debug btnopen selected item: ', selected_items)

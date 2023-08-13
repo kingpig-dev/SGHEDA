@@ -137,6 +137,8 @@ class InputForm(QGroupBox):
             print('setData expeption: ', traceback.format_exc())
 
     def setData1(self, data):
+        # print(data)
+        # i=0
         try:
             for i in range(1, len(self.input) + 1):
                 if self.elements[i][2] == "lineedit":
@@ -145,6 +147,7 @@ class InputForm(QGroupBox):
                     self.input[i-1].setCurrentText(data[i-1])
         except Exception as e:
             print("setData exception: ", traceback.format_exc())
+            # print(i)
 
     def setReadOnly(self, data):
         for i in range(1, len(self.input)+1):

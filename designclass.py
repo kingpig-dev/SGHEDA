@@ -124,7 +124,7 @@ class DesignClass(QWidget):
         self.btn_3.setText(' Soil Properties ')
         self.btn_3.setGeometry(0, 300, 212, 50)
         self.btn_4 = SquareButton(self.left_widget, './Images/pipe01_b.png', './Images/pipe01.png')
-        self.btn_4.setText(' Pipe Configuration ')
+        self.btn_4.setText(' Pipe Design')
         self.btn_4.setGeometry(0, 350, 212, 50)
         self.btn_5 = SquareButton(self.left_widget, './Images/power02_b.png', './Images/power02.png')
         self.btn_5.setText(' Pump Info ')
@@ -226,7 +226,7 @@ class DesignClass(QWidget):
         self.right_widget.addTab(self.tab8, '')
         self.right_widget.addTab(self.tab9, '')
 
-        self.tab1.loadtable()
+        # self.tab1.loadtable()
         self.right_widget.setCurrentIndex(0)
 
         self.right_widget.setStyleSheet('''
@@ -361,7 +361,7 @@ class DesignClass(QWidget):
     # pages
 
     def ui1(self):
-        main = FirstPageClass('./Backgrounds/designbackground.png', self.designpath, self)
+        main = FirstPageClass('./Images/designbackground.png', self.designpath, self)
         main.loadtable()
         return main
 
@@ -383,8 +383,8 @@ class DesignClass(QWidget):
         def uimovenext():
             print("uimovenext")
             dict = {}
-            if self.form_fluidsystemdesign.getValidation():
-                dict = self.form_fluidsystemdesign.getData()
+            if self.form_systemdesign.getValidation():
+                dict = self.form_systemdesign.getData()
             else:
                 self.btn_1_ticker.hide()
                 self.movenext()
@@ -398,7 +398,7 @@ class DesignClass(QWidget):
             self.moveprevious()
 
         def setData(data):
-            self.form_fluidsystemdesign.setData(data['System'])
+            self.form_systemdesign.setData(data['System'])
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
@@ -602,9 +602,10 @@ class DesignClass(QWidget):
             self.dict["Pump"] = dict
             self.btn_5_ticker.show()
 
-            if len(self.dict.keys()) == 5:
+            if len(self.dict.keys()) >= 5:
                 self.result()
             else:
+                print('Design', len(self.dict.keys()))
                 print("notification")
                 return False
             return True
@@ -694,15 +695,13 @@ class DesignClass(QWidget):
         self.textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
         self.textedit_description.setGeometry(150, 450, 700, 150)
 
-
-
         timer = QTimer()
         def uisavedesign():
             print("uimovenext")
             dict = {}
 
             if self.form_designdimensions.getValidation():
-                dict[self.data_form_designdimensions[0]] = self.form_designdimensions.getData()
+                dict = self.form_designdimensions.getData()
             else:
                 icon = QIcon('./Images/logo03.png')
                 custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
@@ -710,12 +709,11 @@ class DesignClass(QWidget):
                 custom_message_box.setGeometry(900, 20, 300, 70)
                 custom_message_box.show()
                 return False
-
+            self.dict['Results'] = dict
             if self.textedit_description.toPlainText() == "":
                 self.textedit_description.setText('Design GHE for blockchain mining equipment')
             description = self.textedit_description.toPlainText()
             self.dict["Description"] = description
-            # self.movenext()
             options = QFileDialog.Options()
             options |= QFileDialog.DontUseNativeDialog
             file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
@@ -730,7 +728,7 @@ class DesignClass(QWidget):
                 with open(self.designpath, 'r') as tablefile:
                     tablecontent = json.load(tablefile)
                 with open(self.designpath, 'w') as savefile:
-                    tablecontent[file_path] = description["Description"]
+                    tablecontent[file_path] = description
                     savefile.write(json.dumps(tablecontent))
             return True
 
@@ -739,7 +737,7 @@ class DesignClass(QWidget):
             dict = {}
 
             if self.form_designdimensions.getValidation():
-                dict[self.data_form_designdimensions[0]] = self.form_designdimensions.getData()
+                dict = self.form_designdimensions.getData()
             else:
                 self.btn_6_ticker.hide()
                 icon = QIcon('./Images/logo03.png')
@@ -748,7 +746,7 @@ class DesignClass(QWidget):
                 custom_message_box.setGeometry(900, 20, 300, 70)
                 custom_message_box.show()
                 return False
-            print('1')
+
             if self.textedit_description.toPlainText() == "":
                 self.textedit_description.setText('Design GHE for blockchain mining equipment')
             description = self.textedit_description.toPlainText()
@@ -908,12 +906,34 @@ class DesignClass(QWidget):
         self.tickerbutton()
 
     def loaddata(self):
-        with open(self.currentgldpath, 'r') as f:
-            context = json.load(f)
-        self.form_systemdesign.setData(context['System'].values())
-        self.form_fluidproperties.setData(context['Fluid'].values())
-        self.form_soilthermalproperties.setData(context['Soil'].values())
-        self
+        try:
+            with open(self.currentgldpath, 'r') as f:
+                context = json.load(f)
+        except:
+            print("Can't find the design file")
+        print(context)
+        self.form_systemdesign.setData1(list(context['System'].values()))
+        self.btn_1_ticker.show()
+        self.dict['System'] = context['System']
+        self.form_fluidproperties.setData1(list(context['Fluid'].values()))
+        self.btn_2_ticker.show()
+        self.dict['Fluid'] = context['Fluid']
+        self.form_soilthermalproperties.setData1(list(context['Soil'].values()))
+        self.btn_3_ticker.show()
+        self.dict['Soil'] = context['Soil']
+        self.form_pipeproperties.setData1(list(context['Pipe'].values())[:6])
+        self.btn_4_ticker.show()
+        self.dict['Pipe'] = context['Pipe']
+        self.form_pipeconfiguration.setData1(context['Pipe']['Buried Depth'])
+        self.form_circulationpumps.setData1(list(context['Pump'].values()))
+        self.btn_5_ticker.show()
+        self.dict['Pump'] = context['Pump']
+        self.form_designdimensions.setData1(list(context['Results'].values()))
+        self.form_designdimensions.setReadOnly(True)
+        self.textedit_description.setText(context['Description'])
+        self.btn_6_ticker.show()
+        self.dict['Results'] = context['Results']
+        self.dict['Description'] = context['Description']
         print(context)
 
     def redirect_to_feedback(self):
@@ -981,7 +1001,6 @@ class DesignClass(QWidget):
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
 
             print("length of pipe:", L)
-            self.dict['Result'] = {'Pipe Length': str(L)}
             loop_diameter = 0.75
             pitch = 0.4
             return True
@@ -992,7 +1011,7 @@ class DesignClass(QWidget):
     def result(self):
         if self.sizing():
             data_form_designdimensions = ["Design Dimensions",
-                                          ["Pipe Length", 'm', "lineedit", self.dict['Result']['Pipe Length']],
+                                          ["Pipe Length", 'm', "lineedit", self.dict['Results']['Pipe Length']],
                                           ['Inlet Temperature', '⁰F', 'lineedit', '70'],
                                           ["Outlet Temperature", '⁰F', "lineedit", '40'],
                                           ['System Flow Rate', 'gpm', 'lineedit', '10']
