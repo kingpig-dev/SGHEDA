@@ -1,6 +1,6 @@
 import json
 import sys
-import time
+import webbrowser
 import traceback
 
 ## UI
@@ -12,7 +12,7 @@ from PyQt5.QtCore import Qt, QSize, QTimer, QPoint
 
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1, TextButton
 from firstpageclass import FirstPageClass
-from inputformclass import InputForm, InputDescription, CustomQTextEdit
+from inputformclass import InputForm, InputDescription, CustomQTextEdit, LicenseForm, PersonalForm
 from labelclass import IntroLabel1, TickerLabel, IntroLabel3
 from notificationclass import CustomMessageBox, ExitNotification
 import pyqtgraph as pg
@@ -28,6 +28,7 @@ getcontext().prec = 4
 class DesignClass(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.license_info = None
         self.plt_gfunction = None
         self.parent = parent
         self.tabstack = []
@@ -183,12 +184,14 @@ class DesignClass(QWidget):
         self.line.setGeometry(25, 646, 150, 1)
 
 
-        self.btn_license = TextButton(self.left_widget)
-        self.btn_license.setText(' Feedback')
-        self.btn_license.setGeometry(50, 650, 100, 20)
+        self.btn_feedback = TextButton(self.left_widget)
+        self.btn_feedback.setText(' Feedback')
+        self.btn_feedback.clicked.connect(self.redirect_to_feedback)
+        self.btn_feedback.setGeometry(50, 650, 100, 20)
 
         self.btn_help = TextButton(self.left_widget)
         self.btn_help.setText('  Help  ')
+        self.btn_help.clicked.connect(self.redirect_to_help)
         self.btn_help.setGeometry(50, 675, 100, 20)
 
         self.btn_exit = ExitButton(self.left_widget, './Images/end01.png')
@@ -863,22 +866,32 @@ class DesignClass(QWidget):
         # self.form_designdimensions = InputForm(main, data_form_designdimensions)
         # self.form_designdimensions.move(260, 100)
 
-        # self.data_license_info = ["1010101010101010", '1010101010101010']
-        # self.license_info = LicenseForm(main, self.data_license_info)
-        # self.license_info.move(260, 100)
-        #
-        # self.data_time_setting = ['Time Setting',
-        #                           ['Prediction Time', '1 year']]
-        #
-        # self.time_setting = InputForm(main, self.data_time_setting)
-        # self.time_setting.move(260, 300)
-        #
-        # self.personal_setting = PersonalForm(main)
-        # self.personal_setting.move(260, 400)
-        #
-        # self.data_userinfo = ['Lyle Rowe', 'default@gmail.com', 'Canada', '1000110']
-        # self.userinfo = UserInfoForm(main)
-        # self.userinfo.setData()
+        self.data_license_info = ["1010101010101010", '1010101010101010']
+        self.license_info = LicenseForm(main)
+        self.license_info.resize(600, 200)
+        self.license_info.move(200, 100)
+
+        self.data_time_setting = ['Time Setting',
+                                  ['Prediction Time', ['1 month', '2 month', '6 month', '1 year'], 'combobox']
+                                  ]
+
+        self.time_setting = InputForm(main, self.data_time_setting)
+        self.time_setting.resize(300, 100)
+        self.time_setting.move(160, 350)
+
+        self.personal_setting = PersonalForm(main)
+        self.personal_setting.resize(300, 137)
+        self.personal_setting.move(160, 470)
+
+        self.data_userinfo = ['User Info',
+                              ['Username', '', 'lineedit', '**** ****'],
+                              ['Gmail','', 'lineedit', 'default@gmail.com'],
+                              ['Purpose', '', 'lineedit', 'Residental Building'],
+                              ['Country', '', 'lineedit', 'Canada'],
+            ['Phone', '', 'lineedit', '1010101010']
+            ]
+        self.userinfo = InputForm(main, self.data_userinfo)
+        self.userinfo.move(500, 350)
 
         return main
 
@@ -894,6 +907,12 @@ class DesignClass(QWidget):
         with open(self.currentgldpath, 'r') as f:
             context = json.load(f)
         print(context)
+
+    def redirect_to_feedback(self):
+        webbrowser.open('https://stackoverflow.com/')
+
+    def redirect_to_help(self):
+        webbrowser.open('https://stackoverflow.com/')
 
     def exitbutton(self):
         self.parent.exit()
