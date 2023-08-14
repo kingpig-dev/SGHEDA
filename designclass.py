@@ -273,6 +273,7 @@ class DesignClass(QWidget):
     # ticker button
     def tickerbutton(self):
         currentIndex = self.right_widget.currentIndex()
+        # print('currentIndex: ', currentIndex)
         if self.right_widget.currentIndex() == 0:
             self.slide_label.hide()
         else:
@@ -378,7 +379,7 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         self.data_form_systemdesign = ["System Design",
-                                       ["Heat Load", "W", "lineedit", "2000"],
+                                       ["Heat Load", "W", "lineedit", "2800"],
                                        ["Input Fluid Temperature", "dC", "lineedit", '60']]
         self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
         self.form_systemdesign.move(257, 100)
@@ -438,9 +439,14 @@ class DesignClass(QWidget):
         self.form_fluidproperties.move(257, 100)
 
         web_view = QWebEngineView(main)
-        file_path = "./HTML/FluidTable1.html"
+        file_path = "D:\Heat Exchanger\Project\SGHEDA_v1.0\HTML\FluidTable1.html"
         web_view.load(QUrl.fromLocalFile(file_path))
-        web_view.setGeometry(130, 300, 800, 350)
+        web_view.setStyleSheet('''
+            background-color: rgba(0,0,0,0);
+            color: white;
+            border-radius: 10px;
+        ''')
+        web_view.setGeometry(100, 350, 800, 300)
 
         def uimovenext():
             print("uimovenext")
@@ -484,10 +490,20 @@ class DesignClass(QWidget):
         self.data_form_soilthermalproperties = ["Soil Thermal Properties",
                                     ["Thermal Conductivity", "W/(m*K*⁰C)", "lineedit", "0.07"],
                                     ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.62"],
-                                    ["Ground Temperature", "⁰C", "lineedit", '10']
+                                    ["Ground Temperature", "⁰C", "lineedit", '30']
                                  ]
         self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
         self.form_soilthermalproperties.move(257, 100)
+
+        web_view = QWebEngineView(main)
+        file_path = "D:\Heat Exchanger\Project\SGHEDA_v1.0\HTML\SoilTable1.html"
+        web_view.load(QUrl.fromLocalFile(file_path))
+        web_view.setStyleSheet('''
+                    background-color: rgba(0,0,0,0);
+                    color: white;
+                    border-radius: 10px;
+                ''')
+        web_view.setGeometry(100, 300, 800, 350)
 
         def uimovenext():
             print("uimovenext")
@@ -598,7 +614,6 @@ class DesignClass(QWidget):
                                       ]
         self.form_circulationpumps = InputForm(main, self.data_form_circulationpumps)
         self.form_circulationpumps.move(267, 100)
-
         timer = QTimer()
 
         def uimoveprevious():
@@ -635,7 +650,6 @@ class DesignClass(QWidget):
             movie.start()
             timer.timeout.connect(end_loading)
             timer.start(2000)
-
 
         def loading_stop():
             self.left_widget.setEnabled(True)
@@ -698,12 +712,12 @@ class DesignClass(QWidget):
         label_description = IntroLabel3(main)
         label_description.setText('Description')
         label_description.setAlignment(Qt.AlignCenter)
-        label_description.move(440, 465)
+        label_description.move(440, 420)
 
         self.textedit_description = CustomQTextEdit(main)
         # textedit_description.place
         self.textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
-        self.textedit_description.setGeometry(150, 500, 700, 150)
+        self.textedit_description.setGeometry(150, 455, 700, 150)
 
         timer = QTimer()
         def uisavedesign():
@@ -1005,7 +1019,7 @@ class DesignClass(QWidget):
             theta_w_out = T_out - T_g
 
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
-
+            L = L/4
             print("length of pipe:", L)
             ring_diameter = 0.75*T_in/T_out
             pitch = 0.4*T_in/T_out
@@ -1029,7 +1043,7 @@ class DesignClass(QWidget):
         if self.sizing():
             self.form_designdimensions.setData1(list(self.dict["Results"].values()))
             self.form_designdimensions.setReadOnly(True)
-            self.movenext()
+            self.right_widget.setCurrentIndex(6)
         else:
             print('Show Notification')
     def analysis(self):
