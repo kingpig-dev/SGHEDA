@@ -24,7 +24,7 @@ class FirstPageClass(QWidget):
         label_design = QLabel(self)
         pic_design = QPixmap(path)
         label_design.setPixmap(pic_design.scaled(500, 300))
-        label_design.move(200, 50)
+        label_design.move(250, 50)
 
         label_design = IntroLabel3(self)
         label_design.setText("Last Design Files")
@@ -61,13 +61,13 @@ class FirstPageClass(QWidget):
 
         btn_open = MainButton1(self)
         btn_open.setText(self.tr('Open Design'))
-        btn_open.move(200, 670)
+        btn_open.move(225, 670)
         btn_open.resize(170, 55)
         btn_open.clicked.connect(self.btnopen)
 
         btn_next = MainButton1(self)
         btn_next.setText(self.tr('Next Step'))
-        btn_next.move(550, 670)
+        btn_next.move(575, 670)
         btn_next.resize(170, 55)
         btn_next.clicked.connect(self.btnnext)
 
@@ -97,20 +97,10 @@ class FirstPageClass(QWidget):
             self.parent.currentgldpath = filepath
             self.parent.loaddata()
         else:
-            icon = QIcon('./Images/logo03.png')
-            custom_message_box = CustomMessageBox(icon, 'Custom Message', 'Please select a row \n'
-                                                                          '   in the table.', self)
-            custom_message_box.setGeometry(900, 20, 300, 70)
-            custom_message_box.show()
+            self.parent.shownotification('./Images/warning.png', 'Select a row.')
     def btnnext(self):
         print('btnnext')
         self.parent.movenext()
-
-    # def designUI(self):
-    #     self.parent.designUI()
-    #
-    # def analysisUI(self):
-    #     self.parent.analysisUI()
 
 
 if __name__ == '__main__':

@@ -71,7 +71,7 @@ class DesignClass(QWidget):
                 background-color: #2C3751;
                 selection-background-color: red;
                 padding: 1px 1px 1px 1px;
-                min-width: 0em;
+                min-width: 2em;
                 font-size: 16px;
             }
             
@@ -80,6 +80,8 @@ class DesignClass(QWidget):
             }
             
             QComboBox::drop-down {
+                subcontrol-origin: padding;
+                color: white;
                 width: 10px;
                 border: none;
             }
@@ -349,14 +351,15 @@ class DesignClass(QWidget):
             self.right_widget.setCurrentIndex(7)
             self.tickerbutton()
         else:
-            icon = QIcon('./Images/logo03.png')
-            custom_message_box = CustomMessageBox(icon, 'Custom Message', 'Please input design \n'
-                                                                          '    parameter.', self)
-            custom_message_box.setGeometry(900, 20, 300, 70)
-            custom_message_box.show()
-            print("notification")
+            self.shownotification('./Images/warning.png', 'Input all parameters.')
     def btnsetting(self):
         self.right_widget.setCurrentIndex(8)
+
+    def shownotification(self, iconpath, message):
+        icon = QIcon(iconpath)
+        custom_message_box = CustomMessageBox(icon, 'Custom Message', message, self)
+        custom_message_box.setGeometry(950, 20, 300, 70)
+        custom_message_box.show()
     # -----------------
     # pages
 
@@ -370,13 +373,13 @@ class DesignClass(QWidget):
         main = QWidget()
         label = IntroLabel1(main)
         label.setText("System")
-        label.move(410, 30)
+        label.move(440, 30)
 
         self.data_form_systemdesign = ["System Design",
                                        ["Heat Load", "W", "lineedit", "2000"],
                                        ["Input Fluid Temperature", "dC", "lineedit", '60']]
         self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
-        self.form_systemdesign.move(240, 100)
+        self.form_systemdesign.move(257, 100)
 
 
 
@@ -402,13 +405,13 @@ class DesignClass(QWidget):
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
-        btn_open.move(200, 670)
+        btn_open.move(225, 670)
         btn_open.resize(170, 55)
         btn_open.clicked.connect(uimoveprevious)
 
         btn_next = MainButton1(main)
         btn_next.setText(main.tr('Next Step'))
-        btn_next.move(550, 670)
+        btn_next.move(575, 670)
         btn_next.resize(170, 55)
         btn_next.clicked.connect(uimovenext)
         return main
@@ -419,7 +422,7 @@ class DesignClass(QWidget):
 
         label = IntroLabel1(main)
         label.setText("Fluid")
-        label.move(410, 30)
+        label.move(440, 30)
 
         self.data_form_fluidproperties = ["Fuild Properties",
                                      ["Fluid Type",
@@ -430,7 +433,7 @@ class DesignClass(QWidget):
                                      ["Density", "Kg/m^3", "lineedit", "1100"]
                                      ]
         self.form_fluidproperties = InputForm(main, self.data_form_fluidproperties)
-        self.form_fluidproperties.move(240, 100)
+        self.form_fluidproperties.move(257, 100)
 
 
         def uimovenext():
@@ -453,13 +456,13 @@ class DesignClass(QWidget):
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
-        btn_open.move(200, 670)
+        btn_open.move(225, 670)
         btn_open.resize(170, 55)
         btn_open.clicked.connect(uimoveprevious)
 
         btn_next = MainButton1(main)
         btn_next.setText(main.tr('Next Step'))
-        btn_next.move(550, 670)
+        btn_next.move(575, 670)
         btn_next.resize(170, 55)
         btn_next.clicked.connect(uimovenext)
         return main
@@ -469,15 +472,16 @@ class DesignClass(QWidget):
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Soil")
-        label.move(425, 30)
+        label.setText(" Soil ")
+        label.move(440, 30)
 
         self.data_form_soilthermalproperties = ["Soil Thermal Properties",
-                                    ["Thermal Conductivity", "W/(m*K)", "lineedit", "0.07"],
+                                    ["Thermal Conductivity", "W/(m*K*⁰C)", "lineedit", "0.07"],
+                                    ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.62"],
                                     ["Ground Temperature", "⁰C", "lineedit", '10']
                                  ]
         self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
-        self.form_soilthermalproperties.move(240, 100)
+        self.form_soilthermalproperties.move(257, 100)
 
         def uimovenext():
             print("uimovenext")
@@ -499,13 +503,13 @@ class DesignClass(QWidget):
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
-        btn_open.move(200, 670)
+        btn_open.move(225, 670)
         btn_open.resize(170, 55)
         btn_open.clicked.connect(uimoveprevious)
 
         btn_next = MainButton1(main)
         btn_next.setText(main.tr('Next Step'))
-        btn_next.move(550, 670)
+        btn_next.move(575, 670)
         btn_next.resize(170, 55)
         btn_next.clicked.connect(uimovenext)
 
@@ -516,8 +520,8 @@ class DesignClass(QWidget):
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Pipe")
-        label.move(425, 30)
+        label.setText(" Pipe")
+        label.move(440, 30)
 
         self.data_form_pipeproperties = ["Pipe Properties",
                                     ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
@@ -528,12 +532,12 @@ class DesignClass(QWidget):
                                     ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
                                   ]
         self.form_pipeproperties = InputForm(main, self.data_form_pipeproperties)
-        self.form_pipeproperties.move(230, 100)
+        self.form_pipeproperties.move(257, 100)
 
         self.data_form_pipeconfiguration = ["Pipe Configuration",
                                         ['Buried Depth', 'm', 'lineedit', '2.0']]
         self.form_pipeconfiguration = InputForm(main, self.data_form_pipeconfiguration)
-        self.form_pipeconfiguration.move(270, 450)
+        self.form_pipeconfiguration.move(287, 450)
 
         def uimovenext():
             print("uimovenext")
@@ -561,13 +565,13 @@ class DesignClass(QWidget):
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
-        btn_open.move(200, 670)
+        btn_open.move(225, 670)
         btn_open.resize(170, 55)
         btn_open.clicked.connect(uimoveprevious)
 
         btn_next = MainButton1(main)
         btn_next.setText(main.tr('Next Step'))
-        btn_next.move(550, 670)
+        btn_next.move(575, 670)
         btn_next.resize(170, 55)
         btn_next.clicked.connect(uimovenext)
 
@@ -578,8 +582,8 @@ class DesignClass(QWidget):
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Pump")
-        label.move(425, 30)
+        label.setText("  Pump")
+        label.move(440, 30)
 
         self.data_form_circulationpumps = ["Circulation Pump",
                                       ["Required Power", 'W', "lineedit", '600'],
@@ -587,28 +591,9 @@ class DesignClass(QWidget):
                                       ['Pump Motor Efficiency', '%', 'lineedit', '85']
                                       ]
         self.form_circulationpumps = InputForm(main, self.data_form_circulationpumps)
-        self.form_circulationpumps.move(250, 100)
+        self.form_circulationpumps.move(267, 100)
 
         timer = QTimer()
-
-        def uimovenext():
-            print("Design")
-            dict = {}
-            if self.form_circulationpumps.getValidation():
-                dict = self.form_circulationpumps.getData()
-            else:
-                return False
-
-            self.dict["Pump"] = dict
-            self.btn_5_ticker.show()
-
-            if len(self.dict.keys()) >= 5:
-                self.result()
-            else:
-                print('Design', len(self.dict.keys()))
-                print("notification")
-                return False
-            return True
 
         def uimoveprevious():
             self.moveprevious()
@@ -620,15 +605,31 @@ class DesignClass(QWidget):
             btn_loading_stop.setVisible(False)
             movie.stop()
             timer.stop()
-            uimovenext()
+            self.result()
 
         def start_loading():
+            print("Design")
+            dict = {}
+            if self.form_circulationpumps.getValidation():
+                dict = self.form_circulationpumps.getData()
+            else:
+                self.shownotification('./Images/warning.png', "Input all parameters.")
+                return False
+            self.dict["Pump"] = dict
+            self.btn_5_ticker.show()
+
+            if len(self.dict.keys()) < 5:
+                print('Design1', len(self.dict.keys()))
+                self.shownotification('./Images/warning.png', "Input all parameters.")
+                return False
+
             loading_label.setVisible(True)
             self.left_widget.setEnabled(False)
             btn_loading_stop.setVisible(True)
             movie.start()
             timer.timeout.connect(end_loading)
             timer.start(2000)
+
 
         def loading_stop():
             self.left_widget.setEnabled(True)
@@ -639,13 +640,13 @@ class DesignClass(QWidget):
 
         btn_open = MainButton1(main)
         btn_open.setText(main.tr('Previous Step'))
-        btn_open.move(200, 670)
+        btn_open.move(225, 670)
         btn_open.resize(170, 55)
         btn_open.clicked.connect(uimoveprevious)
 
         btn_next = MainButton1(main)
         btn_next.setText(main.tr('Design'))
-        btn_next.move(550, 670)
+        btn_next.move(575, 670)
         btn_next.resize(170, 55)
         btn_next.clicked.connect(start_loading)
 
@@ -670,50 +671,41 @@ class DesignClass(QWidget):
         main = QWidget()
 
         label = IntroLabel1(main)
-        label.setText("Result")
-        label.move(425, 30)
+        label.setText(" Result")
+        label.move(440, 30)
 
         main.setStyleSheet('''
             color: white;
         ''')
+
         self.data_form_designdimensions = ["Design Dimensions",
+                                      ["Ring Diameter", 'm', "lineedit", '0.75'],
+                                      ["Pitch", 'm', "lineedit", '0.4'],
+                                      ["Number of Ring", '', 'lineedit', '5'],
                                       ["Pipe Length", 'm', "lineedit", '200'],
-                                      ['Inlet Temperature', '⁰F', 'lineedit', '70'],
-                                      ["Outlet Temperature", '⁰F', "lineedit", '40'],
-                                      ['System Flow Rate', 'gpm', 'lineedit', '10']
+                                      ['Inlet Temperature', '⁰C', 'lineedit', '70'],
+                                      ['System Flow Rate', 'm/s', 'lineedit', '10']
                                       ]
         self.form_designdimensions = InputForm(main, self.data_form_designdimensions)
-        self.form_designdimensions.move(260, 100)
+        self.form_designdimensions.move(277, 100)
 
         label_description = IntroLabel3(main)
         label_description.setText('Description')
         label_description.setAlignment(Qt.AlignCenter)
-        label_description.move(420, 420)
+        label_description.move(440, 465)
 
         self.textedit_description = CustomQTextEdit(main)
         # textedit_description.place
         self.textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
-        self.textedit_description.setGeometry(150, 450, 700, 150)
+        self.textedit_description.setGeometry(150, 500, 700, 150)
 
         timer = QTimer()
         def uisavedesign():
-            print("uimovenext")
-            dict = {}
-
-            if self.form_designdimensions.getValidation():
-                dict = self.form_designdimensions.getData()
-            else:
-                icon = QIcon('./Images/logo03.png')
-                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
-                                                                              '    correctly.', self)
-                custom_message_box.setGeometry(900, 20, 300, 70)
-                custom_message_box.show()
-                return False
-            self.dict['Results'] = dict
             if self.textedit_description.toPlainText() == "":
                 self.textedit_description.setText('Design GHE for blockchain mining equipment')
             description = self.textedit_description.toPlainText()
             self.dict["Description"] = description
+
             options = QFileDialog.Options()
             options |= QFileDialog.DontUseNativeDialog
             file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
@@ -726,7 +718,11 @@ class DesignClass(QWidget):
                 with open(file_path, 'w') as file:
                     file.write(json.dumps(self.dict))
                 with open(self.designpath, 'r') as tablefile:
-                    tablecontent = json.load(tablefile)
+                    try:
+                        tablecontent = json.load(tablefile)
+                    except Exception as e:
+                        tablecontent = {}
+                        print("Design file is empty!")
                 with open(self.designpath, 'w') as savefile:
                     tablecontent[file_path] = description
                     savefile.write(json.dumps(tablecontent))
@@ -910,31 +906,34 @@ class DesignClass(QWidget):
             with open(self.currentgldpath, 'r') as f:
                 context = json.load(f)
         except:
-            print("Can't find the design file")
+            self.shownotification('./Images/warning.png', "Can't find the file!")
         print(context)
-        self.form_systemdesign.setData1(list(context['System'].values()))
-        self.btn_1_ticker.show()
-        self.dict['System'] = context['System']
-        self.form_fluidproperties.setData1(list(context['Fluid'].values()))
-        self.btn_2_ticker.show()
-        self.dict['Fluid'] = context['Fluid']
-        self.form_soilthermalproperties.setData1(list(context['Soil'].values()))
-        self.btn_3_ticker.show()
-        self.dict['Soil'] = context['Soil']
-        self.form_pipeproperties.setData1(list(context['Pipe'].values())[:6])
-        self.btn_4_ticker.show()
-        self.dict['Pipe'] = context['Pipe']
-        self.form_pipeconfiguration.setData1(context['Pipe']['Buried Depth'])
-        self.form_circulationpumps.setData1(list(context['Pump'].values()))
-        self.btn_5_ticker.show()
-        self.dict['Pump'] = context['Pump']
-        self.form_designdimensions.setData1(list(context['Results'].values()))
-        self.form_designdimensions.setReadOnly(True)
-        self.textedit_description.setText(context['Description'])
-        self.btn_6_ticker.show()
-        self.dict['Results'] = context['Results']
-        self.dict['Description'] = context['Description']
-        print(context)
+        if len(context) < 6:
+            self.shownotification("./Images/error.png", "This file is corrupted!")
+        else:
+            self.form_systemdesign.setData1(list(context['System'].values()))
+            self.btn_1_ticker.show()
+            self.dict['System'] = context['System']
+            self.form_fluidproperties.setData1(list(context['Fluid'].values()))
+            self.btn_2_ticker.show()
+            self.dict['Fluid'] = context['Fluid']
+            self.form_soilthermalproperties.setData1(list(context['Soil'].values()))
+            self.btn_3_ticker.show()
+            self.dict['Soil'] = context['Soil']
+            self.form_pipeproperties.setData1(list(context['Pipe'].values())[:6])
+            self.btn_4_ticker.show()
+            self.dict['Pipe'] = context['Pipe']
+            self.form_pipeconfiguration.setData1(context['Pipe']['Buried Depth'])
+            self.form_circulationpumps.setData1(list(context['Pump'].values()))
+            self.btn_5_ticker.show()
+            self.dict['Pump'] = context['Pump']
+            self.form_designdimensions.setData1(list(context['Results'].values()))
+            self.form_designdimensions.setReadOnly(True)
+            self.textedit_description.setText(context['Description'])
+            self.btn_6_ticker.show()
+            self.dict['Results'] = context['Results']
+            self.dict['Description'] = context['Description']
+            # print(context)
 
     def redirect_to_feedback(self):
         webbrowser.open('https://stackoverflow.com/')
@@ -960,7 +959,7 @@ class DesignClass(QWidget):
             k_soil = float(self.dict["Soil"]["Thermal Conductivity"])
             T_g = float(self.dict["Soil"]["Ground Temperature"])
 
-            print(E_heat, T_in, mu, c_p, rho, k_soil, T_g)
+            # print(E_heat, T_in, mu, c_p, rho, k_soil, T_g)
 
             # Pipe
             D_i = float(self.dict['Pipe']['Inner Diameter'])
@@ -975,6 +974,7 @@ class DesignClass(QWidget):
 
         except Exception as e:
             print('Exception: ', traceback.format_exc())
+            self.shownotification("./Images/warning.png", "Didn't input all variables.")
             return False
         print('after input variable')
         try:
@@ -1001,22 +1001,27 @@ class DesignClass(QWidget):
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
 
             print("length of pipe:", L)
-            loop_diameter = 0.75
+            ring_diameter = 0.75
             pitch = 0.4
+
+            dict = {}
+            dict['Ring Diameter'] = str(ring_diameter)
+            dict['Pitch'] = str(pitch)
+            dict['Number of Ring'] = str(L/(3.14*ring_diameter + pitch))
+            dict['Pipe Length'] = str(L + 2*d)
+            dict['Inlet Temperature'] = str(T_in)
+            dict['System Flow Rate'] = str(V)
+            self.dict['Results'] = dict
+
             return True
         except Exception as e:
             print('Size Calculation Error:', traceback.format_exc())
+            self.shownotification("./Image/error.png", "Can't calculate design parameters")
             return False
 
     def result(self):
         if self.sizing():
-            data_form_designdimensions = ["Design Dimensions",
-                                          ["Pipe Length", 'm', "lineedit", self.dict['Results']['Pipe Length']],
-                                          ['Inlet Temperature', '⁰F', 'lineedit', '70'],
-                                          ["Outlet Temperature", '⁰F', "lineedit", '40'],
-                                          ['System Flow Rate', 'gpm', 'lineedit', '10']
-                                          ]
-            self.form_designdimensions.setData(data_form_designdimensions)
+            self.form_designdimensions.setData1(list(self.dict["Results"].values()))
             self.form_designdimensions.setReadOnly(True)
             self.movenext()
         else:
