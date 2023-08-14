@@ -8,7 +8,8 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMainWindow, QTabWidget, \
     QHBoxLayout, QSizePolicy, QComboBox, QFileDialog, QScrollArea, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap, QCursor, QMovie
-from PyQt5.QtCore import Qt, QSize, QTimer, QPoint
+from PyQt5.QtCore import Qt, QSize, QTimer, QPoint, QUrl
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1, TextButton
 from firstpageclass import FirstPageClass
@@ -43,7 +44,8 @@ class DesignClass(QWidget):
 
         # Set the background color of the main window
         self.setStyleSheet("background-color: #1F2843; border: none")
-        # self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        # self.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+        # self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 
         # add all widgets
 
@@ -435,6 +437,10 @@ class DesignClass(QWidget):
         self.form_fluidproperties = InputForm(main, self.data_form_fluidproperties)
         self.form_fluidproperties.move(257, 100)
 
+        web_view = QWebEngineView(main)
+        file_path = "./HTML/FluidTable1.html"
+        web_view.load(QUrl.fromLocalFile(file_path))
+        web_view.setGeometry(130, 300, 800, 350)
 
         def uimovenext():
             print("uimovenext")
@@ -936,10 +942,10 @@ class DesignClass(QWidget):
             # print(context)
 
     def redirect_to_feedback(self):
-        webbrowser.open('https://stackoverflow.com/')
+        webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
     def redirect_to_help(self):
-        webbrowser.open('https://stackoverflow.com/')
+        webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
     def exitbutton(self):
         self.parent.exit()
@@ -1001,8 +1007,8 @@ class DesignClass(QWidget):
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
 
             print("length of pipe:", L)
-            ring_diameter = 0.75
-            pitch = 0.4
+            ring_diameter = 0.75*T_in/T_out
+            pitch = 0.4*T_in/T_out
 
             dict = {}
             dict['Ring Diameter'] = str(ring_diameter)
