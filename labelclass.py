@@ -46,7 +46,7 @@ class TickerLabel(QLabel):
         super().__init__(parent)
         self.setStyleSheet('''
             QLabel {
-                background-color: #2C3751;
+                background-color: rgba(0,0,0,0);
                 color: #7C8AA7;
                 font-size: 18px;
                 text-align: center;

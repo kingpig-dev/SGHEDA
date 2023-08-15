@@ -48,28 +48,27 @@ class CustomMessageBox(QDialog):
 
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setStyleSheet("""
-            background-color: #374866;
-            border-radius: 30px;
-            border: 1px solid red;
-            font-size: 16px;
-            
+            background-color: rgba(0,0,0,0);
+            border: none;
+            font-size: 18px;
+            color: "#FFFF00";
         """)
         # Set window icon
         self.setWindowIcon(icon)
 
         # Create icon label
         icon_label = QLabel(self)
-        icon_label.setPixmap(icon.pixmap(64, 64))
-        icon_label.move(20,10)
+        icon_label.setPixmap(icon.pixmap(25, 25))
+        icon_label.move(20, 10)
 
         # Create text label
         text_label = QLabel(self)
         text_label.setText(text)
-        text_label.setGeometry(100, 5, 200, 64)
+        text_label.setGeometry(55, 4, 200, 35)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.accept)
-        self.timer.start(3000)
+        self.timer.start(1000)
 
 class ExitNotification(QMessageBox):
     def __init__(self, parent=None):

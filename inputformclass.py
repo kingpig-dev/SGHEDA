@@ -44,11 +44,12 @@ class InputForm(QGroupBox):
                     QLineEdit {
                         text-align: center;
                         background-color: #1F2843;
+                        color: white;
                         border: none;
                         border-bottom: 2px solid #1F8EFA;
                     }
                 ''')
-                b.setPlaceholderText(elements[i][3])
+                b.setText(elements[i][3])
                 b.setAlignment(Qt.AlignCenter)
                 c = QLabel(elements[i][1])
                 self.grid.addWidget(a, i + 1, 0)
@@ -78,7 +79,7 @@ class InputForm(QGroupBox):
                     
                     QComboBox::drop-down {
                         subcontrol-origin: padding;
-                        width: 7px;
+                        width: 25px;
                         border: none;
                     }
                     
@@ -131,9 +132,22 @@ class InputForm(QGroupBox):
                 if self.elements[i][2] == "lineedit":
                     self.input[i - 1].setText(data[i][3])
                 else:
-                    self.input[i - 1].setText(data[i][2])
+                    self.input[i - 1].setCurrentText(data[i][2])
         except Exception as e:
             print('setData expeption: ', traceback.format_exc())
+
+    def setData1(self, data):
+        # print(data)
+        # i=0
+        try:
+            for i in range(1, len(self.input) + 1):
+                if self.elements[i][2] == "lineedit":
+                    self.input[i-1].setText(data[i-1])
+                else:
+                    self.input[i-1].setCurrentText(data[i-1])
+        except Exception as e:
+            print("setData exception: ", traceback.format_exc())
+            # print(i)
 
     def setReadOnly(self, data):
         for i in range(1, len(self.input)+1):

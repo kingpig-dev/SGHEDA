@@ -14,13 +14,13 @@ class Myapp(QMainWindow):
 
         # Set the window title
         self.setWindowTitle('Slinky GHE Design & Analysis')
-        self.setWindowIcon(QIcon("./Images/logo03.png"))
+        self.setWindowIcon(QIcon("./Images/logo03_glowed.png"))
 
-        # Create a layout for the central widget
-
+        # Create a DesignClass
         self.design = DesignClass(self)
         self.design.move(1000, 1000)
 
+        # Create a dashboard
         self.dashboard = Dashboard(self)
 
     def designUI(self):
