@@ -24,12 +24,12 @@ class Dashboard(QWidget):
         logo_pix.scaled(100, 100)
         logo_label = QLabel(self)
         logo_label.setPixmap(logo_pix.scaled(400, 300))
-        logo_label.move(370, 80)
+        logo_label.move(370, 100)
 
         # Add an introduction label
         intro_label_tile = IntroLabel1(self)
         intro_label_tile.setText('Welcome to Slinky GHE Design & Analysis!')
-        intro_label_tile.move(350, 420)
+        intro_label_tile.move(350, 440)
         intro_label_tile.show()
 
         intro_label = IntroLabel2(self)
@@ -41,14 +41,14 @@ class Dashboard(QWidget):
          With its unrivaled precision, ease of use, and commitment to sustainability, it empowers engineers and designers to unlock 
             the full potential of geothermal energy, paving the way for a more efficient and environmentally friendly world.
         ''')
-        intro_label.move(90, 470)
+        intro_label.move(90, 490)
         intro_label.show()
 
         # Add a button to the layout
         design_button = MainButton(self)
         design_button.setText('Open Design && Analysis')
         design_button.show()
-        design_button.move(450, 650)
+        design_button.move(450, 680)
         design_button.clicked.connect(self.designUI)
         #
         # # Add another button to the layout

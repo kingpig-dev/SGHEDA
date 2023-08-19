@@ -46,7 +46,7 @@ class DesignClass(QWidget):
         self.analysis_calculation_process = False
 
         # set the size of window
-        self.setFixedSize(1210, 790)
+        self.setFixedSize(1210, 773)
 
         # Set the background color of the main window
         self.setStyleSheet("background-color: #1F2843; border: none")
