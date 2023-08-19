@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QLa
 class CustomTitleBar(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setFixedHeight(30)
-
+        # self.setFixedHeight(100)
+        self.resize(400, 30)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -36,8 +36,8 @@ class CustomTitleBar(QWidget):
 
         # Set the title bar widget as the window's title bar
         self.parent().setWindowFlags(Qt.FramelessWindowHint)
-        self.parent().setWindowTitle("Custom Title Bar")
-        self.parent().layout().setContentsMargins(0, self.height(), 0, 0)
+        # self.parent().setWindowTitle("Custom Title Bar")
+        # self.parent().layout().setContentsMargins(0, self.height(), 0, 0)
         self.parent().layout().addWidget(self)
 
     def mousePressEvent(self, event):
@@ -62,8 +62,8 @@ if __name__ == "__main__":
     title_bar = CustomTitleBar(window)
 
     # Add some content to the window
-    content_widget = QWidget()
-    window.setCentralWidget(content_widget)
+    # content_widget = QWidget()
+    # window.setCentralWidget(content_widget)
 
     # Show the window
     window.show()
