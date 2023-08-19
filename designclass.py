@@ -1,5 +1,7 @@
 import json
 import sys
+import threading
+import time
 import webbrowser
 import traceback
 
@@ -38,6 +40,10 @@ class DesignClass(QWidget):
         self.num_design = 5
         self.num_analysis = 4
         self.currentgldpath = ''
+
+        # calculation
+        self.analysis_calculation_result = False
+        self.analysis_calculation_process = False
 
         # set the size of window
         self.setFixedSize(1210, 790)
@@ -350,9 +356,12 @@ class DesignClass(QWidget):
         self.tickerbutton()
 
     def button7(self):
-        if len(self.dict.keys()) == 7:
+
+        if len(self.dict.keys()) == 8:
             self.right_widget.setCurrentIndex(7)
             self.tickerbutton()
+        elif len(self.dict.keys()) == 7:
+            self.shownotification('./Images/warning.png', "You didn't analyze.")
         else:
             self.shownotification('./Images/warning.png', 'Input all parameters.')
     def btnsetting(self):
@@ -715,11 +724,10 @@ class DesignClass(QWidget):
         label_description.move(440, 420)
 
         self.textedit_description = CustomQTextEdit(main)
-        # textedit_description.place
         self.textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
         self.textedit_description.setGeometry(150, 455, 700, 150)
 
-        timer = QTimer()
+
         def uisavedesign():
             if self.textedit_description.toPlainText() == "":
                 self.textedit_description.setText('Design GHE for blockchain mining equipment')
@@ -749,11 +757,9 @@ class DesignClass(QWidget):
             return True
 
         def gotoanalysis():
-            print("gotoanalysis")
-            dict = {}
 
             if self.form_designdimensions.getValidation():
-                dict = self.form_designdimensions.getData()
+                dict1 = self.form_designdimensions.getData()
             else:
                 self.btn_6_ticker.hide()
                 icon = QIcon('./Images/logo03.png')
@@ -766,35 +772,43 @@ class DesignClass(QWidget):
             if self.textedit_description.toPlainText() == "":
                 self.textedit_description.setText('Design GHE for blockchain mining equipment')
             description = self.textedit_description.toPlainText()
-            self.dict["Results"] = dict
+            self.dict["Results"] = dict1
             self.dict["Description"] = description
             self.btn_6_ticker.show()
-            self.button7()
+
+            if len(self.dict.keys()) == 7:
+                self.analysis_calculation_result = True
+                a = self.analysis()
+                if a:
+                    self.right_widget.setCurrentIndex(7)
+                    self.tickerbutton()
+                end_loading()
+                return True
+            else:
+                self.shownotification('./Images/warning.png', 'Input all parameters.')
+                return False
 
         def end_loading():
-
+            self.analysis_calculation_process = False
             self.left_widget.setEnabled(True)
             loading_label.setVisible(False)
             btn_loading_stop.setVisible(False)
             movie.stop()
-            timer.stop()
-            # Validation
-            self.analysis()
+            self.right_widget.setCurrentIndex(6)
 
         def start_loading():
+            print("start loading")
+            self.analysis_calculation_process = True
             loading_label.setVisible(True)
             self.left_widget.setEnabled(False)
             btn_loading_stop.setVisible(True)
             movie.start()
-            timer.timeout.connect(end_loading)
-            timer.start(2000)
+            self.tickerbutton()
 
-        def loading_stop():
-            self.left_widget.setEnabled(True)
-            loading_label.setVisible(False)
-            btn_loading_stop.setVisible(False)
-            movie.stop()
-            timer.stop()
+        def start_analysis():
+            start_loading()
+            thread = threading.Thread(target = gotoanalysis)
+            thread.start()
 
         btn_save = MainButton1(main)
         btn_save.setText(main.tr('Save design'))
@@ -812,7 +826,7 @@ class DesignClass(QWidget):
         btn_gotoanalysis.setText(main.tr('Go to Analysis'))
         btn_gotoanalysis.move(675, 670)
         btn_gotoanalysis.resize(170, 55)
-        btn_gotoanalysis.clicked.connect(start_loading)
+        btn_gotoanalysis.clicked.connect(start_analysis)
 
         movie = QMovie('./Images/loading.gif')
         loading_label = QLabel(main)
@@ -825,7 +839,7 @@ class DesignClass(QWidget):
         btn_loading_stop = ImageButton1(main, './Images/x02.png')
         btn_loading_stop.setToolTip('Cancel Calculation')
         btn_loading_stop.move(900, 30)
-        btn_loading_stop.clicked.connect(loading_stop)
+        btn_loading_stop.clicked.connect(end_loading)
         btn_loading_stop.setVisible(False)
 
         return main
@@ -922,6 +936,7 @@ class DesignClass(QWidget):
         self.tickerbutton()
 
     def loaddata(self):
+        print("loaddata")
         try:
             with open(self.currentgldpath, 'r') as f:
                 context = json.load(f)
@@ -954,7 +969,7 @@ class DesignClass(QWidget):
             self.dict['Results'] = context['Results']
             self.dict['Description'] = context['Description']
             # print(context)
-
+            self.right_widget.setCurrentIndex(6)
     def redirect_to_feedback(self):
         webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
@@ -1048,44 +1063,84 @@ class DesignClass(QWidget):
             print('Show Notification')
     def analysis(self):
         print('Analysis')
-        # N_ring = 5
-        # R = 1  # m
-        # pitch = 0.2  # m
+        N_ring = 5
+        R = 1  # m
+        pitch: np.float16 = 0.2  # m
         # alpha = 1e-6  # m2/s
-        # t_series = np.arange(10000, 3e7 + 1, 1e6)
-        # t_1 = int(1e6)
-        # h = 2  # m
-        #
-        # # gs_series = []
-        # # for N_ring in N_ring_series:
-        # gs_series = []
-        # for t in t_series:
-        #     gs = Decimal(0)
-        #     for i in range(1, N_ring + 1):
-        #         for j in range(1, N_ring + 1):
-        #             if i != j:
-        #                 def d(w, phi):
-        #                     return np.sqrt((pitch * (i - j) + R * (np.cos(phi) - np.cos(w))) ** 2 +
-        #                                    (R * (np.sin(phi) - np.sin(w))) ** 2)
-        #
-        #                 def fun(w, phi):
-        #                     return erfc(d(w, phi) / (2 * np.sqrt(alpha * t))) / d(w, phi) - erfc(
-        #                         np.sqrt(d(w, phi) ** 2 + 4 * h ** 2) / (2 * np.sqrt(alpha * t))) / np.sqrt(
-        #                         d(w, phi) ** 2 + 4 * h ** 2)
-        #
-        #                 b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2,
-        #                                epsrel=1e-2)
-        #                 print(b)
-        #                 gs += Decimal(b)
-        #
-        #     print(f"gs: {gs}")
-        #     gs_series.append(gs)
-        x = np.linspace(0, 2*np.pi, 1000)
-        y = np.sin(x)
-        self.plt_gfunction.clear()
-        self.plt_gfunction.plot(x, y, pen='b')
+        t_series = np.arange(0.01, 30, 1)  # consider alpha
+        t_1 = int(1e6)
+        h = 2  # m
 
-        self.movenext()
+        def sqrt_float16(x):
+            return np.sqrt(x).astype(np.float16)
+
+        def erfc_float16(x):
+            return erfc(x).astype(np.float16)
+
+        def cos_float16(x):
+            return np.cos(x).astype(np.float16)
+
+        def sin_float16(x):
+            return np.sin(x).astype(np.float16)
+
+        def quadself(f, a, b, c, d, nx, ny):
+            # Function to approximate the double integral
+            dx: np.float16 = (b - a) / nx
+            dy: np.float16 = (d - c) / ny
+
+            integral_sum: np.float16 = 0.0
+
+            for i in range(nx):
+                x = a + (i + 0.5) * dx
+
+                for j in range(ny):
+                    y = c + (j + 0.5) * dy
+                    integral_sum += f(x, y)
+
+            integral_sum *= dx * dy
+
+            return integral_sum
+
+        start_time = time.time()
+
+        # gs_series = []
+        # for N_ring in N_ring_series:
+        gs_series = []
+        for t in t_series:
+            gs: np.float16 = 0
+            for i in range(1, N_ring + 1):
+                for j in range(1, N_ring + 1):
+                    if self.analysis_calculation_process:
+                        if i != j:
+
+                            def d(w: np.float16, phi: np.float16):
+                                return sqrt_float16((pitch * (i - j) + R * (cos_float16(phi) - cos_float16(w))) ** 2 +
+                                                    (R * (sin_float16(phi) - sin_float16(w))) ** 2)
+
+                            def fun(w: np.float16, phi: np.float16):
+                                return erfc_float16(d(w, phi) / (2 * sqrt_float16(t))) / d(w, phi) - erfc_float16(
+                                    sqrt_float16(d(w, phi) ** 2 + 4 * h ** 2) / (2 * sqrt_float16(t))) / sqrt_float16(
+                                    d(w, phi) ** 2 + 4 * h ** 2)
+
+                            # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2, epsrel=1e-2)
+                            b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 20, 20)
+                            # print(b)
+                            gs += np.float16(b)
+                    else:
+                        return False
+            # print(f"gs: {gs}")
+            gs_series.append(gs)
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+
+        print("Elapsed time: {:.2f}".format(elapsed_time))
+        # x = np.linspace(0, 2*np.pi, 1000)
+        # y = np.sin(x)
+        self.plt_gfunction.clear()
+        self.plt_gfunction.plot(t_series*1000000, gs_series, pen='b')
+        self.dict["Analysis"] = {"Elapsed time": str(elapsed_time)}
+        return True
 
     def btnexit(self):
         self.setEnabled(False)
