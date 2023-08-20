@@ -81,3 +81,21 @@ if __name__ == '__main__':
     window = LicenseWindow()
     window.show()
     sys.exit(app.exec_())
+
+#     self.is_dragging = False
+    #     self.offset = QPoint()
+    #
+    # def mousePressEvent(self, event):
+    #     if event.button() == Qt.LeftButton:
+    #         self.is_dragging = True
+    #         self.offset = event.pos()
+    #
+    # def mouseMoveEvent(self, event):
+    #     if self.is_dragging:
+    #         self.move(event.globalPos() - self.offset)
+    #
+    # def mouseReleaseEvent(self, event):
+    #     if event.button() == Qt.LeftButton:
+    #         self.is_dragging = False
+    # -----------------
+    # ticker button

@@ -5,42 +5,53 @@ import time
 import webbrowser
 import traceback
 
-## UI
+# UI
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMainWindow, QTabWidget, \
-    QHBoxLayout, QSizePolicy, QComboBox, QFileDialog, QScrollArea, QMessageBox
-from PyQt5.QtGui import QIcon, QPixmap, QCursor, QMovie
-from PyQt5.QtCore import Qt, QSize, QTimer, QPoint, QUrl
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QTabWidget, \
+    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox
+from PyQt5.QtGui import QIcon, QCursor, QMovie
+from PyQt5.QtCore import Qt, QSize, QTimer, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
+# Self define
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1, TextButton
 from firstpageclass import FirstPageClass
-from inputformclass import InputForm, InputDescription, CustomQTextEdit, LicenseForm, PersonalForm
+from inputformclass import InputForm, CustomQTextEdit, LicenseForm, PersonalForm
 from labelclass import IntroLabel1, TickerLabel, IntroLabel3
 from notificationclass import CustomMessageBox, ExitNotification
 import pyqtgraph as pg
 
-## Calculation
+# Calculation
 import numpy as np
 from scipy.special import erfc
-from scipy.integrate import dblquad
 import math
-from decimal import *
-getcontext().prec = 4
+
+# license
+import hashlib
+import uuid
+import sqlite3
 
 class DesignClass(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.license_info = None
-        self.plt_gfunction = None
         self.parent = parent
+        self.num_design = 1
+        self.num_analysis = 1
+        self.program_version = "1.0"
+
+        # Get data
+        self.database_connection = sqlite3.connect("./Logs/log/bin/data.db")
+        self.database_cursor = self.database_connection.cursor()
+        self.database_get_data()
+
         self.tabstack = []
         self.dict = {}
         self.designpath = './Logs/designpath.json'
-        self.num_design = 5
-        self.num_analysis = 4
         self.currentgldpath = ''
 
+        # UI
+        self.license_info = None
+        self.plt_gfunction = None
         # calculation
         self.analysis_calculation_result = False
         self.analysis_calculation_process = False
@@ -54,7 +65,6 @@ class DesignClass(QWidget):
         # self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 
         # add all widgets
-
         self.left_widget = QWidget()
         self.left_widget.setStyleSheet("""
             background-color: #2C3751;
@@ -260,23 +270,48 @@ class DesignClass(QWidget):
         main_layout.setStretch(1, 100)
         self.setLayout(main_layout)
 
-    #     self.is_dragging = False
-    #     self.offset = QPoint()
-    #
-    # def mousePressEvent(self, event):
-    #     if event.button() == Qt.LeftButton:
-    #         self.is_dragging = True
-    #         self.offset = event.pos()
-    #
-    # def mouseMoveEvent(self, event):
-    #     if self.is_dragging:
-    #         self.move(event.globalPos() - self.offset)
-    #
-    # def mouseReleaseEvent(self, event):
-    #     if event.button() == Qt.LeftButton:
-    #         self.is_dragging = False
-    # -----------------
-    # ticker button
+    def database_get_data(self):
+        try:
+            # get data from db
+            self.database_cursor.execute("SELECT * FROM property")
+            rows = self.database_cursor.fetchall()
+            print("rows: ", rows)
+            json_data = json.load(rows[0][1])
+
+            # set class property
+            self.num_design = json_data["Design"]
+            self.num_analysis = json_data['Analysis']
+
+            # set data if data not exist
+            if len(rows) != 1:
+                self.database_set_data()
+        except Exception as e:
+            print('getdata Exception: ', e)
+            # create db file if no exist
+            self.database_cursor.execute('''CREATE TABLE IF NOT EXISTS property
+                              (id INTEGER PRIMARY KEY, data TEXT)''')
+            self.database_connection.commit()
+
+    def database_set_data(self):
+        json_data = {
+            'Design': self.num_design,
+            'Analysis': self.num_analysis
+        }
+        self.database_cursor.execute("insert into property (data) values (?)", (json_data,))
+        self.database_connection.commit()
+
+    def get_machine_number(self):
+        # Get operating system version
+        mac_address = uuid.getnode()
+
+        # Combine OS version and program version
+        combined_str = f"{mac_address}-{self.program_version}"
+
+        # Generate a hash of the combined string
+        hash_value = hashlib.md5(combined_str.encode()).hexdigest()
+        machine_number = hash_value[:16]
+        return machine_number
+
     def tickerbutton(self):
         currentIndex = self.right_widget.currentIndex()
         # print('currentIndex: ', currentIndex)
@@ -356,21 +391,21 @@ class DesignClass(QWidget):
         self.tickerbutton()
 
     def button7(self):
-
-        if len(self.dict.keys()) == 8:
-            self.right_widget.setCurrentIndex(7)
-            self.tickerbutton()
-        elif len(self.dict.keys()) == 7:
-            self.shownotification('./Images/warning.png', "You didn't analyze.")
-        else:
-            self.shownotification('./Images/warning.png', 'Input all parameters.')
+        self.right_widget.setCurrentIndex(7)
+        # if len(self.dict.keys()) == 8:
+        #     self.right_widget.setCurrentIndex(7)
+        #     self.tickerbutton()
+        # elif len(self.dict.keys()) == 7:
+        #     self.shownotification('./Images/warning.png', "You didn't analyze.")
+        # else:
+        #     self.shownotification('./Images/warning.png', 'Input all parameters.')
     def btnsetting(self):
         self.right_widget.setCurrentIndex(8)
 
     def shownotification(self, iconpath, message):
         icon = QIcon(iconpath)
         custom_message_box = CustomMessageBox(icon, 'Custom Message', message, self)
-        custom_message_box.setGeometry(950, 20, 300, 70)
+        custom_message_box.setGeometry(1050, 20, 300, 70)
         custom_message_box.show()
     # -----------------
     # pages
@@ -839,12 +874,11 @@ class DesignClass(QWidget):
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
 
-
         main = QWidget()
 
         label = IntroLabel1(main)
         label.setText("Analysis")
-        label.move(400, 30)
+        label.move(440, 30)
         
         self.plt_gfunction = pg.PlotWidget(main)
         self.plt_gfunction.setTitle("G-function")
@@ -853,12 +887,12 @@ class DesignClass(QWidget):
         self.plt_gfunction.setBackground('#2C3751')
         self.plt_gfunction.setGeometry(150, 100, 700, 400)
 
-        self.plt_temperaturepertubation = pg.PlotWidget(main)
+        # self.plt_temperaturepertubation = pg.PlotWidget(main)
 
 
         btn_redesign = MainButton1(main)
         btn_redesign.setText(main.tr('Redesign'))
-        btn_redesign.move(450, 670)
+        btn_redesign.move(410, 670)
         btn_redesign.resize(170, 55)
         btn_redesign.clicked.connect(self.button0)
 
@@ -879,17 +913,7 @@ class DesignClass(QWidget):
         label.setText("Settings")
         label.move(425, 30)
 
-        # data_form_designdimensions = ["Design Dimensions",
-        #                               ["Pipe Length", 'm', "lineedit", '200'],
-        #                               ['Inlet Temperature', '⁰F', 'lineedit', '70'],
-        #                               ["Outlet Temperature", '⁰F', "lineedit", '40'],
-        #                               ['System Flow Rate', 'gpm', 'lineedit', '10']
-        #                               ]
-        # self.form_designdimensions = InputForm(main, data_form_designdimensions)
-        # self.form_designdimensions.move(260, 100)
-
-        self.data_license_info = ["1010101010101010", '1010101010101010']
-        self.license_info = LicenseForm(main)
+        self.license_info = LicenseForm(main, self)
         self.license_info.resize(600, 200)
         self.license_info.move(200, 100)
 
@@ -1140,6 +1164,7 @@ class DesignClass(QWidget):
 
         if result == QMessageBox.No:
             self.setEnabled(True)
+            return True
         
         elif result == QMessageBox.Yes:
             sys.exit()
