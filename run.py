@@ -29,7 +29,7 @@ class Myapp(QMainWindow):
     def designUI(self):
         print("designUI")
         self.dashboard.move(1000, 1000)
-        self.design.move(0, 21)
+        self.design.move(0, 22)
         self.design.right_widget.setCurrentIndex(0)
 
     def dashboardUI(self):
@@ -51,7 +51,7 @@ class CustomTitleBar(QWidget):
         layout.addWidget(self.title_label)
 
         # Minimize button
-        self.minimize_button = QPushButton("--")
+        self.minimize_button = QPushButton("—")
         self.minimize_button.setFixedSize(34, 23)
         self.minimize_button.setStyleSheet('''
             QPushButton {
@@ -59,6 +59,7 @@ class CustomTitleBar(QWidget):
             }
             QPushButton:hover {
                 background-color: #E5E5E5;
+                color: white;
             }
         ''')
         self.minimize_button.clicked.connect(parent.showMinimized)
@@ -84,7 +85,7 @@ class CustomTitleBar(QWidget):
             background-color: #F1F1F1;
             color: #ABABAB;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 10px;
             text-align: center;
         """)
 

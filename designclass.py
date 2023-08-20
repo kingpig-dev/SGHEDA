@@ -46,7 +46,7 @@ class DesignClass(QWidget):
         self.analysis_calculation_process = False
 
         # set the size of window
-        self.setFixedSize(1210, 773)
+        self.setFixedSize(1210, 770)
 
         # Set the background color of the main window
         self.setStyleSheet("background-color: #1F2843; border: none")
@@ -77,7 +77,7 @@ class DesignClass(QWidget):
              QComboBox {
                 color: #7C8AA7;
                 background-color: #2C3751;
-                selection-background-color: red;
+                selection-background-color: white;
                 padding: 1px 1px 1px 1px;
                 min-width: 2em;
                 font-size: 16px;
@@ -682,10 +682,10 @@ class DesignClass(QWidget):
         movie = QMovie('./Images/loading.gif')
         loading_label = QLabel(main)
         loading_label.setAlignment(Qt.AlignCenter)
-        loading_label.setFixedSize(800, 800)
+        loading_label.setFixedSize(730, 730)
         loading_label.setVisible(False)
         loading_label.setMovie(movie)
-        loading_label.move(100, 0)
+        loading_label.move(120, 0)
 
         btn_loading_stop = ImageButton1(main, './Images/x02.png')
         btn_loading_stop.setToolTip('Cancel Calculation')
@@ -727,62 +727,44 @@ class DesignClass(QWidget):
         self.textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
         self.textedit_description.setGeometry(150, 455, 700, 150)
 
-
         def uisavedesign():
             if self.textedit_description.toPlainText() == "":
                 self.textedit_description.setText('Design GHE for blockchain mining equipment')
             description = self.textedit_description.toPlainText()
             self.dict["Description"] = description
 
-            options = QFileDialog.Options()
-            options |= QFileDialog.DontUseNativeDialog
-            file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
-                                                       options=options)
-            print(file_path)
-            if file_path:
-                temp_file_path = file_path.split('/')[-1].split('.')
-                if len(temp_file_path) == 1:
-                    file_path = file_path + '.gld'
-                with open(file_path, 'w') as file:
-                    file.write(json.dumps(self.dict))
-                with open(self.designpath, 'r') as tablefile:
-                    try:
-                        tablecontent = json.load(tablefile)
-                    except Exception as e:
-                        tablecontent = {}
-                        print("Design file is empty!")
-                with open(self.designpath, 'w') as savefile:
-                    tablecontent[file_path] = description
-                    savefile.write(json.dumps(tablecontent))
-            return True
-
-        def gotoanalysis():
-
-            if self.form_designdimensions.getValidation():
-                dict1 = self.form_designdimensions.getData()
+            if len(self.dict.keys()) == 7:
+                options = QFileDialog.Options()
+                options |= QFileDialog.DontUseNativeDialog
+                file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
+                                                           options=options)
+                print(file_path)
+                if file_path:
+                    temp_file_path = file_path.split('/')[-1].split('.')
+                    if len(temp_file_path) == 1:
+                        file_path = file_path + '.gld'
+                    with open(file_path, 'w') as file:
+                        file.write(json.dumps(self.dict))
+                    with open(self.designpath, 'r') as tablefile:
+                        try:
+                            tablecontent = json.load(tablefile)
+                        except Exception as e:
+                            tablecontent = {}
+                            print("Design file is empty!")
+                    with open(self.designpath, 'w') as savefile:
+                        tablecontent[file_path] = description
+                        savefile.write(json.dumps(tablecontent))
+                return True
             else:
-                self.btn_6_ticker.hide()
-                icon = QIcon('./Images/logo03.png')
-                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
-                                                                              '    correctly.', self)
-                custom_message_box.setGeometry(900, 20, 300, 70)
-                custom_message_box.show()
+                self.shownotification('./Images/warning.png', "Input all parameters.")
                 return False
-
-            if self.textedit_description.toPlainText() == "":
-                self.textedit_description.setText('Design GHE for blockchain mining equipment')
-            description = self.textedit_description.toPlainText()
-            self.dict["Results"] = dict1
-            self.dict["Description"] = description
-            self.btn_6_ticker.show()
-
+        def gotoanalysis():
             if len(self.dict.keys()) == 7:
                 self.analysis_calculation_result = True
-                a = self.analysis()
-                if a:
-                    self.right_widget.setCurrentIndex(7)
-                    self.tickerbutton()
+                self.analysis()
                 end_loading()
+                self.right_widget.setCurrentIndex(7)
+                self.tickerbutton()
                 return True
             else:
                 self.shownotification('./Images/warning.png', 'Input all parameters.')
@@ -806,9 +788,17 @@ class DesignClass(QWidget):
             self.tickerbutton()
 
         def start_analysis():
-            start_loading()
-            thread = threading.Thread(target = gotoanalysis)
-            thread.start()
+            if self.textedit_description.toPlainText() == "":
+                self.textedit_description.setText('Design GHE for blockchain mining equipment')
+            description = self.textedit_description.toPlainText()
+            self.dict["Description"] = description
+            if len(self.dict.keys()) == 7:
+                start_loading()
+                thread = threading.Thread(target=gotoanalysis)
+                thread.start()
+            else:
+                self.shownotification('./Images/warning.png', 'Input all parameters.')
+
 
         btn_save = MainButton1(main)
         btn_save.setText(main.tr('Save design'))
@@ -831,10 +821,10 @@ class DesignClass(QWidget):
         movie = QMovie('./Images/loading.gif')
         loading_label = QLabel(main)
         loading_label.setAlignment(Qt.AlignCenter)
-        loading_label.setFixedSize(800, 800)
+        loading_label.setFixedSize(730, 730)
         loading_label.setVisible(False)
         loading_label.setMovie(movie)
-        loading_label.move(100, 0)
+        loading_label.move(120, 0)
 
         btn_loading_stop = ImageButton1(main, './Images/x02.png')
         btn_loading_stop.setToolTip('Cancel Calculation')
@@ -870,7 +860,7 @@ class DesignClass(QWidget):
         btn_redesign.setText(main.tr('Redesign'))
         btn_redesign.move(450, 670)
         btn_redesign.resize(170, 55)
-        # btn_redesign.clicked.connect(uiredesign)
+        btn_redesign.clicked.connect(self.button0)
 
         # btn_gotoanalysis = MainButton1(main)
         # btn_gotoanalysis.setText(main.tr('Go to Analysis'))
@@ -1059,6 +1049,7 @@ class DesignClass(QWidget):
             self.form_designdimensions.setData1(list(self.dict["Results"].values()))
             self.form_designdimensions.setReadOnly(True)
             self.right_widget.setCurrentIndex(6)
+            self.tickerbutton()
         else:
             print('Show Notification')
     def analysis(self):
