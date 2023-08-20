@@ -727,7 +727,6 @@ class DesignClass(QWidget):
         self.textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
         self.textedit_description.setGeometry(150, 455, 700, 150)
 
-
         def uisavedesign():
             if self.textedit_description.toPlainText() == "":
                 self.textedit_description.setText('Design GHE for blockchain mining equipment')
@@ -760,31 +759,12 @@ class DesignClass(QWidget):
                 self.shownotification('./Images/warning.png', "Input all parameters.")
                 return False
         def gotoanalysis():
-
-            if self.form_designdimensions.getValidation():
-                dict1 = self.form_designdimensions.getData()
-            else:
-                self.btn_6_ticker.hide()
-                icon = QIcon('./Images/logo03.png')
-                custom_message_box = CustomMessageBox(icon, 'Custom Message', 'You have to input values \n'
-                                                                              '    correctly.', self)
-                custom_message_box.setGeometry(900, 20, 300, 70)
-                custom_message_box.show()
-                return False
-
-            if self.textedit_description.toPlainText() == "":
-                self.textedit_description.setText('Design GHE for blockchain mining equipment')
-            description = self.textedit_description.toPlainText()
-            self.dict["Results"] = dict1
-            self.dict["Description"] = description
-            self.btn_6_ticker.show()
-
             if len(self.dict.keys()) == 7:
                 self.analysis_calculation_result = True
-                a = self.analysis()
+                self.analysis()
+                end_loading()
                 self.right_widget.setCurrentIndex(7)
                 self.tickerbutton()
-                end_loading()
                 return True
             else:
                 self.shownotification('./Images/warning.png', 'Input all parameters.')
@@ -808,7 +788,11 @@ class DesignClass(QWidget):
             self.tickerbutton()
 
         def start_analysis():
-            if len(self.dict.keys()) >= 7:
+            if self.textedit_description.toPlainText() == "":
+                self.textedit_description.setText('Design GHE for blockchain mining equipment')
+            description = self.textedit_description.toPlainText()
+            self.dict["Description"] = description
+            if len(self.dict.keys()) == 7:
                 start_loading()
                 thread = threading.Thread(target=gotoanalysis)
                 thread.start()
@@ -876,7 +860,7 @@ class DesignClass(QWidget):
         btn_redesign.setText(main.tr('Redesign'))
         btn_redesign.move(450, 670)
         btn_redesign.resize(170, 55)
-        # btn_redesign.clicked.connect(uiredesign)
+        btn_redesign.clicked.connect(self.button0)
 
         # btn_gotoanalysis = MainButton1(main)
         # btn_gotoanalysis.setText(main.tr('Go to Analysis'))
@@ -1065,6 +1049,7 @@ class DesignClass(QWidget):
             self.form_designdimensions.setData1(list(self.dict["Results"].values()))
             self.form_designdimensions.setReadOnly(True)
             self.right_widget.setCurrentIndex(6)
+            self.tickerbutton()
         else:
             print('Show Notification')
     def analysis(self):
