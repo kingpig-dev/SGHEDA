@@ -26,6 +26,10 @@ class Myapp(QMainWindow):
         # Create a dashboard
         self.dashboard = Dashboard(self)
 
+    def closeEvent(self, event):
+        if self.design.btnexit():
+            event.ignore()
+
     def designUI(self):
         print("designUI")
         self.dashboard.move(1000, 1000)

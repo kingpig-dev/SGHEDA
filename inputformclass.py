@@ -194,8 +194,11 @@ class CustomQTextEdit(QTextEdit):
         """)
 
 class LicenseForm(QGroupBox):
-    def __init__(self, parent):
+    def __init__(self, parent, design):
         super().__init__(parent)
+        self.parent = parent
+        self.design = design
+        self.value_machinenumber = self.design.get_machine_number()
         self.setStyleSheet('''
             * {
                 background-color: #1F2843;
@@ -209,9 +212,10 @@ class LicenseForm(QGroupBox):
                 border-radius: 30%;
             }
         ''')
+
         self.grid = QGridLayout(self)
 
-        self.label_title = IntroLabel3('License Information(2023.8.10~2024.2.10)')
+        self.label_title = IntroLabel3('License Information')
         self.label_title.setAlignment(Qt.AlignCenter)
         self.grid.addWidget(self.label_title, 1, 1, 1, 2)
 
@@ -231,6 +235,7 @@ class LicenseForm(QGroupBox):
                                 border-bottom: 2px solid #1F8EFA;
                             }
                         ''')
+        self.machinenumber.setText(self.value_machinenumber)
 
         self.grid.addWidget(self.label_machinenumber, 2, 1)
         self.grid.addWidget(self.machinenumber, 2, 2)
@@ -299,7 +304,8 @@ class LicenseForm(QGroupBox):
         self.setData()
 
     def setData(self):
-        self.machinenumber.setText('1010101010101010101010')
+        print(self.design.get_machine_number())
+        self.machinenumber.setText(self.design.get_machine_number())
 
 
 class PersonalForm(QGroupBox):
