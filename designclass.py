@@ -8,7 +8,7 @@ import traceback
 # UI
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QTabWidget, \
-    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox
+    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox, QVBoxLayout
 from PyQt5.QtGui import QIcon, QCursor, QMovie
 from PyQt5.QtCore import Qt, QSize, QTimer, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -900,36 +900,32 @@ class DesignClass(QWidget):
         # Analysis
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
+        # scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
-        main = QWidget()
-
-        label = IntroLabel1(main)
+        label = IntroLabel1(scroll_area)
         label.setText("Analysis")
         label.move(440, 30)
-        
-        self.plt_gfunction = pg.PlotWidget(main)
+
+        self.plt_gfunction = pg.PlotWidget(scroll_area)
         self.plt_gfunction.setTitle("G-function")
         self.plt_gfunction.setLabel('left', 'g-function')
-        self.plt_gfunction.setLabel('bottom', 'Time')
+        self.plt_gfunction.setLabel('bottom', 'Time(s)')
         self.plt_gfunction.setBackground('#2C3751')
-        self.plt_gfunction.setGeometry(150, 100, 700, 400)
+        self.plt_gfunction.setGeometry(150, 80, 700, 290)
 
-        # self.plt_temperaturepertubation = pg.PlotWidget(main)
+        self.plt_temperaturepertubation = pg.PlotWidget(scroll_area)
+        self.plt_temperaturepertubation.setTitle('Temperature Pertubation')
+        self.plt_temperaturepertubation.setLabel('left', 'degree')
+        self.plt_temperaturepertubation.setLabel('bottom', 'Time(s)')
+        self.plt_temperaturepertubation.setBackground('#2C3751')
+        self.plt_temperaturepertubation.setGeometry(150, 380, 700, 290)
 
-
-        btn_redesign = MainButton1(main)
-        btn_redesign.setText(main.tr('Redesign'))
-        btn_redesign.move(410, 670)
+        btn_redesign = MainButton1(scroll_area)
+        btn_redesign.setText('Redesign')
+        btn_redesign.move(410, 690)
         btn_redesign.resize(170, 55)
         btn_redesign.clicked.connect(self.button0)
 
-        # btn_gotoanalysis = MainButton1(main)
-        # btn_gotoanalysis.setText(main.tr('Go to Analysis'))
-        # btn_gotoanalysis.move(625, 670)
-        # btn_gotoanalysis.resize(170, 55)
-        # # btn_gotoanalysis.clicked.connect(uigotoanalysis)
-
-        scroll_area.setWidget(main)
         return scroll_area
 
     def ui9(self):
