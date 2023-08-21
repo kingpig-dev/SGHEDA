@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QIcon, QCursor
+from PyQt5.QtGui import QIcon, QCursor, QIntValidator
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QApplication, QWidget, QHBoxLayout, \
     QMainWindow, QGroupBox, QComboBox
 from labelclass import IntroLabel3, ImageButton
@@ -120,15 +120,19 @@ class Myapp(QMainWindow):
         self.label_machinenumber.setGeometry(180, 65, 130, 40)
         self.machinenumber.setGeometry(320, 70, 270, 30)
 
-        self.groupbox = QGroupBox(self)
-        self.groupbox.setTitle('License Type')
+        self.label_type = QLabel(self)
+        self.label_type.setText('Type')
+        self.label_type.setStyleSheet('''
+            font-size: 14px;
+        ''')
+        self.label_type.setGeometry(180, 115, 40, 30)
 
-        self.combobox_selection = QComboBox(self.left_widget)
-        self.icon_design = QIcon('./Images/design.png')
-        self.icon_analysis = QIcon('./Images/analysis02.png')
-        self.combobox_selection.addItem(self.icon_design, ' Design')
-        self.combobox_selection.addItem(self.icon_analysis, 'Analysis ')
-        self.combobox_selection.resize(100, 30)
+        self.combobox_selection = QComboBox(self)
+        self.icon_design = QIcon('./Images/full.png')
+        self.icon_analysis = QIcon('./Images/part.png')
+        self.combobox_selection.addItem(self.icon_design, ' Fully')
+        self.combobox_selection.addItem(self.icon_analysis, ' Daily')
+        self.combobox_selection.resize(80, 30)
         self.combobox_selection.setCursor(QCursor(Qt.PointingHandCursor))
         self.combobox_selection.setStyleSheet(""" 
                      QComboBox {
@@ -147,7 +151,7 @@ class Myapp(QMainWindow):
                     QComboBox::drop-down {
                         subcontrol-origin: padding;
                         color: white;
-                        width: 10px;
+                        width: 7px;
                         border: none;
                     }
 
@@ -159,8 +163,56 @@ class Myapp(QMainWindow):
                 """
                                               )
         self.combobox_selection.currentIndexChanged.connect(self.combobox_selection_changed)
-        self.combobox_selection.move(20, 155)
+        self.combobox_selection.move(220, 115)
 
+        self.label_design = QLabel(self)
+        self.label_design.setText('Design')
+        self.label_design.setStyleSheet('''
+                                   QLabel {
+                                       text-align: center;
+                                       font-size: 14px;
+                                   }
+                               ''')
+        self.lineedit_design = QLineEdit(self)
+        self.lineedit_design.setAlignment(Qt.AlignCenter)
+        self.lineedit_design.setStyleSheet('''
+                                   QLineEdit {
+                                       text-align: center;
+                                       background-color: #1F2843;
+                                       border: none;
+                                       border-bottom: 2px solid #1F8EFA;
+                                       font-size: 14px;
+                                   }
+                               ''')
+        self.lineedit_design.setMaxLength(4)
+        lineedit_validator = QIntValidator()
+        self.lineedit_design.setValidator(lineedit_validator)
+        self.label_design.setGeometry(320, 115, 50, 30)
+        self.lineedit_design.setGeometry(375, 115, 70, 30)
+
+        self.label_analysis = QLabel(self)
+        self.label_analysis.setText('Analysis')
+        self.label_analysis.setStyleSheet('''
+                                           QLabel {
+                                               text-align: center;
+                                               font-size: 14px;
+                                           }
+                                       ''')
+        self.lineedit_analysis = QLineEdit(self)
+        self.lineedit_analysis.setAlignment(Qt.AlignCenter)
+        self.lineedit_analysis.setStyleSheet('''
+                                           QLineEdit {
+                                               text-align: center;
+                                               background-color: #1F2843;
+                                               border: none;
+                                               border-bottom: 2px solid #1F8EFA;
+                                               font-size: 14px;
+                                           }
+                                       ''')
+        self.lineedit_analysis.setMaxLength(4)
+        self.lineedit_analysis.setValidator(QIntValidator())
+        self.label_analysis.setGeometry(450, 115, 50, 30)
+        self.lineedit_analysis.setGeometry(510, 115, 70, 30)
 
         self.label_serialnumber = QLabel(self)
         self.label_serialnumber.setText('Serial Number')
@@ -182,7 +234,6 @@ class Myapp(QMainWindow):
         self.label_serialnumber.setGeometry(180, 160, 130, 30)
         self.serialnumber.setGeometry(320, 160, 270, 30)
         self.serialnumber.setReadOnly(True)
-        # self.serialnumber.mousePressEvent()
 
         self.btn_confirm = QPushButton(self)
         self.btn_confirm.setText('Generate')
@@ -205,6 +256,21 @@ class Myapp(QMainWindow):
         self.btn_confirm.setGeometry(280, 200, 130, 40)
         self.btn_confirm.clicked.connect(self.generate_license)
 
+        self.combobox_selection_changed()
+
+    def combobox_selection_changed(self):
+        print('combo')
+        if self.combobox_selection.currentText() == " Fully":
+            self.label_design.setEnabled(False)
+            self.lineedit_design.setEnabled(False)
+            self.label_analysis.setEnabled(False)
+            self.lineedit_analysis.setEnabled(False)
+        else:
+            self.label_design.setEnabled(True)
+            self.lineedit_design.setEnabled(True)
+            self.label_analysis.setEnabled(True)
+            self.lineedit_analysis.setEnabled(True)
+
     def generate_license(self):
         print("generate license")
         machine_number = self.machinenumber.text()
@@ -212,8 +278,12 @@ class Myapp(QMainWindow):
             print("machine number: ", machine_number)
 
             # get use number
-            num_design = '{:4d}'.format(45).replace(' ', '0')
-            num_analysis = '{:4d}'.format(45).replace(' ', '0')
+            if self.combobox_selection.currentText() == ' Fully':
+                num_design = 'g8u4'
+                num_analysis = 'bisk'
+            else:
+                num_design = '{:4d}'.format(int(self.lineedit_design.text())).replace(' ', '0')
+                num_analysis = '{:4d}'.format(int(self.lineedit_analysis.text())).replace(' ', '0')
             data = num_design + machine_number[8:16] + num_analysis + machine_number[0:8]
 
             # encrypt data with key
@@ -263,6 +333,7 @@ class Myapp(QMainWindow):
         return plaintext
     def copy_clipboard(self):
         print('copy clipboardd')
+
 
 if __name__ == "__main__":
 
