@@ -1,4 +1,6 @@
 import sys
+import webbrowser
+
 from PyQt5.QtCore import Qt
 
 from PyQt5.QtGui import *
@@ -278,6 +280,8 @@ class LicenseForm(QGroupBox):
                     background-color: #5D7C4C;
                 }
             """)
+        self.btn_confirm.clicked.connect(self.get_license_info)
+
         self.grid.addWidget(self.btn_confirm, 4, 2)
 
         self.btn_get_license = QPushButton(self)
@@ -298,15 +302,63 @@ class LicenseForm(QGroupBox):
                             background-color: #5D7C4C;
                         }
                     """)
+        self.btn_get_license.setCursor(Qt.DragLinkCursor)
+        self.btn_get_license.clicked.connect(self.redirect_get_license)
+
         self.grid.addWidget(self.btn_get_license, 4, 1)
 
         self.machinenumber.setReadOnly(True)
         self.setData()
 
     def setData(self):
-        print(self.design.get_machine_number())
-        self.machinenumber.setText(self.design.get_machine_number())
+        self.machinenumber.setText(self.value_machinenumber)
 
+    def redirect_get_license(self):
+        webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
+
+    def get_license_info(self):
+        ciphertext = self.serialnumber.text()
+        print('ciphertext: ', ciphertext)
+        plaintext = self.caesar_decrypt(ciphertext, 5)
+        num_design = plaintext[0:4]
+        num_analysis = plaintext[12:16]
+        design_analysis = num_design + num_analysis
+        if plaintext[16:24] + plaintext[4:12] == self.value_machinenumber:
+            if design_analysis == 'g8u4bisk':
+                print('full license')
+                self.design.num_design = '∞'
+                self.design.num_analysis = '∞'
+                self.design.database_set_data()
+                self.design.combobox_selection_changed()
+            else:
+                try:
+                    self.design.num_design += int(num_design)
+                    self.design.num_analysis += int(num_analysis)
+                    self.design.database_set_data()
+                    self.design.combobox_selection_changed()
+                except Exception as e:
+                    self.design.shownotification("./Image/error.png", "Invalid license!")
+        else:
+            self.design.shownotification("./Image/error.png", "Invalid license!")
+
+    def caesar_decrypt(self, ciphertext, shift):
+        plaintext = ""
+        for char in ciphertext:
+            # Decrypt uppercase letters
+            if char.isupper():
+                decrypted_char = chr((ord(char) - 65 - shift) % 26 + 65)
+            # Decrypt lowercase letters
+            elif char.islower():
+                decrypted_char = chr((ord(char) - 97 - shift) % 26 + 97)
+            # Decrypt digit
+            elif char.isdigit():
+                decrypted_char = chr((ord(char) - 48 - shift) % 10 + 48)
+            else:
+                # Leave non-alphabetic characters unchanged
+                decrypted_char = char
+            plaintext += decrypted_char
+        print("plaintext: ", plaintext)
+        return plaintext
 
 class PersonalForm(QGroupBox):
     def __init__(self, parent):

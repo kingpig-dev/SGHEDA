@@ -35,8 +35,8 @@ class DesignClass(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.num_design = 1
-        self.num_analysis = 1
+        self.num_design = 0
+        self.num_analysis = 0
         self.program_version = "1.0"
 
         # Get data
@@ -119,7 +119,7 @@ class DesignClass(QWidget):
         self.label_num.setIcon(self.label_num_icon)
         self.label_num.setIconSize(QSize(25, 25))
         self.label_num.setText(' ' + str(self.num_design))
-        self.label_num.setGeometry(130, 155, 60, 30)
+        self.label_num.setGeometry(130, 155, 80, 30)
         self.label_num.setStyleSheet("""
             QPushButton {
                 background-color: #374866;
@@ -179,6 +179,10 @@ class DesignClass(QWidget):
         self.btn_6_ticker = TickerLabel(self.left_widget)
         self.btn_6_ticker.setGeometry(180, 460, 30, 30)
         self.btn_6_ticker.hide()
+
+        self.btn_7_ticker = TickerLabel(self.left_widget)
+        self.btn_7_ticker.setGeometry(180, 510, 30, 30)
+        self.btn_7_ticker.hide()
 
         self.slide_label = QLabel(self.left_widget)
         self.slide_label.setStyleSheet('background-color: #31A8FC')
@@ -275,30 +279,35 @@ class DesignClass(QWidget):
             # get data from db
             self.database_cursor.execute("SELECT * FROM property")
             rows = self.database_cursor.fetchall()
-            print("rows: ", rows)
-            json_data = json.load(rows[0][1])
-
-            # set class property
-            self.num_design = json_data["Design"]
-            self.num_analysis = json_data['Analysis']
+            print("rows: ", len(rows))
 
             # set data if data not exist
-            if len(rows) != 1:
+            if len(rows) > 0:
+                json_data = json.loads(rows[-1][1])
+
+                # set class property
+                self.num_design = json_data["Design"]
+                self.num_analysis = json_data["Analysis"]
+                print('loaddata')
+            elif len(rows) == 0:
                 self.database_set_data()
+
         except Exception as e:
             print('getdata Exception: ', e)
             # create db file if no exist
             self.database_cursor.execute('''CREATE TABLE IF NOT EXISTS property
                               (id INTEGER PRIMARY KEY, data TEXT)''')
             self.database_connection.commit()
+            self.database_set_data()
 
     def database_set_data(self):
         json_data = {
             'Design': self.num_design,
             'Analysis': self.num_analysis
         }
-        self.database_cursor.execute("insert into property (data) values (?)", (json_data,))
+        self.database_cursor.execute("insert into property (data) values (?)", (json.dumps(json_data),))
         self.database_connection.commit()
+        print("Completely store data")
 
     def get_machine_number(self):
         # Get operating system version
@@ -365,6 +374,7 @@ class DesignClass(QWidget):
         self.btn_4_ticker.hide()
         self.btn_5_ticker.hide()
         self.btn_6_ticker.hide()
+        self.btn_7_ticker.hide()
 
     def button1(self):
         self.right_widget.setCurrentIndex(1)
@@ -671,29 +681,33 @@ class DesignClass(QWidget):
             movie.stop()
             timer.stop()
             self.result()
+            self.btn_6_ticker.show()
 
         def start_loading():
             print("Design")
-            dict = {}
-            if self.form_circulationpumps.getValidation():
-                dict = self.form_circulationpumps.getData()
+            if self.num_design == '∞' or self.num_design > 0:
+                dict = {}
+                if self.form_circulationpumps.getValidation():
+                    dict = self.form_circulationpumps.getData()
+                else:
+                    self.shownotification('./Images/warning.png', "Input all parameters.")
+                    return False
+                self.dict["Pump"] = dict
+                self.btn_5_ticker.show()
+
+                if len(self.dict.keys()) < 5:
+                    print('Design1', len(self.dict.keys()))
+                    self.shownotification('./Images/warning.png', "Input all parameters.")
+                    return False
+
+                loading_label.setVisible(True)
+                self.left_widget.setEnabled(False)
+                btn_loading_stop.setVisible(True)
+                movie.start()
+                timer.timeout.connect(end_loading)
+                timer.start(2000)
             else:
-                self.shownotification('./Images/warning.png', "Input all parameters.")
-                return False
-            self.dict["Pump"] = dict
-            self.btn_5_ticker.show()
-
-            if len(self.dict.keys()) < 5:
-                print('Design1', len(self.dict.keys()))
-                self.shownotification('./Images/warning.png', "Input all parameters.")
-                return False
-
-            loading_label.setVisible(True)
-            self.left_widget.setEnabled(False)
-            btn_loading_stop.setVisible(True)
-            movie.start()
-            timer.timeout.connect(end_loading)
-            timer.start(2000)
+                self.shownotification('./Images/error.png', "Get license!")
 
         def loading_stop():
             self.left_widget.setEnabled(True)
@@ -812,6 +826,8 @@ class DesignClass(QWidget):
             btn_loading_stop.setVisible(False)
             movie.stop()
             self.right_widget.setCurrentIndex(6)
+            self.btn_7_ticker.show()
+
 
         def start_loading():
             print("start loading")
@@ -823,16 +839,27 @@ class DesignClass(QWidget):
             self.tickerbutton()
 
         def start_analysis():
-            if self.textedit_description.toPlainText() == "":
-                self.textedit_description.setText('Design GHE for blockchain mining equipment')
-            description = self.textedit_description.toPlainText()
-            self.dict["Description"] = description
-            if len(self.dict.keys()) == 7:
-                start_loading()
-                thread = threading.Thread(target=gotoanalysis)
-                thread.start()
+            if self.num_analysis == '∞' or self.num_analysis > 0:
+                if self.textedit_description.toPlainText() == "":
+                    self.textedit_description.setText('Design GHE for blockchain mining equipment')
+                description = self.textedit_description.toPlainText()
+                self.dict["Description"] = description
+                if len(self.dict.keys()) == 7:
+                    start_loading()
+                    thread = threading.Thread(target=gotoanalysis)
+                    thread.start()
+
+                    # database update
+                    if self.num_analysis == "∞":
+                        print('full license access')
+                    else:
+                        self.num_analysis -= 1
+                        self.database_set_data()
+                        self.combobox_selection_changed()
+                else:
+                    self.shownotification('./Images/warning.png', 'Input all parameters.')
             else:
-                self.shownotification('./Images/warning.png', 'Input all parameters.')
+                self.shownotification('./Images/error.png', 'Get license!')
 
 
         btn_save = MainButton1(main)
@@ -1062,6 +1089,12 @@ class DesignClass(QWidget):
             dict['System Flow Rate'] = str(V)
             self.dict['Results'] = dict
 
+            if self.num_analysis == '∞':
+                print('full license access')
+            else:
+                self.num_design -= 1
+                self.database_set_data()
+                self.combobox_selection_changed()
             return True
         except Exception as e:
             print('Size Calculation Error:', traceback.format_exc())
@@ -1155,6 +1188,7 @@ class DesignClass(QWidget):
         self.plt_gfunction.clear()
         self.plt_gfunction.plot(t_series*1000000, gs_series, pen='b')
         self.dict["Analysis"] = {"Elapsed time": str(elapsed_time)}
+
         return True
 
     def btnexit(self):
