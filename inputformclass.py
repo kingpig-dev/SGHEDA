@@ -466,14 +466,14 @@ class CustomRadioButtonGroup(QGroupBox):
         self.radiobuttons = [self.radio_horizontal, self.radio_vertical, self.radio_earthbasket]
 
         self.btn_image1 = ImageButton2(self, self.imagepath[0])
-        self.btn_image1.move(300, 60)
+        self.btn_image1.move(350, 60)
 
         self.btn_image2 = ImageButton2(self, self.imagepath[1])
-        self.btn_image2.move(300, 60)
+        self.btn_image2.move(350, 60)
         self.btn_image2.hide()
 
         self.btn_image3 = ImageButton2(self, self.imagepath[2])
-        self.btn_image3.move(300, 60)
+        self.btn_image3.move(350, 60)
         self.btn_image3.hide()
 
         self.btn_images = [self.btn_image1, self.btn_image2, self.btn_image3]

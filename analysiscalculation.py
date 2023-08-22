@@ -5,13 +5,18 @@ import matplotlib.pyplot as plt
 import time
 
 # N_ring_series = np.array([2, 3, 5])
-N_ring = 5
-R = 1  # m
-pitch: np.float16 = 0.2  # m
+# N_ring = 20
+# R = 1  # m
+# pitch: np.float16 = 0.2  # m
+
+N_ring =20
+R = 0.76  # m
+pitch: np.float16 = 0.4  # m
+
 # alpha = 1e-6  # m2/s
-t_series = np.arange(0.01, 30, 1)  #consider alpha
+t_series = np.arange(0.01, 3, 0.1)  #consider alpha
 t_1 = int(1e6)
-h = 2  # m
+h = 1.5  # m
 
 def sqrt_float16(x):
     return np.sqrt(x).astype(np.float16)
@@ -61,7 +66,7 @@ for t in t_series:
                     return erfc_float16(d(w, phi) / (2 * sqrt_float16(t))) / d(w, phi) - erfc_float16(sqrt_float16(d(w, phi)**2 + 4 * h**2) / (2 * sqrt_float16(t))) / sqrt_float16(d(w, phi)**2 + 4 * h**2)
 
                 # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2, epsrel=1e-2)
-                b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 20, 20)
+                b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 10, 10)
                 # print(b)
                 gs += np.float16(b)
 
