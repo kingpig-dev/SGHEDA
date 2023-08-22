@@ -5,6 +5,8 @@ from PyQt5.QtCore import Qt
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+
+from buttonclass import ImageButton
 from labelclass import IntroLabel3
 
 import traceback
@@ -184,6 +186,7 @@ class InputDescription(QWidget):
             return False
         else:
             return True
+
 class CustomQTextEdit(QTextEdit):
     def __init__(self, parent):
         super().__init__(parent)
@@ -392,6 +395,51 @@ class PersonalForm(QGroupBox):
     # def setData(self):
     #     self.machinenumber.setText('1010101010101010')
 
+class CustomRadioButton(QRadioButton):
+    def __init__(self, image_path, parent=None):
+        super().__init__(parent)
+        self.setIcon(QIcon(image_path))
+
+
+class CustomRadioButtonGroup(QGroupBox):
+    def __init__(self, parent, imagepath):
+        super().__init__(parent)
+        self.setStyleSheet('''
+            * {
+                background-color: #1F2843;
+                color: white;
+                font-size: 16px;
+                padding: 5px 10px;
+            }
+
+            QGroupBox {
+                border: 1px solid white;
+                border-radius: 30%;
+            }
+        ''')
+        self.resize(600, 300)
+        self.radiobutton_group = QButtonGroup()
+
+        self.radio_horizontal = QRadioButton(self)
+        self.radio_horizontal.setText("Horizontal Slinky")
+        self.radio_horizontal.move(50, 100)
+
+        self.radio_vertical = QRadioButton(self)
+        self.radio_vertical.setText("Vertical Slinky")
+        self.radio_vertical.move(50, 150)
+
+        self.radio_earthbasket = QRadioButton(self)
+        self.radio_earthbasket.setText("Earth Basket")
+        self.radio_earthbasket.move(50, 200)
+
+        self.btn_image = ImageButton(self, imagepath[0])
+        self.btn_image.move(200, 100)
+
+        self.radiobutton_group.addButton(self.radio_horizontal)
+        self.radiobutton_group.addButton(self.radio_vertical)
+        self.radiobutton_group.addButton(self.radio_earthbasket)
+
+
 class Dialog(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -404,12 +452,13 @@ class Dialog(QWidget):
         #      ["Flow Rate", "gpm/ton", "lineedit", '3.0'], ["Fluid type", ["Water", "Methanol"], "combobox"]]
         # a = InputForm(self, b)
 
-        c = CustomQTextEdit(self)
-        c.setText("Initial")
+        # c = CustomQTextEdit(self)
+        # c.setText("Initial")
+        #
+        # d = LicenseForm(self)
 
-        d = LicenseForm(self)
+        e = CustomRadioButtonGroup(self, ['./Images/horizontalslinky.png', './Images/verticalslinky.png', './Images/earthbasket.png'])
 
-        print(c.toPlainText())
         self.resize(600, 300)
 
 

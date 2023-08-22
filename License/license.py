@@ -4,8 +4,16 @@ from PyQt5.QtGui import QIcon, QCursor, QIntValidator
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QApplication, QWidget, QHBoxLayout, \
     QMainWindow, QGroupBox, QComboBox
 from labelclass import IntroLabel3, ImageButton
-from cryptography.fernet import Fernet
-import pyperclip
+import sys
+import os
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 class CustomTitleBar(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
@@ -90,7 +98,7 @@ class Myapp(QMainWindow):
 
         self.resize(610, 250)
 
-        self.btn_home = ImageButton(self, './Images/logo03_glowed_white.png')
+        self.btn_home = ImageButton(self, resource_path('./Images/logo.png'))
         self.btn_home.resize(165, 140)
         self.btn_home.move(0, 60)
 
@@ -128,8 +136,8 @@ class Myapp(QMainWindow):
         self.label_type.setGeometry(180, 115, 40, 30)
 
         self.combobox_selection = QComboBox(self)
-        self.icon_design = QIcon('./Images/full.png')
-        self.icon_analysis = QIcon('./Images/part.png')
+        self.icon_design = QIcon(resource_path('./Images/full.png'))
+        self.icon_analysis = QIcon(resource_path('./Images/part.png'))
         self.combobox_selection.addItem(self.icon_design, ' Fully')
         self.combobox_selection.addItem(self.icon_analysis, ' Daily')
         self.combobox_selection.resize(80, 30)
@@ -151,8 +159,9 @@ class Myapp(QMainWindow):
                     QComboBox::drop-down {
                         subcontrol-origin: padding;
                         color: white;
-                        width: 7px;
+                        width: 10px;
                         border: none;
+                        padding-right: 3px;
                     }
 
                     QComboBox::down-arrow {
