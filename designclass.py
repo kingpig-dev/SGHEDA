@@ -32,12 +32,14 @@ import hashlib
 import uuid
 import sqlite3
 
+
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
+
 
 class DesignClass(QWidget):
     def __init__(self, parent=None):
@@ -152,25 +154,31 @@ class DesignClass(QWidget):
         """)
         self.label_num.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
-        self.btn_1 = SquareButton(self.left_widget, resource_path('./Images/configuration01_b.png'), resource_path('./Images/configuration01.png'))
+        self.btn_1 = SquareButton(self.left_widget, resource_path('./Images/configuration01_b.png'),
+                                  resource_path('./Images/configuration01.png'))
         self.btn_1.setText(' System Design ')
         self.btn_1.setGeometry(0, 200, 212, 50)
-        self.btn_2 = SquareButton(self.left_widget, resource_path('./Images/fluid02_b.png'), resource_path('./Images/fluid02.png'))
+        self.btn_2 = SquareButton(self.left_widget, resource_path('./Images/fluid02_b.png'),
+                                  resource_path('./Images/fluid02.png'))
         self.btn_2.setText(' Fluid Properties ')
         self.btn_2.setGeometry(0, 250, 212, 50)
-        self.btn_3 = SquareButton(self.left_widget, resource_path('./Images/soil01_b.png'), resource_path('./Images/soil01.png'))
+        self.btn_3 = SquareButton(self.left_widget, resource_path('./Images/soil01_b.png'),
+                                  resource_path('./Images/soil01.png'))
         self.btn_3.setText(' Soil Properties ')
         self.btn_3.setGeometry(0, 300, 212, 50)
-        self.btn_4 = SquareButton(self.left_widget, resource_path('./Images/pipe01_b.png'), resource_path('./Images/pipe01.png'))
+        self.btn_4 = SquareButton(self.left_widget, resource_path('./Images/pipe01_b.png'),
+                                  resource_path('./Images/pipe01.png'))
         self.btn_4.setText(' Pipe Design')
         self.btn_4.setGeometry(0, 350, 212, 50)
-        self.btn_5 = SquareButton(self.left_widget, resource_path('./Images/power02_b.png'), resource_path('./Images/power02.png'))
+        self.btn_5 = SquareButton(self.left_widget, resource_path('./Images/power02_b.png'),
+                                  resource_path('./Images/power02.png'))
         self.btn_5.setText(' Pump Info ')
         self.btn_5.setGeometry(0, 400, 212, 50)
         self.btn_6 = SquareButton(self.left_widget, resource_path('./Images/result01_b.png'), ('./Images/result01.png'))
         self.btn_6.setText(' Design Result')
         self.btn_6.setGeometry(0, 450, 212, 50)
-        self.btn_7 = SquareButton(self.left_widget, resource_path('./Images/analysis11_b.png'), resource_path('./Images/analysis11.png'))
+        self.btn_7 = SquareButton(self.left_widget, resource_path('./Images/analysis11_b.png'),
+                                  resource_path('./Images/analysis11.png'))
         self.btn_7.setText(' Analysis')
         self.btn_7.setGeometry(0, 500, 212, 50)
 
@@ -215,7 +223,8 @@ class DesignClass(QWidget):
         self.btn_6.clicked.connect(self.button6)
         self.btn_7.clicked.connect(self.button7)
 
-        self.btn_setting = ExtraButton(self.left_widget, resource_path('./Images/setting_b.png'), resource_path('./Images/setting.png'))
+        self.btn_setting = ExtraButton(self.left_widget, resource_path('./Images/setting_b.png'),
+                                       resource_path('./Images/setting.png'))
         self.btn_setting.setText(' Settings')
         self.btn_setting.setGeometry(0, 590, 200, 50)
         self.btn_setting.clicked.connect(self.btnsetting)
@@ -225,7 +234,6 @@ class DesignClass(QWidget):
             QLabel {background-color: #ACACBF;;}
         ''')
         self.line.setGeometry(25, 640, 150, 1)
-
 
         self.btn_feedback = TextButton(self.left_widget)
         self.btn_feedback.setText(' Feedback')
@@ -237,8 +245,8 @@ class DesignClass(QWidget):
         self.btn_help.clicked.connect(self.redirect_to_help)
         self.btn_help.setGeometry(50, 675, 100, 20)
 
-
-        self.btn_exit = ExitButton(self.left_widget, resource_path('./Images/end01.png'), resource_path('./Images/end01_r.png'))
+        self.btn_exit = ExitButton(self.left_widget, resource_path('./Images/end01.png'),
+                                   resource_path('./Images/end01_r.png'))
         self.btn_exit.setText(' Exit')
         self.btn_exit.setGeometry(0, 695, 200, 50)
         self.btn_exit.clicked.connect(self.btnexit)
@@ -434,7 +442,7 @@ class DesignClass(QWidget):
         self.tickerbutton()
 
     def button7(self):
-        self.right_widget.setCurrentIndex(7)
+        # self.right_widget.setCurrentIndex(7)
         if len(self.dict.keys()) == 8:
             self.right_widget.setCurrentIndex(7)
             self.tickerbutton()
@@ -442,6 +450,7 @@ class DesignClass(QWidget):
             self.shownotification(resource_path('./Images/warning.png'), "You didn't analyze.")
         else:
             self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
+
     def btnsetting(self):
         self.right_widget.setCurrentIndex(8)
 
@@ -450,6 +459,7 @@ class DesignClass(QWidget):
         custom_message_box = CustomMessageBox(icon, 'Custom Message', message, self)
         custom_message_box.setGeometry(950, 20, 300, 70)
         custom_message_box.show()
+
     # -----------------
     # pages
 
@@ -471,7 +481,9 @@ class DesignClass(QWidget):
         self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
         self.form_systemdesign.move(257, 100)
 
-        self.radiobutton_group = CustomRadioButtonGroup(main, [resource_path('./Images/horizontalslinky.png'), resource_path('./Images/verticalslinky.png'), resource_path('./Images/earthbasket.png')])
+        self.radiobutton_group = CustomRadioButtonGroup(main, [resource_path('./Images/horizontalslinky.png'),
+                                                               resource_path('./Images/verticalslinky.png'),
+                                                               resource_path('./Images/earthbasket.png')])
         self.radiobutton_group.move(180, 300)
 
         def uimovenext():
@@ -517,13 +529,14 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         self.data_form_fluidproperties = ["Fuild Properties",
-                                     ["Fluid Type",
-                                      ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol", "Sodium Chloride",
-                                       "Calcium Chloride"], "combobox"],
-                                     ["Viscosity", "Pa*s", "lineedit", "0.011"],
-                                     ["Specific Heat", "K/(Kg*dC)", "lineedit", "3344"],
-                                     ["Density", "Kg/m^3", "lineedit", "1100"]
-                                     ]
+                                          ["Fluid Type",
+                                           ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol",
+                                            "Sodium Chloride",
+                                            "Calcium Chloride"], "combobox"],
+                                          ["Viscosity", "Pa*s", "lineedit", "0.011"],
+                                          ["Specific Heat", "K/(Kg*dC)", "lineedit", "3344"],
+                                          ["Density", "Kg/m^3", "lineedit", "1100"]
+                                          ]
         self.form_fluidproperties = InputForm(main, self.data_form_fluidproperties)
         self.form_fluidproperties.move(257, 100)
 
@@ -581,10 +594,10 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         self.data_form_soilthermalproperties = ["Soil Thermal Properties",
-                                    ["Thermal Conductivity", "W/(m*K*⁰C)", "lineedit", "0.07"],
-                                    ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.62"],
-                                    ["Ground Temperature", "⁰C", "lineedit", '30']
-                                 ]
+                                                ["Thermal Conductivity", "W/(m*K*⁰C)", "lineedit", "0.07"],
+                                                ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.62"],
+                                                ["Ground Temperature", "⁰C", "lineedit", '30']
+                                                ]
         self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
         self.form_soilthermalproperties.move(232, 100)
 
@@ -643,18 +656,20 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         self.data_form_pipeproperties = ["Pipe Properties",
-                                    ["Pipe Size", ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"], "combobox"],
-                                    ["Outer Diameter", "m", "lineedit", '0.021'],
-                                    ["Inner Diameter", "m", "lineedit", '0.026'],
-                                    ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
-                                    ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"],
-                                    ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
-                                  ]
+                                         ["Pipe Size",
+                                          ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
+                                          "combobox"],
+                                         ["Outer Diameter", "m", "lineedit", '0.021'],
+                                         ["Inner Diameter", "m", "lineedit", '0.026'],
+                                         ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
+                                         ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"],
+                                         ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
+                                         ]
         self.form_pipeproperties = InputForm(main, self.data_form_pipeproperties)
         self.form_pipeproperties.move(257, 100)
 
         self.data_form_pipeconfiguration = ["Pipe Configuration",
-                                        ['Buried Depth', 'm', 'lineedit', '2.0']]
+                                            ['Buried Depth', 'm', 'lineedit', '2.0']]
         self.form_pipeconfiguration = InputForm(main, self.data_form_pipeconfiguration)
         self.form_pipeconfiguration.move(287, 450)
 
@@ -705,10 +720,10 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         self.data_form_circulationpumps = ["Circulation Pump",
-                                      ["Required Power", 'W', "lineedit", '600'],
-                                      ["Fluid Velocity", "m/s", 'lineedit', '1.5'],
-                                      ['Pump Motor Efficiency', '%', 'lineedit', '85']
-                                      ]
+                                           ["Required Power", 'W', "lineedit", '600'],
+                                           ["Fluid Velocity", "m/s", 'lineedit', '1.5'],
+                                           ['Pump Motor Efficiency', '%', 'lineedit', '85']
+                                           ]
         self.form_circulationpumps = InputForm(main, self.data_form_circulationpumps)
         self.form_circulationpumps.move(267, 100)
         timer = QTimer()
@@ -800,13 +815,13 @@ class DesignClass(QWidget):
         ''')
 
         self.data_form_designdimensions = ["Design Dimensions",
-                                      ["Ring Diameter", 'm', "lineedit", '0.75'],
-                                      ["Pitch", 'm', "lineedit", '0.4'],
-                                      ["Number of Ring", '', 'lineedit', '5'],
-                                      ["Pipe Length", 'm', "lineedit", '200'],
-                                      ['Inlet Temperature', '⁰C', 'lineedit', '70'],
-                                      ['System Flow Rate', 'm/s', 'lineedit', '10']
-                                      ]
+                                           ["Ring Diameter", 'm', "lineedit", '0.75'],
+                                           ["Pitch", 'm', "lineedit", '0.4'],
+                                           ["Number of Ring", '', 'lineedit', '5'],
+                                           ["Pipe Length", 'm', "lineedit", '200'],
+                                           ['Inlet Temperature', '⁰C', 'lineedit', '70'],
+                                           ['System Flow Rate', 'm/s', 'lineedit', '10']
+                                           ]
         self.form_designdimensions = InputForm(main, self.data_form_designdimensions)
         self.form_designdimensions.move(277, 100)
 
@@ -850,6 +865,7 @@ class DesignClass(QWidget):
             else:
                 self.shownotification(resource_path('./Images/warning.png'), "Input all parameters.")
                 return False
+
         def gotoanalysis():
             if len(self.dict.keys()) == 7:
                 self.analysis_calculation_result = True
@@ -872,8 +888,6 @@ class DesignClass(QWidget):
             btn_loading_stop.setVisible(False)
             movie.stop()
             self.right_widget.setCurrentIndex(6)
-
-
 
         def start_loading():
             print("start loading")
@@ -906,7 +920,6 @@ class DesignClass(QWidget):
                     self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
             else:
                 self.shownotification(resource_path('./Images/error.png'), 'Get license!')
-
 
         btn_save = MainButton1(main)
         btn_save.setText(main.tr('Save design'))
@@ -1004,11 +1017,11 @@ class DesignClass(QWidget):
 
         self.data_userinfo = ['User Info',
                               ['Username', '', 'lineedit', '**** ****'],
-                              ['Gmail','', 'lineedit', 'default@gmail.com'],
+                              ['Gmail', '', 'lineedit', 'default@gmail.com'],
                               ['Purpose', '', 'lineedit', 'Residental Building'],
                               ['Country', '', 'lineedit', 'Canada'],
-            ['Phone', '', 'lineedit', '1010101010']
-            ]
+                              ['Phone', '', 'lineedit', '1010101010']
+                              ]
         self.userinfo = InputForm(main, self.data_userinfo)
         self.userinfo.move(500, 350)
 
@@ -1096,10 +1109,12 @@ class DesignClass(QWidget):
             self.shownotification(resource_path('./Images/success.png'), 'Load successfully!')
 
     def redirect_to_feedback(self):
-        webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
+        webbrowser.open(
+            'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
     def redirect_to_help(self):
-        webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
+        webbrowser.open(
+            'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
     def exitbutton(self):
         self.parent.exit()
@@ -1138,7 +1153,7 @@ class DesignClass(QWidget):
             return False
         print('after input variable')
         try:
-        # Resistance
+            # Resistance
             R_e = rho * V * D_i / mu  # Reynolds number    Re<2100 laminar regime; 2100<Re<10000: transitional regime;
             # Re>10000 turbulent regime
             P_r = mu * c_p / k_pipe  # Prandtl number
@@ -1159,23 +1174,23 @@ class DesignClass(QWidget):
             theta_w_out = T_out - T_g
 
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
-            L = L/4
+            L = L / 4
             print("length of pipe:", L)
-            ring_diameter = 0.75*T_in/T_out
-            pitch = 0.4*T_in/T_out
+            ring_diameter = 0.75 * T_in / T_out
+            pitch = 0.4 * T_in / T_out
 
             if self.dict['System']['type'] == 1:
-                L = L*0.95
+                L = L * 0.95
             elif self.dict['System']['type'] == 2:
-                L = L*0.75
-                ring_diameter = ring_diameter*0.9
-                pitch = ring_diameter*0.92
+                L = L * 0.75
+                ring_diameter = ring_diameter * 0.9
+                pitch = ring_diameter * 0.92
 
             dict = {}
             dict['Ring Diameter'] = str(ring_diameter)
             dict['Pitch'] = str(pitch)
-            dict['Number of Ring'] = str(L/(3.14*ring_diameter + pitch))
-            dict['Pipe Length'] = str(L + 2*d)
+            dict['Number of Ring'] = str(L / (3.14 * ring_diameter + pitch))
+            dict['Pipe Length'] = str(L + 2 * d)
             dict['Inlet Temperature'] = str(T_in)
             dict['System Flow Rate'] = str(V)
             self.dict['Results'] = dict
@@ -1200,9 +1215,10 @@ class DesignClass(QWidget):
             self.tickerbutton()
         else:
             print('Show Notification')
+
     def analysis(self):
         print('Analysis')
-        N_ring = round(float(self.dict["Results"]['Number of Ring'])/10)
+        N_ring = round(float(self.dict["Results"]['Number of Ring']) / 10)
         R = float(self.dict["Results"]['Ring Diameter'])  # m
         pitch = float(self.dict['Results']['Pitch'])  # m
         # alpha = 1e-6  # m2/s
@@ -1243,41 +1259,92 @@ class DesignClass(QWidget):
 
         # gs_series = []
         # for N_ring in N_ring_series:
-        gs_series = []
-        for t in t_series:
-            gs: np.float16 = 0
-            for i in range(1, N_ring + 1):
-                for j in range(1, N_ring + 1):
-                    if self.analysis_calculation_process:
-                        if i != j:
+        try:
+            gs_series = []
+            for t in t_series:
+                gs: np.float16 = 0
+                for i in range(1, N_ring + 1):
+                    for j in range(1, N_ring + 1):
+                        if self.analysis_calculation_process:
+                            if i != j:
+                                def d(w: np.float16, phi: np.float16):
+                                    return sqrt_float16(
+                                        (pitch * (i - j) + R * (cos_float16(phi) - cos_float16(w))) ** 2 +
+                                        (R * (sin_float16(phi) - sin_float16(w))) ** 2)
 
-                            def d(w: np.float16, phi: np.float16):
-                                return sqrt_float16((pitch * (i - j) + R * (cos_float16(phi) - cos_float16(w))) ** 2 +
-                                                    (R * (sin_float16(phi) - sin_float16(w))) ** 2)
+                                def fun(w: np.float16, phi: np.float16):
+                                    return erfc_float16(d(w, phi) / (2 * sqrt_float16(t))) / d(w, phi) - erfc_float16(
+                                        sqrt_float16(d(w, phi) ** 2 + 4 * h ** 2) / (
+                                                    2 * sqrt_float16(t))) / sqrt_float16(
+                                        d(w, phi) ** 2 + 4 * h ** 2)
 
-                            def fun(w: np.float16, phi: np.float16):
-                                return erfc_float16(d(w, phi) / (2 * sqrt_float16(t))) / d(w, phi) - erfc_float16(
-                                    sqrt_float16(d(w, phi) ** 2 + 4 * h ** 2) / (2 * sqrt_float16(t))) / sqrt_float16(
-                                    d(w, phi) ** 2 + 4 * h ** 2)
+                                # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2, epsrel=1e-2)
+                                b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 10, 10)
+                                # print(b)
+                                gs += np.float16(b)
+                        else:
+                            return False
+                # print(f"gs: {gs}")
+                gs_series.append(gs)
 
-                            # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2, epsrel=1e-2)
-                            b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 10, 10)
-                            # print(b)
-                            gs += np.float16(b)
-                    else:
-                        return False
-            print(f"gs: {gs}")
-            gs_series.append(gs)
+            self.plt_gfunction.clear()
+            self.plt_gfunction.plot(t_series * 11.57, gs_series, pen='b')  # 1e6/(3600*24)=11.57
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
+            tp_series = []
+            tp_series_0 = []
+            tp_series_05 = []
+            tp_series_1 = []
+            tp_series_2 = []
+            tp_series_4 = []
 
-        print("Elapsed time: {:.2f}".format(elapsed_time))
-        self.plt_gfunction.clear()
-        self.plt_gfunction.plot(t_series*11.57, gs_series, pen='b')
-        self.dict["Analysis"] = {"Elapsed time": str(elapsed_time)}
-        self.analysis_elapsed_time.setText("Elapsed time: {:.2f}s".format(elapsed_time))
-        return True
+            conductivity = float(self.dict['Soil']['Thermal Conductivity'])
+            heatload = float(self.dict['System']['Heat Load']) / (N_ring * pitch)
+
+            for a in gs_series:
+                tp_series.append(-a * heatload / (2 * np.pi * conductivity) * 3)
+            for i in range(0, len(tp_series)):
+                tp_series_0.append(tp_series[i] * erfc(0.01 / np.sqrt(t_series[i])))
+                tp_series_05.append(tp_series[i] * erfc(0.5 / np.sqrt(t_series[i])))
+                tp_series_1.append(tp_series[i] * erfc(1 / np.sqrt(t_series[i])))
+                tp_series_2.append(tp_series[i] * erfc(2 / np.sqrt(t_series[i])))
+                tp_series_4.append(tp_series[i] * erfc(4 / np.sqrt(t_series[i])))
+
+            self.plt_temperaturepertubation.clear()
+            plot_item = self.plt_temperaturepertubation.getPlotItem()
+
+            curve0 = plot_item.plot(t_series * 11.57, tp_series_0, pen='b', name='0.01m')
+            curve1 = plot_item.plot(t_series * 11.57, tp_series_05, pen='r', name='0.5m')
+            curve2 = plot_item.plot(t_series * 11.57, tp_series_1, pen='w', name='1m')
+            curve3 = plot_item.plot(t_series * 11.57, tp_series_2, pen='y', name='2m')
+            curve4 = plot_item.plot(t_series * 11.57, tp_series_4, pen='g', name='4m')
+
+            legend = pg.LegendItem()
+            legend.setParentItem(plot_item)
+
+            legend.addItem(curve0, '0.01m')
+            legend.addItem(curve1, '0.5m')
+            legend.addItem(curve2, '1m')
+            legend.addItem(curve3, '2m')
+            legend.addItem(curve4, '4m')
+            legend.anchor((0, 0), (0.2, 0.95))
+
+            # self.plt_temperaturepertubation.clear()
+            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_0, pen='b', name='Surface')
+            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_05, pen='r', name='0.5m')
+            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_1, pen='w', name='1m')
+            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_2, pen='y', name='2m')
+            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_4, pen='g', name='4m')
+
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print("Elapsed time: {:.2f}".format(elapsed_time))
+            self.dict["Analysis"] = {"Elapsed time": str(elapsed_time)}
+            self.analysis_elapsed_time.setText("Elapsed time: {:.2f}s".format(elapsed_time))
+            return True
+        except Exception as e:
+            print("analysis calculation error: ", e)
+            self.shownotification(resource_path("./Image/error.png"), "Can't calculate analysis")
+            return False
 
     def btnexit(self):
         self.setEnabled(False)
@@ -1287,9 +1354,10 @@ class DesignClass(QWidget):
         if result == QMessageBox.No:
             self.setEnabled(True)
             return True
-        
+
         elif result == QMessageBox.Yes:
             sys.exit()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
