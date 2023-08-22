@@ -292,6 +292,9 @@ class DesignClass(QWidget):
         main_layout.setStretch(1, 100)
         self.setLayout(main_layout)
 
+    def check_serial_number(self):
+        print("check serial number")
+
     def database_get_data(self):
         try:
             # get data from db
@@ -527,11 +530,15 @@ class DesignClass(QWidget):
         web_view = QWebEngineView(main)
         file_path = self.currentpath + "\HTML\FluidTable1.html"
         web_view.load(QUrl.fromLocalFile(file_path))
-        web_view.setStyleSheet('''
-            background-color: rgba(0,0,0,0);
-            color: white;
-            border-radius: 10px;
-        ''')
+        web_view.setAttribute(Qt.WA_StyledBackground)
+        web_view.setStyleSheet("""
+            QWebEngineView { 
+                border: 1px solid white;
+                border-radius: 50px;
+                padding: 50px;
+            }
+        """)
+        web_view.setContentsMargins(30, 20, 30, 20)
         web_view.setGeometry(100, 350, 800, 300)
 
         def uimovenext():
@@ -579,16 +586,20 @@ class DesignClass(QWidget):
                                     ["Ground Temperature", "⁰C", "lineedit", '30']
                                  ]
         self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
-        self.form_soilthermalproperties.move(257, 100)
+        self.form_soilthermalproperties.move(232, 100)
 
         web_view = QWebEngineView(main)
         file_path = self.currentpath + "\HTML\SoilTable1.html"
         web_view.load(QUrl.fromLocalFile(file_path))
-        web_view.setStyleSheet('''
-                    background-color: rgba(0,0,0,0);
-                    color: white;
-                    border-radius: 10px;
-                ''')
+        web_view.setAttribute(Qt.WA_StyledBackground)
+        web_view.setStyleSheet("""
+                    QWebEngineView { 
+                        border: 1px solid white;
+                        border-radius: 50px;
+                        padding: 50px;
+                    }
+                """)
+        web_view.setContentsMargins(30, 20, 30, 20)
         web_view.setGeometry(100, 300, 800, 350)
 
         def uimovenext():
