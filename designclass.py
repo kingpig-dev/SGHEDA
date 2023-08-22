@@ -18,7 +18,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1, TextButton
 from firstpageclass import FirstPageClass
 from inputformclass import InputForm, CustomQTextEdit, LicenseForm, PersonalForm, CustomRadioButtonGroup
-from labelclass import IntroLabel1, TickerLabel, IntroLabel3
+from labelclass import IntroLabel1, TickerLabel, IntroLabel3, IntroLabel2
 from notificationclass import CustomMessageBox, ExitNotification
 import pyqtgraph as pg
 
@@ -292,6 +292,9 @@ class DesignClass(QWidget):
         main_layout.setStretch(1, 100)
         self.setLayout(main_layout)
 
+    def check_serial_number(self):
+        print("check serial number")
+
     def database_get_data(self):
         try:
             # get data from db
@@ -431,7 +434,7 @@ class DesignClass(QWidget):
         self.tickerbutton()
 
     def button7(self):
-        # self.right_widget.setCurrentIndex(7)
+        self.right_widget.setCurrentIndex(7)
         if len(self.dict.keys()) == 8:
             self.right_widget.setCurrentIndex(7)
             self.tickerbutton()
@@ -527,11 +530,15 @@ class DesignClass(QWidget):
         web_view = QWebEngineView(main)
         file_path = self.currentpath + "\HTML\FluidTable1.html"
         web_view.load(QUrl.fromLocalFile(file_path))
-        web_view.setStyleSheet('''
-            background-color: rgba(0,0,0,0);
-            color: white;
-            border-radius: 10px;
-        ''')
+        web_view.setAttribute(Qt.WA_StyledBackground)
+        web_view.setStyleSheet("""
+            QWebEngineView { 
+                border: 1px solid white;
+                border-radius: 50px;
+                padding: 50px;
+            }
+        """)
+        web_view.setContentsMargins(30, 20, 30, 20)
         web_view.setGeometry(100, 350, 800, 300)
 
         def uimovenext():
@@ -579,16 +586,20 @@ class DesignClass(QWidget):
                                     ["Ground Temperature", "⁰C", "lineedit", '30']
                                  ]
         self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
-        self.form_soilthermalproperties.move(257, 100)
+        self.form_soilthermalproperties.move(232, 100)
 
         web_view = QWebEngineView(main)
         file_path = self.currentpath + "\HTML\SoilTable1.html"
         web_view.load(QUrl.fromLocalFile(file_path))
-        web_view.setStyleSheet('''
-                    background-color: rgba(0,0,0,0);
-                    color: white;
-                    border-radius: 10px;
-                ''')
+        web_view.setAttribute(Qt.WA_StyledBackground)
+        web_view.setStyleSheet("""
+                    QWebEngineView { 
+                        border: 1px solid white;
+                        border-radius: 50px;
+                        padding: 50px;
+                    }
+                """)
+        web_view.setContentsMargins(30, 20, 30, 20)
         web_view.setGeometry(100, 300, 800, 350)
 
         def uimovenext():
@@ -842,11 +853,14 @@ class DesignClass(QWidget):
         def gotoanalysis():
             if len(self.dict.keys()) == 7:
                 self.analysis_calculation_result = True
-                self.analysis()
-                end_loading()
-                self.right_widget.setCurrentIndex(7)
-                self.tickerbutton()
-                return True
+                if self.analysis():
+                    end_loading()
+                    self.right_widget.setCurrentIndex(7)
+                    self.tickerbutton()
+                    self.btn_7_ticker.show()
+                    return True
+                else:
+                    return False
             else:
                 self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
                 return False
@@ -858,7 +872,7 @@ class DesignClass(QWidget):
             btn_loading_stop.setVisible(False)
             movie.stop()
             self.right_widget.setCurrentIndex(6)
-            self.btn_7_ticker.show()
+
 
 
         def start_loading():
@@ -938,17 +952,21 @@ class DesignClass(QWidget):
         label.setText("Analysis")
         label.move(440, 30)
 
+        self.analysis_elapsed_time = IntroLabel2(scroll_area)
+        self.analysis_elapsed_time.setText("Elapsed time: ")
+        self.analysis_elapsed_time.move(650, 40)
+
         self.plt_gfunction = pg.PlotWidget(scroll_area)
         self.plt_gfunction.setTitle("G-function")
         self.plt_gfunction.setLabel('left', 'g-function')
-        self.plt_gfunction.setLabel('bottom', 'Time(s)')
+        self.plt_gfunction.setLabel('bottom', 'Time(day)')
         self.plt_gfunction.setBackground('#2C3751')
         self.plt_gfunction.setGeometry(150, 80, 700, 290)
 
         self.plt_temperaturepertubation = pg.PlotWidget(scroll_area)
         self.plt_temperaturepertubation.setTitle('Temperature Pertubation')
         self.plt_temperaturepertubation.setLabel('left', 'degree')
-        self.plt_temperaturepertubation.setLabel('bottom', 'Time(s)')
+        self.plt_temperaturepertubation.setLabel('bottom', 'Time(day)')
         self.plt_temperaturepertubation.setBackground('#2C3751')
         self.plt_temperaturepertubation.setGeometry(150, 380, 700, 290)
 
@@ -1177,13 +1195,12 @@ class DesignClass(QWidget):
             print('Show Notification')
     def analysis(self):
         print('Analysis')
-        N_ring = 5
-        R = 1  # m
-        pitch: np.float16 = 0.2  # m
+        N_ring = round(float(self.dict["Results"]['Number of Ring'])/10)
+        R = float(self.dict["Results"]['Ring Diameter'])  # m
+        pitch = float(self.dict['Results']['Pitch'])  # m
         # alpha = 1e-6  # m2/s
-        t_series = np.arange(0.01, 30, 1)  # consider alpha
-        t_1 = int(1e6)
-        h = 2  # m
+        t_series = np.arange(0.01, 3, 0.05)  # consider alpha
+        h = float(self.dict['Pipe']['Buried Depth'])  # m
 
         def sqrt_float16(x):
             return np.sqrt(x).astype(np.float16)
@@ -1237,24 +1254,22 @@ class DesignClass(QWidget):
                                     d(w, phi) ** 2 + 4 * h ** 2)
 
                             # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2, epsrel=1e-2)
-                            b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 20, 20)
+                            b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 10, 10)
                             # print(b)
                             gs += np.float16(b)
                     else:
                         return False
-            # print(f"gs: {gs}")
+            print(f"gs: {gs}")
             gs_series.append(gs)
 
         end_time = time.time()
         elapsed_time = end_time - start_time
 
         print("Elapsed time: {:.2f}".format(elapsed_time))
-        # x = np.linspace(0, 2*np.pi, 1000)
-        # y = np.sin(x)
         self.plt_gfunction.clear()
-        self.plt_gfunction.plot(t_series*1000000, gs_series, pen='b')
+        self.plt_gfunction.plot(t_series*11.57, gs_series, pen='b')
         self.dict["Analysis"] = {"Elapsed time": str(elapsed_time)}
-
+        self.analysis_elapsed_time.setText("Elapsed time: {:.2f}s".format(elapsed_time))
         return True
 
     def btnexit(self):
