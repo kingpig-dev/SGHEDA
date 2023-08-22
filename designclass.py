@@ -1164,6 +1164,13 @@ class DesignClass(QWidget):
             ring_diameter = 0.75*T_in/T_out
             pitch = 0.4*T_in/T_out
 
+            if self.dict['System']['type'] == 1:
+                L = L*0.95
+            elif self.dict['System']['type'] == 2:
+                L = L*0.75
+                ring_diameter = ring_diameter*0.9
+                pitch = ring_diameter*0.92
+
             dict = {}
             dict['Ring Diameter'] = str(ring_diameter)
             dict['Pitch'] = str(pitch)
