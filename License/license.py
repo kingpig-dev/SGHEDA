@@ -1,23 +1,19 @@
 import sys
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QCursor, QIntValidator
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QApplication, QWidget, QHBoxLayout, \
-    QMainWindow, QGroupBox, QComboBox
+    QMainWindow, QComboBox
 from labelclass import IntroLabel3, ImageButton
 import sys
 import os
 
 def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+    base_path = os.path.abspath(".")
+    return os.path.join(relative_path)
 
 class CustomTitleBar(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        # self.setFixedHeight(100)
         self.resize(parent.width(), 23)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -68,8 +64,6 @@ class CustomTitleBar(QWidget):
 
         # Set the title bar widget as the window's title bar
         self.parent().setWindowFlags(Qt.FramelessWindowHint)
-        # self.parent().setWindowTitle("Custom Title Bar")
-        # self.parent().layout().setContentsMargins(0, self.height(), 0, 0)
         self.parent().layout().addWidget(self)
 
     def mousePressEvent(self, event):
@@ -142,6 +136,8 @@ class Myapp(QMainWindow):
         self.combobox_selection.addItem(self.icon_analysis, ' Daily')
         self.combobox_selection.resize(80, 30)
         self.combobox_selection.setCursor(QCursor(Qt.PointingHandCursor))
+        self.image_down_arrow = resource_path('./Images/down.png')
+        print(self.image_down_arrow)
         self.combobox_selection.setStyleSheet(""" 
                      QComboBox {
                         color: #7C8AA7;
@@ -167,10 +163,9 @@ class Myapp(QMainWindow):
                     QComboBox::down-arrow {
                         border: 0px;
                         background-image-width: 30px;
-                        border-image: url(./Images/down.png);
-                    }
-                """
-                                              )
+                        border-image: url(%s);
+                    } 
+                """ % './Images/down.png')
         self.combobox_selection.currentIndexChanged.connect(self.combobox_selection_changed)
         self.combobox_selection.move(220, 115)
 
@@ -268,7 +263,6 @@ class Myapp(QMainWindow):
         self.combobox_selection_changed()
 
     def combobox_selection_changed(self):
-        print('combo')
         if self.combobox_selection.currentText() == " Fully":
             self.label_design.setEnabled(False)
             self.lineedit_design.setEnabled(False)

@@ -201,6 +201,39 @@ class ImageButton1(QtWidgets.QPushButton):
     def leaveEvent(self, event):
         self.setIconSize(QSize(30, 30))
 
+class ImageButton2(QtWidgets.QPushButton):
+    def __init__(self, parent, path):
+        super().__init__(parent)
+        self.icon = QtGui.QIcon(path)
+        self.setIcon(self.icon)
+        self.setIconSize(QSize(137, 210))
+
+        self.setStyleSheet(
+            """
+        QPushButton{
+            background-color: rgba(0,0,0,0);
+            text-align: center;
+            text-decoration: none;
+            font-size: 20px;
+            margin: 4px 2px;
+            border: none;
+        }
+        """
+        )
+        self.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+
+        self.animation = QtCore.QPropertyAnimation(self, b"iconSize")
+        self.animation.setDuration(300)  # Animation duration in milliseconds
+        self.animation.setEasingCurve(QtCore.QEasingCurve.OutCubic)
+
+    def enterEvent(self, event):
+        self.animation.setEndValue(QtCore.QSize(150, 230))
+        self.animation.start()
+
+    def leaveEvent(self, event):
+        self.animation.setEndValue(QtCore.QSize(137, 210))
+        self.animation.start()
+
 class ExtraButton(QtWidgets.QPushButton):
     def __init__(self, parent, path, path_hover):
         super().__init__(parent)

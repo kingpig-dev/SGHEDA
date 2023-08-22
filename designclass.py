@@ -32,6 +32,13 @@ import hashlib
 import uuid
 import sqlite3
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 class DesignClass(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -50,6 +57,8 @@ class DesignClass(QWidget):
         self.tabstack = []
         self.dict = {}
         self.designpath = self.currentpath + '/Logs/designpath.json'
+        self.image_down_path = resource_path('./Images/down.png')
+        print(self.image_down_path)
         self.currentgldpath = ''
 
         # UI
@@ -76,13 +85,13 @@ class DesignClass(QWidget):
         """)
 
         # Image button
-        self.btn_home = ImageButton(self.left_widget, './Images/logo03_glowed_white.png')
+        self.btn_home = ImageButton(self.left_widget, resource_path('./Images/logo03_glowed_white.png'))
         self.btn_home.move(20, 20)
         self.btn_home.clicked.connect(self.button0)
 
         self.combobox_selection = QComboBox(self.left_widget)
-        self.icon_design = QIcon('./Images/design.png')
-        self.icon_analysis = QIcon('./Images/analysis02.png')
+        self.icon_design = QIcon(resource_path('./Images/design.png'))
+        self.icon_analysis = QIcon(resource_path('./Images/analysis02.png'))
         self.combobox_selection.addItem(self.icon_design, ' Design')
         self.combobox_selection.addItem(self.icon_analysis, 'Analysis ')
         self.combobox_selection.resize(100, 30)
@@ -106,20 +115,20 @@ class DesignClass(QWidget):
                 color: white;
                 width: 10px;
                 border: none;
+                padding-right: 3px;
             }
             
             QComboBox::down-arrow {
                 border: 0px;
                 background-image-width: 30px;
-                border-image: url(./Images/down.png);
+                border-image: url(%s);
             }
-        """
-                                              )
+        """ % self.image_down_path)
         self.combobox_selection.currentIndexChanged.connect(self.combobox_selection_changed)
         self.combobox_selection.move(20, 155)
 
         self.label_num = QPushButton(self.left_widget)
-        self.label_num_icon = QIcon('./Images/remain01.png')
+        self.label_num_icon = QIcon(resource_path('./Images/remain01.png'))
         self.label_num.setIcon(self.label_num_icon)
         self.label_num.setIconSize(QSize(25, 25))
         self.label_num.setText(' ' + str(self.num_design))
@@ -138,25 +147,25 @@ class DesignClass(QWidget):
         """)
         self.label_num.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
-        self.btn_1 = SquareButton(self.left_widget, './Images/configuration01_b.png', './Images/configuration01.png')
+        self.btn_1 = SquareButton(self.left_widget, resource_path('./Images/configuration01_b.png'), resource_path('./Images/configuration01.png'))
         self.btn_1.setText(' System Design ')
         self.btn_1.setGeometry(0, 200, 212, 50)
-        self.btn_2 = SquareButton(self.left_widget, './Images/fluid02_b.png', './Images/fluid02.png')
+        self.btn_2 = SquareButton(self.left_widget, resource_path('./Images/fluid02_b.png'), resource_path('./Images/fluid02.png'))
         self.btn_2.setText(' Fluid Properties ')
         self.btn_2.setGeometry(0, 250, 212, 50)
-        self.btn_3 = SquareButton(self.left_widget, './Images/soil01_b.png', './Images/soil01.png')
+        self.btn_3 = SquareButton(self.left_widget, resource_path('./Images/soil01_b.png'), resource_path('./Images/soil01.png'))
         self.btn_3.setText(' Soil Properties ')
         self.btn_3.setGeometry(0, 300, 212, 50)
-        self.btn_4 = SquareButton(self.left_widget, './Images/pipe01_b.png', './Images/pipe01.png')
+        self.btn_4 = SquareButton(self.left_widget, resource_path('./Images/pipe01_b.png'), resource_path('./Images/pipe01.png'))
         self.btn_4.setText(' Pipe Design')
         self.btn_4.setGeometry(0, 350, 212, 50)
-        self.btn_5 = SquareButton(self.left_widget, './Images/power02_b.png', './Images/power02.png')
+        self.btn_5 = SquareButton(self.left_widget, resource_path('./Images/power02_b.png'), resource_path('./Images/power02.png'))
         self.btn_5.setText(' Pump Info ')
         self.btn_5.setGeometry(0, 400, 212, 50)
-        self.btn_6 = SquareButton(self.left_widget, './Images/result01_b.png', './Images/result01.png')
+        self.btn_6 = SquareButton(self.left_widget, resource_path('./Images/result01_b.png'), ('./Images/result01.png'))
         self.btn_6.setText(' Design Result')
         self.btn_6.setGeometry(0, 450, 212, 50)
-        self.btn_7 = SquareButton(self.left_widget, './Images/analysis11_b.png', './Images/analysis11.png')
+        self.btn_7 = SquareButton(self.left_widget, resource_path('./Images/analysis11_b.png'), resource_path('./Images/analysis11.png'))
         self.btn_7.setText(' Analysis')
         self.btn_7.setGeometry(0, 500, 212, 50)
 
@@ -201,7 +210,7 @@ class DesignClass(QWidget):
         self.btn_6.clicked.connect(self.button6)
         self.btn_7.clicked.connect(self.button7)
 
-        self.btn_setting = ExtraButton(self.left_widget, './Images/setting_b.png', './Images/setting.png')
+        self.btn_setting = ExtraButton(self.left_widget, resource_path('./Images/setting_b.png'), resource_path('./Images/setting.png'))
         self.btn_setting.setText(' Settings')
         self.btn_setting.setGeometry(0, 590, 200, 50)
         self.btn_setting.clicked.connect(self.btnsetting)
@@ -224,7 +233,7 @@ class DesignClass(QWidget):
         self.btn_help.setGeometry(50, 675, 100, 20)
 
 
-        self.btn_exit = ExitButton(self.left_widget, './Images/end01.png', './Images/end01_r.png')
+        self.btn_exit = ExitButton(self.left_widget, resource_path('./Images/end01.png'), resource_path('./Images/end01_r.png'))
         self.btn_exit.setText(' Exit')
         self.btn_exit.setGeometry(0, 695, 200, 50)
         self.btn_exit.clicked.connect(self.btnexit)
@@ -405,27 +414,27 @@ class DesignClass(QWidget):
         self.tickerbutton()
 
     def button7(self):
-        self.right_widget.setCurrentIndex(7)
-        # if len(self.dict.keys()) == 8:
-        #     self.right_widget.setCurrentIndex(7)
-        #     self.tickerbutton()
-        # elif len(self.dict.keys()) == 7:
-        #     self.shownotification('./Images/warning.png', "You didn't analyze.")
-        # else:
-        #     self.shownotification('./Images/warning.png', 'Input all parameters.')
+        # self.right_widget.setCurrentIndex(7)
+        if len(self.dict.keys()) == 8:
+            self.right_widget.setCurrentIndex(7)
+            self.tickerbutton()
+        elif len(self.dict.keys()) == 7:
+            self.shownotification(resource_path('./Images/warning.png'), "You didn't analyze.")
+        else:
+            self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
     def btnsetting(self):
         self.right_widget.setCurrentIndex(8)
 
     def shownotification(self, iconpath, message):
         icon = QIcon(iconpath)
         custom_message_box = CustomMessageBox(icon, 'Custom Message', message, self)
-        custom_message_box.setGeometry(1050, 20, 300, 70)
+        custom_message_box.setGeometry(950, 20, 300, 70)
         custom_message_box.show()
     # -----------------
     # pages
 
     def ui1(self):
-        main = FirstPageClass('./Images/designbackground.png', self.designpath, self)
+        main = FirstPageClass(resource_path('./Images/designbackground.png'), self.designpath, self)
         main.loadtable()
         return main
 
@@ -442,14 +451,15 @@ class DesignClass(QWidget):
         self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
         self.form_systemdesign.move(257, 100)
 
-        self.radiobutton_group = CustomRadioButtonGroup(main, ['./Images/horizontalslinky.png', './Images/verticalslinky.png', './Images/earthbasket.png'])
-        self.radiobutton_group.move(0, 300)
+        self.radiobutton_group = CustomRadioButtonGroup(main, [resource_path('./Images/horizontalslinky.png'), resource_path('./Images/verticalslinky.png'), resource_path('./Images/earthbasket.png')])
+        self.radiobutton_group.move(180, 300)
 
         def uimovenext():
             print("uimovenext")
             dict = {}
             if self.form_systemdesign.getValidation():
                 dict = self.form_systemdesign.getData()
+                dict['type'] = self.radiobutton_group.radiobutton_group.checkedId()
             else:
                 self.btn_1_ticker.hide()
                 self.movenext()
@@ -695,14 +705,14 @@ class DesignClass(QWidget):
                 if self.form_circulationpumps.getValidation():
                     dict = self.form_circulationpumps.getData()
                 else:
-                    self.shownotification('./Images/warning.png', "Input all parameters.")
+                    self.shownotification(resource_path('./Images/warning.png'), "Input all parameters.")
                     return False
                 self.dict["Pump"] = dict
                 self.btn_5_ticker.show()
 
                 if len(self.dict.keys()) < 5:
                     print('Design1', len(self.dict.keys()))
-                    self.shownotification('./Images/warning.png', "Input all parameters.")
+                    self.shownotification(resource_path('./Images/warning.png'), "Input all parameters.")
                     return False
 
                 loading_label.setVisible(True)
@@ -712,7 +722,7 @@ class DesignClass(QWidget):
                 timer.timeout.connect(end_loading)
                 timer.start(2000)
             else:
-                self.shownotification('./Images/error.png', "Get license!")
+                self.shownotification(resource_path('./Images/error.png'), "Get license!")
 
         def loading_stop():
             self.left_widget.setEnabled(True)
@@ -733,7 +743,7 @@ class DesignClass(QWidget):
         btn_next.resize(170, 55)
         btn_next.clicked.connect(start_loading)
 
-        movie = QMovie('./Images/loading.gif')
+        movie = QMovie(resource_path('./Images/loading.gif'))
         loading_label = QLabel(main)
         loading_label.setAlignment(Qt.AlignCenter)
         loading_label.setFixedSize(730, 730)
@@ -741,7 +751,7 @@ class DesignClass(QWidget):
         loading_label.setMovie(movie)
         loading_label.move(120, 0)
 
-        btn_loading_stop = ImageButton1(main, './Images/x02.png')
+        btn_loading_stop = ImageButton1(main, resource_path('./Images/x02.png'))
         btn_loading_stop.setToolTip('Cancel Calculation')
         btn_loading_stop.move(900, 30)
         btn_loading_stop.clicked.connect(loading_stop)
@@ -810,7 +820,7 @@ class DesignClass(QWidget):
                         savefile.write(json.dumps(tablecontent))
                 return True
             else:
-                self.shownotification('./Images/warning.png', "Input all parameters.")
+                self.shownotification(resource_path('./Images/warning.png'), "Input all parameters.")
                 return False
         def gotoanalysis():
             if len(self.dict.keys()) == 7:
@@ -821,7 +831,7 @@ class DesignClass(QWidget):
                 self.tickerbutton()
                 return True
             else:
-                self.shownotification('./Images/warning.png', 'Input all parameters.')
+                self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
                 return False
 
         def end_loading():
@@ -862,9 +872,9 @@ class DesignClass(QWidget):
                         self.database_set_data()
                         self.combobox_selection_changed()
                 else:
-                    self.shownotification('./Images/warning.png', 'Input all parameters.')
+                    self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
             else:
-                self.shownotification('./Images/error.png', 'Get license!')
+                self.shownotification(resource_path('./Images/error.png'), 'Get license!')
 
 
         btn_save = MainButton1(main)
@@ -885,7 +895,7 @@ class DesignClass(QWidget):
         btn_gotoanalysis.resize(170, 55)
         btn_gotoanalysis.clicked.connect(start_analysis)
 
-        movie = QMovie('./Images/loading.gif')
+        movie = QMovie(resource_path('./Images/loading.gif'))
         loading_label = QLabel(main)
         loading_label.setAlignment(Qt.AlignCenter)
         loading_label.setFixedSize(730, 730)
@@ -893,7 +903,7 @@ class DesignClass(QWidget):
         loading_label.setMovie(movie)
         loading_label.move(120, 0)
 
-        btn_loading_stop = ImageButton1(main, './Images/x02.png')
+        btn_loading_stop = ImageButton1(main, resource_path('./Images/x02.png'))
         btn_loading_stop.setToolTip('Cancel Calculation')
         btn_loading_stop.move(900, 30)
         btn_loading_stop.clicked.connect(end_loading)
@@ -983,12 +993,13 @@ class DesignClass(QWidget):
             with open(self.currentgldpath, 'r') as f:
                 context = json.load(f)
         except:
-            self.shownotification('./Images/warning.png', "Can't find the file!")
+            self.shownotification(resource_path('./Images/warning.png'), "Can't find the file!")
         print(context)
         if len(context) < 6:
-            self.shownotification("./Images/error.png", "This file is corrupted!")
+            self.shownotification(resource_path("./Images/error.png"), "This file is corrupted!")
         else:
-            self.form_systemdesign.setData1(list(context['System'].values()))
+            self.form_systemdesign.setData1(list(context['System'].values())[:1])
+            self.radiobutton_group.setData1(context['System']['Type'])
             self.btn_1_ticker.show()
             self.dict['System'] = context['System']
             self.form_fluidproperties.setData1(list(context['Fluid'].values()))
@@ -1051,7 +1062,7 @@ class DesignClass(QWidget):
 
         except Exception as e:
             print('Exception: ', traceback.format_exc())
-            self.shownotification("./Images/warning.png", "Didn't input all variables.")
+            self.shownotification(resource_path("./Images/warning.png"), "Didn't input all variables.")
             return False
         print('after input variable')
         try:
@@ -1099,7 +1110,7 @@ class DesignClass(QWidget):
             return True
         except Exception as e:
             print('Size Calculation Error:', traceback.format_exc())
-            self.shownotification("./Image/error.png", "Can't calculate design parameters")
+            self.shownotification(resource_path("./Image/error.png"), "Can't calculate design parameters")
             return False
 
     def result(self):

@@ -6,10 +6,19 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from buttonclass import ImageButton
+from buttonclass import ImageButton, ImageButton2
 from labelclass import IntroLabel3
 
 import traceback
+import os
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 class InputForm(QGroupBox):
 
     def __init__(self, parent, elements):
@@ -65,7 +74,6 @@ class InputForm(QGroupBox):
             elif elements[i][2] == 'combobox':
 
                 a = QLabel(elements[i][0])
-
                 b = QComboBox()
                 b.addItems(elements[i][1])
                 b.setStyleSheet("""            
@@ -92,8 +100,7 @@ class InputForm(QGroupBox):
                         background-image-width: 30px;
                         border-image: url(./Images/down.png);
                     }
-                """
-                )
+                """)
 
                 self.grid.addWidget(a, i + 1, 0)
                 self.grid.addWidget(b, i + 1, 1, 1, 2)
@@ -404,6 +411,8 @@ class CustomRadioButton(QRadioButton):
 class CustomRadioButtonGroup(QGroupBox):
     def __init__(self, parent, imagepath):
         super().__init__(parent)
+
+        self.imagepath = imagepath
         self.setStyleSheet('''
             * {
                 background-color: #1F2843;
@@ -418,27 +427,73 @@ class CustomRadioButtonGroup(QGroupBox):
             }
         ''')
         self.resize(600, 300)
+
+        self.label_title = IntroLabel3(self)
+        self.label_title.setText('Ring Type')
+        self.label_title.setAlignment(Qt.AlignCenter)
+        self.label_title.move(250, 20)
+
         self.radiobutton_group = QButtonGroup()
 
         self.radio_horizontal = QRadioButton(self)
         self.radio_horizontal.setText("Horizontal Slinky")
-        self.radio_horizontal.move(50, 100)
+        self.radio_horizontal.move(100, 100)
+        self.radio_horizontal.setChecked(True)
+        self.radio_horizontal.clicked.connect(self.radio_horizontal_selection)
 
         self.radio_vertical = QRadioButton(self)
         self.radio_vertical.setText("Vertical Slinky")
-        self.radio_vertical.move(50, 150)
+        self.radio_vertical.move(100, 150)
+        self.radio_vertical.clicked.connect(self.radio_vertical_selection)
 
         self.radio_earthbasket = QRadioButton(self)
         self.radio_earthbasket.setText("Earth Basket")
-        self.radio_earthbasket.move(50, 200)
+        self.radio_earthbasket.move(100, 200)
+        self.radio_earthbasket.clicked.connect(self.radio_earthbasket_selection)
 
-        self.btn_image = ImageButton(self, imagepath[0])
-        self.btn_image.move(200, 100)
+        self.radiobuttons = [self.radio_horizontal, self.radio_vertical, self.radio_earthbasket]
 
-        self.radiobutton_group.addButton(self.radio_horizontal)
-        self.radiobutton_group.addButton(self.radio_vertical)
-        self.radiobutton_group.addButton(self.radio_earthbasket)
+        self.btn_image1 = ImageButton2(self, self.imagepath[0])
+        self.btn_image1.move(300, 60)
 
+        self.btn_image2 = ImageButton2(self, self.imagepath[1])
+        self.btn_image2.move(300, 60)
+        self.btn_image2.hide()
+
+        self.btn_image3 = ImageButton2(self, self.imagepath[2])
+        self.btn_image3.move(300, 60)
+        self.btn_image3.hide()
+
+        self.btn_images = [self.btn_image1, self.btn_image2, self.btn_image3]
+
+        self.radiobutton_group.addButton(self.radio_horizontal, 0)
+        self.radiobutton_group.addButton(self.radio_vertical, 1)
+        self.radiobutton_group.addButton(self.radio_earthbasket, 2)
+
+        # print(self.radiobutton_group.checkedId())
+
+    def radio_horizontal_selection(self):
+        self.allhide()
+        self.btn_image1.show()
+
+    def radio_vertical_selection(self):
+        self.allhide()
+        self.btn_image2.show()
+
+    def radio_earthbasket_selection(self):
+        self.allhide()
+        self.btn_image3.show()
+
+    def allhide(self):
+        self.btn_image1.hide()
+        self.btn_image2.hide()
+        self.btn_image3.hide()
+
+    def setData1(self, str):
+        num = int(str)
+        self.radiobuttons[num].setChecked(True)
+        self.allhide()
+        self.btn_images[num].show()
 
 class Dialog(QWidget):
     def __init__(self, parent=None):
