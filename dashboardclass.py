@@ -4,7 +4,6 @@ from PyQt5.QtGui import QIcon, QPixmap
 from buttonclass import MainButton
 from labelclass import IntroLabel1, IntroLabel2
 
-
 class Dashboard(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -50,7 +49,7 @@ class Dashboard(QWidget):
         design_button.show()
         design_button.move(450, 680)
         design_button.clicked.connect(self.designUI)
-        #
+
         # # Add another button to the layout
         # analysis_button = MainButton(self)
         # analysis_button.setText(self.tr('Design Analysis'))

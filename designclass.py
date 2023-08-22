@@ -4,11 +4,12 @@ import threading
 import time
 import webbrowser
 import traceback
+import os
 
 # UI
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QTabWidget, \
-    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox
+    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox, QVBoxLayout, QRadioButton, QButtonGroup
 from PyQt5.QtGui import QIcon, QCursor, QMovie
 from PyQt5.QtCore import Qt, QSize, QTimer, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -16,7 +17,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 # Self define
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1, TextButton
 from firstpageclass import FirstPageClass
-from inputformclass import InputForm, CustomQTextEdit, LicenseForm, PersonalForm
+from inputformclass import InputForm, CustomQTextEdit, LicenseForm, PersonalForm, CustomRadioButtonGroup
 from labelclass import IntroLabel1, TickerLabel, IntroLabel3
 from notificationclass import CustomMessageBox, ExitNotification
 import pyqtgraph as pg
@@ -34,24 +35,27 @@ import sqlite3
 class DesignClass(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
         self.parent = parent
         self.num_design = 0
         self.num_analysis = 0
         self.program_version = "1.0"
+        self.currentpath = os.getcwd()
 
         # Get data
-        self.database_connection = sqlite3.connect("./Logs/log/bin/data.db")
+        self.database_connection = sqlite3.connect(self.currentpath + "/Logs/log/bin/data.db")
         self.database_cursor = self.database_connection.cursor()
         self.database_get_data()
 
         self.tabstack = []
         self.dict = {}
-        self.designpath = './Logs/designpath.json'
+        self.designpath = self.currentpath + '/Logs/designpath.json'
         self.currentgldpath = ''
 
         # UI
         self.license_info = None
         self.plt_gfunction = None
+        self.radiobutton_group = None
         # calculation
         self.analysis_calculation_result = False
         self.analysis_calculation_process = False
@@ -438,7 +442,8 @@ class DesignClass(QWidget):
         self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
         self.form_systemdesign.move(257, 100)
 
-
+        self.radiobutton_group = CustomRadioButtonGroup(main, ['./Images/horizontalslinky.png', './Images/verticalslinky.png', './Images/earthbasket.png'])
+        self.radiobutton_group.move(0, 300)
 
         def uimovenext():
             print("uimovenext")
@@ -493,7 +498,7 @@ class DesignClass(QWidget):
         self.form_fluidproperties.move(257, 100)
 
         web_view = QWebEngineView(main)
-        file_path = "D:\Heat Exchanger\Project\SGHEDA_v1.0\HTML\FluidTable1.html"
+        file_path = self.currentpath + "\HTML\FluidTable1.html"
         web_view.load(QUrl.fromLocalFile(file_path))
         web_view.setStyleSheet('''
             background-color: rgba(0,0,0,0);
@@ -550,7 +555,7 @@ class DesignClass(QWidget):
         self.form_soilthermalproperties.move(257, 100)
 
         web_view = QWebEngineView(main)
-        file_path = "D:\Heat Exchanger\Project\SGHEDA_v1.0\HTML\SoilTable1.html"
+        file_path = self.currentpath + "\HTML\SoilTable1.html"
         web_view.load(QUrl.fromLocalFile(file_path))
         web_view.setStyleSheet('''
                     background-color: rgba(0,0,0,0);
@@ -900,36 +905,32 @@ class DesignClass(QWidget):
         # Analysis
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
+        # scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
-        main = QWidget()
-
-        label = IntroLabel1(main)
+        label = IntroLabel1(scroll_area)
         label.setText("Analysis")
         label.move(440, 30)
-        
-        self.plt_gfunction = pg.PlotWidget(main)
+
+        self.plt_gfunction = pg.PlotWidget(scroll_area)
         self.plt_gfunction.setTitle("G-function")
         self.plt_gfunction.setLabel('left', 'g-function')
-        self.plt_gfunction.setLabel('bottom', 'Time')
+        self.plt_gfunction.setLabel('bottom', 'Time(s)')
         self.plt_gfunction.setBackground('#2C3751')
-        self.plt_gfunction.setGeometry(150, 100, 700, 400)
+        self.plt_gfunction.setGeometry(150, 80, 700, 290)
 
-        # self.plt_temperaturepertubation = pg.PlotWidget(main)
+        self.plt_temperaturepertubation = pg.PlotWidget(scroll_area)
+        self.plt_temperaturepertubation.setTitle('Temperature Pertubation')
+        self.plt_temperaturepertubation.setLabel('left', 'degree')
+        self.plt_temperaturepertubation.setLabel('bottom', 'Time(s)')
+        self.plt_temperaturepertubation.setBackground('#2C3751')
+        self.plt_temperaturepertubation.setGeometry(150, 380, 700, 290)
 
-
-        btn_redesign = MainButton1(main)
-        btn_redesign.setText(main.tr('Redesign'))
-        btn_redesign.move(410, 670)
+        btn_redesign = MainButton1(scroll_area)
+        btn_redesign.setText('Redesign')
+        btn_redesign.move(410, 690)
         btn_redesign.resize(170, 55)
         btn_redesign.clicked.connect(self.button0)
 
-        # btn_gotoanalysis = MainButton1(main)
-        # btn_gotoanalysis.setText(main.tr('Go to Analysis'))
-        # btn_gotoanalysis.move(625, 670)
-        # btn_gotoanalysis.resize(170, 55)
-        # # btn_gotoanalysis.clicked.connect(uigotoanalysis)
-
-        scroll_area.setWidget(main)
         return scroll_area
 
     def ui9(self):
