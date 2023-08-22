@@ -4,6 +4,16 @@ from PyQt5.QtGui import QIcon, QPixmap
 from buttonclass import MainButton
 from labelclass import IntroLabel1, IntroLabel2
 
+import os
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
 class Dashboard(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -15,11 +25,11 @@ class Dashboard(QWidget):
         self.parent = parent
 
         # Set the window title
-        self.setWindowTitle('Slinky GHE Design & Analysis')
-        self.setWindowIcon(QIcon("./Images/logo03_glowed.png"))
+        self.setWindowTitle(resource_path('Slinky GHE Design & Analysis'))
+        self.setWindowIcon(QIcon(resource_path("./Images/logo03_glowed.png")))
 
         # Add logo
-        logo_pix = QPixmap('./Images/logo03_glowed_white.png')
+        logo_pix = QPixmap(resource_path('./Images/logo03_glowed_white.png'))
         logo_pix.scaled(100, 100)
         logo_label = QLabel(self)
         logo_label.setPixmap(logo_pix.scaled(400, 300))
