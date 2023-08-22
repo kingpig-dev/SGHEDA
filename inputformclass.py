@@ -62,13 +62,12 @@ class InputForm(QGroupBox):
                         border-bottom: 2px solid #1F8EFA;
                     }
                 ''')
-                b.setText(elements[i][3])
+                b.setPlaceholderText(elements[i][3])
                 b.setAlignment(Qt.AlignCenter)
                 c = QLabel(elements[i][1])
                 self.grid.addWidget(a, i + 1, 0)
                 self.grid.addWidget(b, i + 1, 1)
                 self.grid.addWidget(c, i + 1, 2)
-
                 self.input.append(b)
 
             elif elements[i][2] == 'combobox':
@@ -323,6 +322,8 @@ class LicenseForm(QGroupBox):
     def setData(self):
         self.machinenumber.setText(self.value_machinenumber)
 
+    def setData1(self):
+        self.serialnumber.setText(self.design.serial_number)
     def redirect_get_license(self):
         webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
@@ -340,16 +341,19 @@ class LicenseForm(QGroupBox):
                 self.design.num_analysis = '∞'
                 self.design.database_set_data()
                 self.design.combobox_selection_changed()
+                self.design.shownotification(resource_path('./Images/success.png'), 'Load new license!')
             else:
                 try:
                     self.design.num_design += int(num_design)
                     self.design.num_analysis += int(num_analysis)
+                    self.design.serial_number = ciphertext
                     self.design.database_set_data()
                     self.design.combobox_selection_changed()
                 except Exception as e:
                     self.design.shownotification("./Image/error.png", "Invalid license!")
         else:
             self.design.shownotification("./Image/error.png", "Invalid license!")
+        self.design.database_set_data()
 
     def caesar_decrypt(self, ciphertext, shift):
         plaintext = ""
@@ -392,15 +396,23 @@ class PersonalForm(QGroupBox):
         self.label_title.setAlignment(Qt.AlignCenter)
         self.grid.addWidget(self.label_title, 1, 1)
 
-        self.includedesignerdetails = QCheckBox('Include Designer Details')
-        self.grid.addWidget(self.includedesignerdetails, 2, 1)
+        self.setdefaultdata = QCheckBox('Set Default Data')
+        self.grid.addWidget(self.setdefaultdata, 2, 1)
 
         self.automateupgrate = QCheckBox('Automate Upgrade')
         self.grid.addWidget(self.automateupgrate, 3, 1)
 
 
-    # def setData(self):
-    #     self.machinenumber.setText('1010101010101010')
+    def getData(self):
+        dict = {
+            'Set Default Data': self.setdefaultdata.isChecked(),
+            'Automate Upgrade': self.automateupgrate.isChecked()
+        }
+        return dict
+
+    def setData(self, data):
+        self.setdefaultdata.setChecked(data['Set Default Data'])
+        self.automateupgrate.setChecked(data['Automate Upgrade'])
 
 class CustomRadioButton(QRadioButton):
     def __init__(self, image_path, parent=None):

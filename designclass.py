@@ -47,6 +47,11 @@ class DesignClass(QWidget):
         self.num_design = 0
         self.num_analysis = 0
         self.program_version = "1.0"
+        self.serial_number = ""
+        self.value_time_setting = ""
+        self.value_personal_setting = {}
+        self.value_userinfo = {}
+
         self.currentpath = os.getcwd()
 
         # Get data
@@ -123,7 +128,7 @@ class DesignClass(QWidget):
                 background-image-width: 30px;
                 border-image: url(%s);
             }
-        """ % self.image_down_path)
+        """ % './Images/down.png')
         self.combobox_selection.currentIndexChanged.connect(self.combobox_selection_changed)
         self.combobox_selection.move(20, 155)
 
@@ -301,6 +306,12 @@ class DesignClass(QWidget):
                 # set class property
                 self.num_design = json_data["Design"]
                 self.num_analysis = json_data["Analysis"]
+                self.program_version = json_data["Program Version"]
+                self.serial_number = json_data["Serial Number"]
+                self.value_time_setting = json_data["Time Setting"]
+                self.value_personal_setting = json_data["Personal Setting"]
+                self.value_userinfo = json_data["User Info"]
+
                 print('loaddata')
             elif len(rows) == 0:
                 self.database_set_data()
@@ -316,8 +327,14 @@ class DesignClass(QWidget):
     def database_set_data(self):
         json_data = {
             'Design': self.num_design,
-            'Analysis': self.num_analysis
+            'Analysis': self.num_analysis,
+            'Program Version': self.program_version,
+            'Serial Number': self.serial_number,
+            'Time Setting': self.value_time_setting,
+            'Personal Setting': self.value_personal_setting,
+            'User Info': self.value_userinfo
         }
+
         self.database_cursor.execute("insert into property (data) values (?)", (json.dumps(json_data),))
         self.database_connection.commit()
         print("Completely store data")
@@ -977,7 +994,42 @@ class DesignClass(QWidget):
         self.userinfo = InputForm(main, self.data_userinfo)
         self.userinfo.move(500, 350)
 
+        self.btn_save_settings = QPushButton(main)
+        self.btn_save_settings.setText('Save Settings')
+        self.btn_save_settings.setStyleSheet("""
+                QPushButton{
+                    background-color: #333A51;
+                    color: white;
+                    border-radius: 15px;
+                    padding: 3px 10px 3px 10px;
+                    text-align: center;
+                    text-decoration: none;
+                    margin: 4px 2px;
+                    border: 2px solid #6B963B;
+                    font-size: 16px;
+                    height: 30px;
+                    width: 140px;
+                }
+                QPushButton:hover {
+                    background-color: #5D7C4C;
+                }
+            """)
+        self.btn_save_settings.move(400, 650)
+        self.btn_save_settings.clicked.connect(self.savesettings)
         return main
+
+    def savesettings(self):
+        self.value_time_setting = self.time_setting.getData()
+        # print(self.value_time_setting)
+        self.value_personal_setting = self.personal_setting.getData()
+        # print(self.value_personal_setting)
+        self.value_userinfo = self.userinfo.getData()
+        # print(self.value_userinfo)
+        self.database_set_data()
+        self.shownotification(resource_path('./Images/success.png'), 'Save successfully!')
+
+    def setsettings(self):
+        self.license_info.setData1()
 
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
@@ -998,8 +1050,8 @@ class DesignClass(QWidget):
         if len(context) < 6:
             self.shownotification(resource_path("./Images/error.png"), "This file is corrupted!")
         else:
-            self.form_systemdesign.setData1(list(context['System'].values())[:1])
-            self.radiobutton_group.setData1(context['System']['Type'])
+            self.form_systemdesign.setData1(list(context['System'].values()))
+            self.radiobutton_group.setData1(context['System']['type'])
             self.btn_1_ticker.show()
             self.dict['System'] = context['System']
             self.form_fluidproperties.setData1(list(context['Fluid'].values()))
@@ -1023,6 +1075,8 @@ class DesignClass(QWidget):
             self.dict['Description'] = context['Description']
             # print(context)
             self.right_widget.setCurrentIndex(6)
+            self.shownotification(resource_path('./Images/success.png'), 'Load successfully!')
+
     def redirect_to_feedback(self):
         webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
