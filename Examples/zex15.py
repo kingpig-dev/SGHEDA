@@ -35,7 +35,7 @@ def caesar_decrypt(ciphertext, shift):
     return plaintext
 
 # Example usage
-plaintext = "0079dd7b4fdad3ea"
+plaintext = "4d2a8b152f9172d6"
 
 num_design = '{:4d}'.format(45).replace(' ', '0')
 num_analysis = '{:4d}'.format(34).replace(' ', '0')

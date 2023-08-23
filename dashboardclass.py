@@ -7,12 +7,7 @@ from labelclass import IntroLabel1, IntroLabel2
 import os
 
 def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
+    return os.path.join(relative_path)
 
 class Dashboard(QWidget):
     def __init__(self, parent=None):
