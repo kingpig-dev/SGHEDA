@@ -34,11 +34,7 @@ import sqlite3
 
 
 def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+    return os.path.join(relative_path)
 
 
 class DesignClass(QWidget):
@@ -58,6 +54,7 @@ class DesignClass(QWidget):
 
         # Get data
         self.database_connection = sqlite3.connect(self.currentpath + "/Logs/log/bin/data.db")
+
         self.database_cursor = self.database_connection.cursor()
         self.database_get_data()
 
@@ -138,8 +135,8 @@ class DesignClass(QWidget):
         self.label_num_icon = QIcon(resource_path('./Images/remain01.png'))
         self.label_num.setIcon(self.label_num_icon)
         self.label_num.setIconSize(QSize(25, 25))
-        self.label_num.setText(' ' + str(self.num_design))
-        self.label_num.setGeometry(130, 155, 80, 30)
+        self.label_num.setText('' + str(self.num_design))
+        self.label_num.setGeometry(130, 155, 75, 30)
         self.label_num.setStyleSheet("""
             QPushButton {
                 background-color: #374866;
@@ -174,7 +171,8 @@ class DesignClass(QWidget):
                                   resource_path('./Images/power02.png'))
         self.btn_5.setText(' Pump Info ')
         self.btn_5.setGeometry(0, 400, 212, 50)
-        self.btn_6 = SquareButton(self.left_widget, resource_path('./Images/result01_b.png'), ('./Images/result01.png'))
+        self.btn_6 = SquareButton(self.left_widget, resource_path('./Images/result01_b.png'),
+                                  resource_path('./Images/result01.png'))
         self.btn_6.setText(' Design Result')
         self.btn_6.setGeometry(0, 450, 212, 50)
         self.btn_7 = SquareButton(self.left_widget, resource_path('./Images/analysis11_b.png'),
@@ -336,19 +334,25 @@ class DesignClass(QWidget):
             self.database_set_data()
 
     def database_set_data(self):
-        json_data = {
-            'Design': self.num_design,
-            'Analysis': self.num_analysis,
-            'Program Version': self.program_version,
-            'Serial Number': self.serial_number,
-            'Time Setting': self.value_time_setting,
-            'Personal Setting': self.value_personal_setting,
-            'User Info': self.value_userinfo
-        }
+        try:
+            json_data = {
+                'Design': self.num_design,
+                'Analysis': self.num_analysis,
+                'Program Version': self.program_version,
+                'Serial Number': self.serial_number,
+                'Time Setting': self.value_time_setting,
+                'Personal Setting': self.value_personal_setting,
+                'User Info': self.value_userinfo
+            }
 
-        self.database_cursor.execute("insert into property (data) values (?)", (json.dumps(json_data),))
-        self.database_connection.commit()
-        print("Completely store data")
+            self.database_cursor.execute("insert into property (data) values (?)", (json.dumps(json_data),))
+            self.database_connection.commit()
+            print("Completely store data")
+            return True
+        except Exception as e:
+            print('Set data Exception: ', e)
+            self.shownotification(resource_path('./Images/error.png'), "Can't Open Database!")
+            return False
 
     def get_machine_number(self):
         # Get operating system version
@@ -549,6 +553,22 @@ class DesignClass(QWidget):
                 border: 1px solid white;
                 border-radius: 50px;
                 padding: 50px;
+            }
+            
+            QScrollBar:vertical {
+                background-color: #F5F5F5;
+                width: 20px;
+                margin: 0px;
+            }
+        
+            QScrollBar::handle:vertical {
+                background-color: #CCCCCC;
+                min-height: 20px;
+            }
+        
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
             }
         """)
         web_view.setContentsMargins(30, 20, 30, 20)
@@ -1050,14 +1070,17 @@ class DesignClass(QWidget):
         return main
 
     def savesettings(self):
-        self.value_time_setting = self.time_setting.getData()
-        # print(self.value_time_setting)
-        self.value_personal_setting = self.personal_setting.getData()
-        # print(self.value_personal_setting)
-        self.value_userinfo = self.userinfo.getData()
-        # print(self.value_userinfo)
-        self.database_set_data()
-        self.shownotification(resource_path('./Images/success.png'), 'Save successfully!')
+        try:
+            self.value_time_setting = self.time_setting.getData()
+            # print(self.value_time_setting)
+            self.value_personal_setting = self.personal_setting.getData()
+            # print(self.value_personal_setting)
+            self.value_userinfo = self.userinfo.getData()
+            # print(self.value_userinfo)
+            if self.database_set_data():
+                self.shownotification(resource_path('./Images/success.png'), 'Save successfully!')
+        except Exception as e:
+            self.shownotification(resource_path('./Images/error.png'), "Can't Save Settings!")
 
     def setsettings(self):
         self.license_info.setData1()
@@ -1275,7 +1298,7 @@ class DesignClass(QWidget):
                                 def fun(w: np.float16, phi: np.float16):
                                     return erfc_float16(d(w, phi) / (2 * sqrt_float16(t))) / d(w, phi) - erfc_float16(
                                         sqrt_float16(d(w, phi) ** 2 + 4 * h ** 2) / (
-                                                    2 * sqrt_float16(t))) / sqrt_float16(
+                                                2 * sqrt_float16(t))) / sqrt_float16(
                                         d(w, phi) ** 2 + 4 * h ** 2)
 
                                 # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2, epsrel=1e-2)

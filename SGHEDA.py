@@ -2,18 +2,10 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QLabel, QPushButton
-from PyQt5.QtGui import QIcon
-import os
 
 from dashboardclass import Dashboard
 from designclass import DesignClass
 
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
 
 class Myapp(QMainWindow):
     def __init__(self):
@@ -21,10 +13,6 @@ class Myapp(QMainWindow):
         # self.setFixedSize(1210, 790)
         self.resize(1210, 790)
         self.setStyleSheet("background-color: #1F2843;")
-
-        # Set the window title
-        self.setWindowTitle('Slinky GHE Design & Analysis')
-        self.setWindowIcon(QIcon(resource_path("./Images/logo03_glowed.png")))
 
         # Create a DesignClass
         self.design = DesignClass(self)
