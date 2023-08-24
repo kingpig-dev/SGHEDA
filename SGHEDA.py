@@ -1,21 +1,25 @@
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QStandardPaths
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QLabel, QPushButton
 
 from dashboardclass import Dashboard
 from designclass import DesignClass
 
+def app_specific_path():
+    appdata_dir = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+    print("appdata_dir", appdata_dir)
+    return appdata_dir + "/SGHEDA"
 
 class Myapp(QMainWindow):
-    def __init__(self):
+    def __init__(self, path):
         super().__init__()
         # self.setFixedSize(1210, 790)
         self.resize(1210, 790)
         self.setStyleSheet("background-color: #1F2843;")
 
         # Create a DesignClass
-        self.design = DesignClass(self)
+        self.design = DesignClass(self, path)
         self.design.move(1000, 1000)
 
         # Create a dashboard
@@ -106,10 +110,11 @@ class CustomTitleBar(QWidget):
 
 if __name__ == '__main__':
     # Create a new QApplication instance
+    appdata_dir = app_specific_path()
     app = QApplication(sys.argv)
-
+    print(appdata_dir)
     # Create a new MyApp instance
-    my_app = Myapp()
+    my_app = Myapp(appdata_dir)
 
     titlebar = CustomTitleBar(my_app)
     # Show the main window
