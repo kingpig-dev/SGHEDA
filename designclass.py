@@ -11,7 +11,7 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QTabWidget, \
     QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox
 from PyQt5.QtGui import QIcon, QCursor, QMovie
-from PyQt5.QtCore import Qt, QSize, QTimer, QUrl, QStandardPaths
+from PyQt5.QtCore import Qt, QSize, QTimer, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # Self define
@@ -63,6 +63,14 @@ class DesignClass(QWidget):
         self.tabstack = []
         self.dict = {}
 
+        # graph data
+        self.tp_series = []
+        self.tp_series_0 = []
+        self.tp_series_05 = []
+        self.tp_series_1 = []
+        self.tp_series_2 = []
+        self.tp_series_4 = []
+        self.t_series = []
 
         self.image_down_path = resource_path('./Images/down.png')
         print(self.image_down_path)
@@ -309,7 +317,7 @@ class DesignClass(QWidget):
                 print("Design Path exists")
             else:
                 with open(self.designpath, 'w') as file:
-                    json.dump({"C:/Program Files/SGHEDA/Samples/sample.gld": "Design GHE for blockchain mining equipment"}, file)
+                    json.dump({self.currentpath+"/Samples/sample.gld": "Design GHE for blockchain mining equipment"}, file)
             print("make appdata_dir")
 
     def check_serial_number(self):
@@ -901,18 +909,14 @@ class DesignClass(QWidget):
                 return False
 
         def gotoanalysis():
-            if len(self.dict.keys()) == 7:
-                self.analysis_calculation_result = True
-                if self.analysis():
-                    end_loading()
-                    self.right_widget.setCurrentIndex(7)
-                    self.tickerbutton()
-                    self.btn_7_ticker.show()
-                    return True
-                else:
-                    return False
+            self.analysis_calculation_result = True
+            if self.analysis():
+                end_loading()
+                self.right_widget.setCurrentIndex(7)
+                self.tickerbutton()
+                self.btn_7_ticker.show()
+                return True
             else:
-                self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
                 return False
 
         def end_loading():
@@ -950,6 +954,7 @@ class DesignClass(QWidget):
                         self.num_analysis -= 1
                         self.database_set_data()
                         self.combobox_selection_changed()
+
                 else:
                     print(self.dict)
                     self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
@@ -1113,11 +1118,14 @@ class DesignClass(QWidget):
         try:
             with open(self.currentgldpath, 'r') as f:
                 context = json.load(f)
+                print(context)
         except:
             self.shownotification(resource_path('./Images/warning.png'), "Can't find the file!")
-        print(context)
+            return False
+
         if len(context) < 6:
             self.shownotification(resource_path("./Images/error.png"), "This file is corrupted!")
+            return False
         else:
             self.form_systemdesign.setData1(list(context['System'].values()))
             self.radiobutton_group.setData1(context['System']['type'])
@@ -1145,7 +1153,7 @@ class DesignClass(QWidget):
             # print(context)
             self.right_widget.setCurrentIndex(6)
             self.shownotification(resource_path('./Images/success.png'), 'Load successfully!')
-
+        return True
     def redirect_to_feedback(self):
         webbrowser.open(
             'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
@@ -1189,7 +1197,6 @@ class DesignClass(QWidget):
             print('Exception: ', traceback.format_exc())
             self.shownotification(resource_path("./Images/warning.png"), "Didn't input all variables.")
             return False
-        print('after input variable')
         try:
             # Resistance
             R_e = rho * V * D_i / mu  # Reynolds number    Re<2100 laminar regime; 2100<Re<10000: transitional regime;
@@ -1255,12 +1262,20 @@ class DesignClass(QWidget):
             print('Show Notification')
 
     def analysis(self):
+        self.tp_series = []
+        self.tp_series_0 = []
+        self.tp_series_05 = []
+        self.tp_series_1 = []
+        self.tp_series_2 = []
+        self.tp_series_4 = []
+        self.t_series = []
+
         print('Analysis')
         N_ring = round(float(self.dict["Results"]['Number of Ring']) / 10)
         R = float(self.dict["Results"]['Ring Diameter'])  # m
         pitch = float(self.dict['Results']['Pitch'])  # m
         # alpha = 1e-6  # m2/s
-        t_series = np.arange(0.01, 3, 0.05)  # consider alpha
+        self.t_series = np.arange(0.01, 3, 0.05)  # consider alpha
         h = float(self.dict['Pipe']['Buried Depth'])  # m
 
         def sqrt_float16(x):
@@ -1299,7 +1314,7 @@ class DesignClass(QWidget):
         # for N_ring in N_ring_series:
         try:
             gs_series = []
-            for t in t_series:
+            for t in self.t_series:
                 gs: np.float16 = 0
                 for i in range(1, N_ring + 1):
                     for j in range(1, N_ring + 1):
@@ -1326,52 +1341,23 @@ class DesignClass(QWidget):
                 gs_series.append(gs)
 
             self.plt_gfunction.clear()
-            self.plt_gfunction.plot(t_series * 11.57, gs_series, pen='b')  # 1e6/(3600*24)=11.57
+            self.plt_gfunction.plot(self.t_series * 11.57, gs_series, pen='b')  # 1e6/(3600*24)=11.57
 
-            tp_series = []
-            tp_series_0 = []
-            tp_series_05 = []
-            tp_series_1 = []
-            tp_series_2 = []
-            tp_series_4 = []
+
 
             conductivity = float(self.dict['Soil']['Thermal Conductivity'])
             heatload = float(self.dict['System']['Heat Load']) / (N_ring * pitch)
 
             for a in gs_series:
-                tp_series.append(-a * heatload / (2 * np.pi * conductivity) * 3)
-            for i in range(0, len(tp_series)):
-                tp_series_0.append(tp_series[i] * erfc(0.01 / np.sqrt(t_series[i])))
-                tp_series_05.append(tp_series[i] * erfc(0.5 / np.sqrt(t_series[i])))
-                tp_series_1.append(tp_series[i] * erfc(1 / np.sqrt(t_series[i])))
-                tp_series_2.append(tp_series[i] * erfc(2 / np.sqrt(t_series[i])))
-                tp_series_4.append(tp_series[i] * erfc(4 / np.sqrt(t_series[i])))
+                self.tp_series.append(-a * heatload / (2 * np.pi * conductivity * 1e6) * 3)
+            for i in range(0, len(self.tp_series)):
+                self.tp_series_0.append(self.tp_series[i] * erfc(0.01 / np.sqrt(self.t_series[i])))
+                self.tp_series_05.append(self.tp_series[i] * erfc(0.5 / np.sqrt(self.t_series[i])))
+                self.tp_series_1.append(self.tp_series[i] * erfc(1 / np.sqrt(self.t_series[i])))
+                self.tp_series_2.append(self.tp_series[i] * erfc(2 / np.sqrt(self.t_series[i])))
+                self.tp_series_4.append(self.tp_series[i] * erfc(4 / np.sqrt(self.t_series[i])))
 
-            self.plt_temperaturepertubation.clear()
-            plot_item = self.plt_temperaturepertubation.getPlotItem()
-
-            curve0 = plot_item.plot(t_series * 11.57, tp_series_0, pen='b', name='0.01m')
-            curve1 = plot_item.plot(t_series * 11.57, tp_series_05, pen='r', name='0.5m')
-            curve2 = plot_item.plot(t_series * 11.57, tp_series_1, pen='w', name='1m')
-            curve3 = plot_item.plot(t_series * 11.57, tp_series_2, pen='y', name='2m')
-            curve4 = plot_item.plot(t_series * 11.57, tp_series_4, pen='g', name='4m')
-
-            legend = pg.LegendItem()
-            legend.setParentItem(plot_item)
-
-            legend.addItem(curve0, '0.01m')
-            legend.addItem(curve1, '0.5m')
-            legend.addItem(curve2, '1m')
-            legend.addItem(curve3, '2m')
-            legend.addItem(curve4, '4m')
-            legend.anchor((0, 0), (0.2, 0.95))
-
-            # self.plt_temperaturepertubation.clear()
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_0, pen='b', name='Surface')
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_05, pen='r', name='0.5m')
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_1, pen='w', name='1m')
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_2, pen='y', name='2m')
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_4, pen='g', name='4m')
+            self.show_analysis_graph()
 
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -1383,6 +1369,26 @@ class DesignClass(QWidget):
             print("analysis calculation error: ", e)
             self.shownotification(resource_path("./Image/error.png"), "Can't calculate analysis")
             return False
+
+    def show_analysis_graph(self):
+        self.plt_temperaturepertubation.clear()
+        plot_item = self.plt_temperaturepertubation.getPlotItem()
+
+        curve0 = plot_item.plot(self.t_series * 11.57, self.tp_series_0, pen='b', name='0.01m')
+        curve1 = plot_item.plot(self.t_series * 11.57, self.tp_series_05, pen='r', name='0.5m')
+        curve2 = plot_item.plot(self.t_series * 11.57, self.tp_series_1, pen='w', name='1m')
+        curve3 = plot_item.plot(self.t_series * 11.57, self.tp_series_2, pen='y', name='2m')
+        curve4 = plot_item.plot(self.t_series * 11.57, self.tp_series_4, pen='g', name='4m')
+
+        legend = pg.LegendItem()
+        legend.setParentItem(plot_item)
+
+        legend.addItem(curve0, '0.01m')
+        legend.addItem(curve1, '0.5m')
+        legend.addItem(curve2, '1m')
+        legend.addItem(curve3, '2m')
+        legend.addItem(curve4, '4m')
+        legend.anchor((0, 0), (0.2, 0.95))
 
     def btnexit(self):
         self.setEnabled(False)
