@@ -9,9 +9,9 @@ import os
 # UI
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QTabWidget, \
-    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox, QVBoxLayout, QRadioButton, QButtonGroup
+    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox
 from PyQt5.QtGui import QIcon, QCursor, QMovie
-from PyQt5.QtCore import Qt, QSize, QTimer, QUrl
+from PyQt5.QtCore import Qt, QSize, QTimer, QUrl, QStandardPaths
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # Self define
@@ -36,9 +36,8 @@ import sqlite3
 def resource_path(relative_path):
     return os.path.join(relative_path)
 
-
 class DesignClass(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent, path):
         super().__init__(parent)
 
         self.parent = parent
@@ -51,16 +50,20 @@ class DesignClass(QWidget):
         self.value_userinfo = {}
 
         self.currentpath = os.getcwd()
+        self.appdata_dir = path
+        self.designpath = self.appdata_dir + '/designpath.json'
+        self.init_appdata_dir()
 
         # Get data
-        self.database_connection = sqlite3.connect(self.currentpath + "/Logs/log/bin/data.db")
+        self.database_connection = sqlite3.connect(self.appdata_dir + "/data.db")
 
         self.database_cursor = self.database_connection.cursor()
         self.database_get_data()
 
         self.tabstack = []
         self.dict = {}
-        self.designpath = self.currentpath + '/Logs/designpath.json'
+
+
         self.image_down_path = resource_path('./Images/down.png')
         print(self.image_down_path)
         self.currentgldpath = ''
@@ -69,6 +72,7 @@ class DesignClass(QWidget):
         self.license_info = None
         self.plt_gfunction = None
         self.radiobutton_group = None
+
         # calculation
         self.analysis_calculation_result = False
         self.analysis_calculation_process = False
@@ -78,8 +82,6 @@ class DesignClass(QWidget):
 
         # Set the background color of the main window
         self.setStyleSheet("background-color: #1F2843; border: none")
-        # self.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
-        # self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 
         # add all widgets
         self.left_widget = QWidget()
@@ -297,6 +299,18 @@ class DesignClass(QWidget):
         main_layout.setStretch(0, 22)
         main_layout.setStretch(1, 100)
         self.setLayout(main_layout)
+
+    def init_appdata_dir(self):
+        if os.path.isdir(self.appdata_dir):
+            print("Folder exists")
+        else:
+            os.makedirs(self.appdata_dir)
+            if os.path.exists(self.designpath):
+                print("Design Path exists")
+            else:
+                with open(self.designpath, 'w') as file:
+                    json.dump({"C:/Program Files/SGHEDA/Samples/sample.gld": "Design GHE for blockchain mining equipment"}, file)
+            print("make appdata_dir")
 
     def check_serial_number(self):
         print("check serial number")
@@ -924,7 +938,7 @@ class DesignClass(QWidget):
                     self.textedit_description.setText('Design GHE for blockchain mining equipment')
                 description = self.textedit_description.toPlainText()
                 self.dict["Description"] = description
-                if len(self.dict.keys()) == 7:
+                if len(self.dict.keys()) == 7 or len(self.dict.keys()) == 8:
                     start_loading()
                     thread = threading.Thread(target=gotoanalysis)
                     thread.start()
@@ -937,6 +951,7 @@ class DesignClass(QWidget):
                         self.database_set_data()
                         self.combobox_selection_changed()
                 else:
+                    print(self.dict)
                     self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
             else:
                 self.shownotification(resource_path('./Images/error.png'), 'Get license!')
