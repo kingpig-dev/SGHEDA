@@ -9,7 +9,7 @@ import os
 # UI
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QTabWidget, \
-    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox
+    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox, QLineEdit
 from PyQt5.QtGui import QIcon, QCursor, QMovie
 from PyQt5.QtCore import Qt, QSize, QTimer, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -130,6 +130,10 @@ class DesignClass(QWidget):
                 width: 10px;
                 border: none;
                 padding-right: 3px;
+            }
+            
+            QComboBox QAbstractItemView {
+                color: white;
             }
             
             QComboBox::down-arrow {
@@ -503,7 +507,7 @@ class DesignClass(QWidget):
 
         self.data_form_systemdesign = ["System Design",
                                        ["Heat Load", "W", "lineedit", "2800"],
-                                       ["Input Fluid Temperature", "dC", "lineedit", '60']]
+                                       ["Input Fluid Temperature", "⁰C", "lineedit", '40']]
         self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
         self.form_systemdesign.move(257, 100)
 
@@ -559,9 +563,9 @@ class DesignClass(QWidget):
                                            ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol",
                                             "Sodium Chloride",
                                             "Calcium Chloride"], "combobox"],
-                                          ["Viscosity", "Pa*s", "lineedit", "0.011"],
-                                          ["Specific Heat", "K/(Kg*dC)", "lineedit", "3344"],
-                                          ["Density", "Kg/m^3", "lineedit", "1100"]
+                                          ["Viscosity", "Pa*s", "lineedit", "0.001"],
+                                          ["Specific Heat", "J/(Kg*⁰C)", "lineedit", "4162"],
+                                          ["Density", "Kg/m^3", "lineedit", "1001"]
                                           ]
         self.form_fluidproperties = InputForm(main, self.data_form_fluidproperties)
         self.form_fluidproperties.move(257, 100)
@@ -636,9 +640,9 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         self.data_form_soilthermalproperties = ["Soil Thermal Properties",
-                                                ["Thermal Conductivity", "W/(m*K*⁰C)", "lineedit", "0.07"],
-                                                ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.62"],
-                                                ["Ground Temperature", "⁰C", "lineedit", '30']
+                                                ["Thermal Conductivity", "W/(m*K)", "lineedit", "2.07"],
+                                                ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.0000001"],
+                                                ["Ground Temperature", "⁰C", "lineedit", '20']
                                                 ]
         self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
         self.form_soilthermalproperties.move(232, 100)
@@ -699,7 +703,7 @@ class DesignClass(QWidget):
 
         self.data_form_pipeproperties = ["Pipe Properties",
                                          ["Pipe Size",
-                                          ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
+                                          ["3/4 in. (21mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
                                           "combobox"],
                                          ["Outer Diameter", "m", "lineedit", '0.021'],
                                          ["Inner Diameter", "m", "lineedit", '0.026'],
@@ -853,16 +857,25 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         main.setStyleSheet('''
-            color: white;
+            * {
+                color: white;
+            }
+            QLineEdit {
+                border: 1px solid #767A7D;
+            }
+            
+            QCombobox {
+                border: 1px solid #767A7D;
+            }
         ''')
 
         self.data_form_designdimensions = ["Design Dimensions",
                                            ["Ring Diameter", 'm', "lineedit", '0.75'],
                                            ["Pitch", 'm', "lineedit", '0.4'],
-                                           ["Number of Ring", '', 'lineedit', '5'],
-                                           ["Pipe Length", 'm', "lineedit", '200'],
-                                           ['Inlet Temperature', '⁰C', 'lineedit', '70'],
-                                           ['System Flow Rate', 'm/s', 'lineedit', '10']
+                                           ["Number of Ring", '', 'lineedit', '8'],
+                                           ["Pipe Length", 'm', "lineedit", '25.6'],
+                                           ['Inlet Temperature', '⁰C', 'lineedit', '40'],
+                                           ['System Flow Rate', 'm/s', 'lineedit', '20']
                                            ]
         self.form_designdimensions = InputForm(main, self.data_form_designdimensions)
         self.form_designdimensions.move(277, 100)
@@ -882,11 +895,14 @@ class DesignClass(QWidget):
             description = self.textedit_description.toPlainText()
             self.dict["Description"] = description
 
-            if len(self.dict.keys()) == 7:
+            if len(self.dict.keys()) >= 7:
                 options = QFileDialog.Options()
                 options |= QFileDialog.DontUseNativeDialog
+
+
                 file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
                                                            options=options)
+
                 print(file_path)
                 if file_path:
                     temp_file_path = file_path.split('/')[-1].split('.')
@@ -1168,8 +1184,8 @@ class DesignClass(QWidget):
     def sizing(self):
         # System
         try:
-            E_heat = float(self.dict['System']['Heat Load'])  # heat load [W*h]
-            T_in = float(self.dict['System']['Input Fluid Temperature'])  # Hot Fluid Temperature 60~65dC, 140~150dF
+            E_heat = float(self.dict['System']['Heat Load'])  # heat load [W]
+            T_in = float(self.dict['System']['Input Fluid Temperature'])  # Hot Fluid Temperature 60~65⁰C, 140~150⁰F
 
             # Fluid
             mu = float(self.dict["Fluid"]["Viscosity"])
@@ -1219,7 +1235,7 @@ class DesignClass(QWidget):
             theta_w_out = T_out - T_g
 
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
-            L = L / 4
+            L = L*1.8
             print("length of pipe:", L)
             ring_diameter = 0.75 * T_in / T_out
             pitch = 0.4 * T_in / T_out
@@ -1315,7 +1331,7 @@ class DesignClass(QWidget):
         try:
             gs_series = []
             for t in self.t_series:
-                gs: np.float16 = 0
+                gs = 0
                 for i in range(1, N_ring + 1):
                     for j in range(1, N_ring + 1):
                         if self.analysis_calculation_process:
@@ -1331,14 +1347,14 @@ class DesignClass(QWidget):
                                                 2 * sqrt_float16(t))) / sqrt_float16(
                                         d(w, phi) ** 2 + 4 * h ** 2)
 
-                                # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2, epsrel=1e-2)
-                                b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 10, 10)
-                                # print(b)
+                                # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi,
+                                # epsabs=1e-2, epsrel=1e-2)
+                                b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 20, 20)
                                 gs += np.float16(b)
                         else:
                             return False
-                # print(f"gs: {gs}")
-                gs_series.append(gs)
+                print(f"gs: {gs}")
+                gs_series.append(gs/N_ring)
 
             self.plt_gfunction.clear()
             self.plt_gfunction.plot(self.t_series * 11.57, gs_series, pen='b')  # 1e6/(3600*24)=11.57
@@ -1346,10 +1362,10 @@ class DesignClass(QWidget):
 
 
             conductivity = float(self.dict['Soil']['Thermal Conductivity'])
-            heatload = float(self.dict['System']['Heat Load']) / (N_ring * pitch)
+            heatload = float(self.dict['System']['Heat Load']) / pitch
 
             for a in gs_series:
-                self.tp_series.append(-a * heatload / (2 * np.pi * conductivity * 1e6) * 3)
+                self.tp_series.append(-a * heatload / (2 * np.pi * conductivity * 1e5) * 3)
             for i in range(0, len(self.tp_series)):
                 self.tp_series_0.append(self.tp_series[i] * erfc(0.01 / np.sqrt(self.t_series[i])))
                 self.tp_series_05.append(self.tp_series[i] * erfc(0.5 / np.sqrt(self.t_series[i])))
