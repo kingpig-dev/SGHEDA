@@ -93,7 +93,7 @@ class CustomTitleBar(QWidget):
         """)
 
         # Set the title bar widget as the window's title bar
-        self.parent().setWindowFlags(Qt.FramelessWindowHint)
+        self.parent().setWindowFlags(Qt.FramelessWindowHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
         # self.parent().setWindowTitle("Custom Title Bar")
         # self.parent().layout().setContentsMargins(0, self.height(), 0, 0)
         self.parent().layout().addWidget(self)
