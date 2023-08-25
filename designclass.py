@@ -9,9 +9,9 @@ import os
 # UI
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QTabWidget, \
-    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox
+    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox, QLineEdit
 from PyQt5.QtGui import QIcon, QCursor, QMovie
-from PyQt5.QtCore import Qt, QSize, QTimer, QUrl, QStandardPaths
+from PyQt5.QtCore import Qt, QSize, QTimer, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # Self define
@@ -63,6 +63,14 @@ class DesignClass(QWidget):
         self.tabstack = []
         self.dict = {}
 
+        # graph data
+        self.tp_series = []
+        self.tp_series_0 = []
+        self.tp_series_05 = []
+        self.tp_series_1 = []
+        self.tp_series_2 = []
+        self.tp_series_4 = []
+        self.t_series = []
 
         self.image_down_path = resource_path('./Images/down.png')
         print(self.image_down_path)
@@ -122,6 +130,10 @@ class DesignClass(QWidget):
                 width: 10px;
                 border: none;
                 padding-right: 3px;
+            }
+            
+            QComboBox QAbstractItemView {
+                color: white;
             }
             
             QComboBox::down-arrow {
@@ -309,7 +321,7 @@ class DesignClass(QWidget):
                 print("Design Path exists")
             else:
                 with open(self.designpath, 'w') as file:
-                    json.dump({"C:/Program Files/SGHEDA/Samples/sample.gld": "Design GHE for blockchain mining equipment"}, file)
+                    json.dump({self.currentpath+"/Samples/sample.gld": "Design GHE for blockchain mining equipment"}, file)
             print("make appdata_dir")
 
     def check_serial_number(self):
@@ -495,7 +507,7 @@ class DesignClass(QWidget):
 
         self.data_form_systemdesign = ["System Design",
                                        ["Heat Load", "W", "lineedit", "2800"],
-                                       ["Input Fluid Temperature", "dC", "lineedit", '60']]
+                                       ["Input Fluid Temperature", "⁰C", "lineedit", '40']]
         self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
         self.form_systemdesign.move(257, 100)
 
@@ -551,9 +563,9 @@ class DesignClass(QWidget):
                                            ["Water", "Methanol", "Ethylene Glycol", "Propylene Glycol",
                                             "Sodium Chloride",
                                             "Calcium Chloride"], "combobox"],
-                                          ["Viscosity", "Pa*s", "lineedit", "0.011"],
-                                          ["Specific Heat", "K/(Kg*dC)", "lineedit", "3344"],
-                                          ["Density", "Kg/m^3", "lineedit", "1100"]
+                                          ["Viscosity", "Pa*s", "lineedit", "0.001"],
+                                          ["Specific Heat", "J/(Kg*⁰C)", "lineedit", "4162"],
+                                          ["Density", "Kg/m^3", "lineedit", "1001"]
                                           ]
         self.form_fluidproperties = InputForm(main, self.data_form_fluidproperties)
         self.form_fluidproperties.move(257, 100)
@@ -628,9 +640,9 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         self.data_form_soilthermalproperties = ["Soil Thermal Properties",
-                                                ["Thermal Conductivity", "W/(m*K*⁰C)", "lineedit", "0.07"],
-                                                ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.62"],
-                                                ["Ground Temperature", "⁰C", "lineedit", '30']
+                                                ["Thermal Conductivity", "W/(m*K)", "lineedit", "2.07"],
+                                                ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.0000001"],
+                                                ["Ground Temperature", "⁰C", "lineedit", '20']
                                                 ]
         self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
         self.form_soilthermalproperties.move(232, 100)
@@ -691,7 +703,7 @@ class DesignClass(QWidget):
 
         self.data_form_pipeproperties = ["Pipe Properties",
                                          ["Pipe Size",
-                                          ["3/4 in. (20mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
+                                          ["3/4 in. (21mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
                                           "combobox"],
                                          ["Outer Diameter", "m", "lineedit", '0.021'],
                                          ["Inner Diameter", "m", "lineedit", '0.026'],
@@ -845,16 +857,25 @@ class DesignClass(QWidget):
         label.move(440, 30)
 
         main.setStyleSheet('''
-            color: white;
+            * {
+                color: white;
+            }
+            QLineEdit {
+                border: 1px solid #767A7D;
+            }
+            
+            QCombobox {
+                border: 1px solid #767A7D;
+            }
         ''')
 
         self.data_form_designdimensions = ["Design Dimensions",
                                            ["Ring Diameter", 'm', "lineedit", '0.75'],
                                            ["Pitch", 'm', "lineedit", '0.4'],
-                                           ["Number of Ring", '', 'lineedit', '5'],
-                                           ["Pipe Length", 'm', "lineedit", '200'],
-                                           ['Inlet Temperature', '⁰C', 'lineedit', '70'],
-                                           ['System Flow Rate', 'm/s', 'lineedit', '10']
+                                           ["Number of Ring", '', 'lineedit', '8'],
+                                           ["Pipe Length", 'm', "lineedit", '25.6'],
+                                           ['Inlet Temperature', '⁰C', 'lineedit', '40'],
+                                           ['System Flow Rate', 'm/s', 'lineedit', '20']
                                            ]
         self.form_designdimensions = InputForm(main, self.data_form_designdimensions)
         self.form_designdimensions.move(277, 100)
@@ -874,11 +895,14 @@ class DesignClass(QWidget):
             description = self.textedit_description.toPlainText()
             self.dict["Description"] = description
 
-            if len(self.dict.keys()) == 7:
+            if len(self.dict.keys()) >= 7:
                 options = QFileDialog.Options()
                 options |= QFileDialog.DontUseNativeDialog
+
+
                 file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
                                                            options=options)
+
                 print(file_path)
                 if file_path:
                     temp_file_path = file_path.split('/')[-1].split('.')
@@ -901,18 +925,14 @@ class DesignClass(QWidget):
                 return False
 
         def gotoanalysis():
-            if len(self.dict.keys()) == 7:
-                self.analysis_calculation_result = True
-                if self.analysis():
-                    end_loading()
-                    self.right_widget.setCurrentIndex(7)
-                    self.tickerbutton()
-                    self.btn_7_ticker.show()
-                    return True
-                else:
-                    return False
+            self.analysis_calculation_result = True
+            if self.analysis():
+                end_loading()
+                self.right_widget.setCurrentIndex(7)
+                self.tickerbutton()
+                self.btn_7_ticker.show()
+                return True
             else:
-                self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
                 return False
 
         def end_loading():
@@ -950,6 +970,7 @@ class DesignClass(QWidget):
                         self.num_analysis -= 1
                         self.database_set_data()
                         self.combobox_selection_changed()
+
                 else:
                     print(self.dict)
                     self.shownotification(resource_path('./Images/warning.png'), 'Input all parameters.')
@@ -1113,11 +1134,14 @@ class DesignClass(QWidget):
         try:
             with open(self.currentgldpath, 'r') as f:
                 context = json.load(f)
+                print(context)
         except:
             self.shownotification(resource_path('./Images/warning.png'), "Can't find the file!")
-        print(context)
+            return False
+
         if len(context) < 6:
             self.shownotification(resource_path("./Images/error.png"), "This file is corrupted!")
+            return False
         else:
             self.form_systemdesign.setData1(list(context['System'].values()))
             self.radiobutton_group.setData1(context['System']['type'])
@@ -1145,7 +1169,7 @@ class DesignClass(QWidget):
             # print(context)
             self.right_widget.setCurrentIndex(6)
             self.shownotification(resource_path('./Images/success.png'), 'Load successfully!')
-
+        return True
     def redirect_to_feedback(self):
         webbrowser.open(
             'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
@@ -1160,8 +1184,8 @@ class DesignClass(QWidget):
     def sizing(self):
         # System
         try:
-            E_heat = float(self.dict['System']['Heat Load'])  # heat load [W*h]
-            T_in = float(self.dict['System']['Input Fluid Temperature'])  # Hot Fluid Temperature 60~65dC, 140~150dF
+            E_heat = float(self.dict['System']['Heat Load'])  # heat load [W]
+            T_in = float(self.dict['System']['Input Fluid Temperature'])  # Hot Fluid Temperature 60~65⁰C, 140~150⁰F
 
             # Fluid
             mu = float(self.dict["Fluid"]["Viscosity"])
@@ -1189,7 +1213,6 @@ class DesignClass(QWidget):
             print('Exception: ', traceback.format_exc())
             self.shownotification(resource_path("./Images/warning.png"), "Didn't input all variables.")
             return False
-        print('after input variable')
         try:
             # Resistance
             R_e = rho * V * D_i / mu  # Reynolds number    Re<2100 laminar regime; 2100<Re<10000: transitional regime;
@@ -1212,7 +1235,7 @@ class DesignClass(QWidget):
             theta_w_out = T_out - T_g
 
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
-            L = L / 4
+            L = L*1.8
             print("length of pipe:", L)
             ring_diameter = 0.75 * T_in / T_out
             pitch = 0.4 * T_in / T_out
@@ -1255,12 +1278,20 @@ class DesignClass(QWidget):
             print('Show Notification')
 
     def analysis(self):
+        self.tp_series = []
+        self.tp_series_0 = []
+        self.tp_series_05 = []
+        self.tp_series_1 = []
+        self.tp_series_2 = []
+        self.tp_series_4 = []
+        self.t_series = []
+
         print('Analysis')
         N_ring = round(float(self.dict["Results"]['Number of Ring']) / 10)
         R = float(self.dict["Results"]['Ring Diameter'])  # m
         pitch = float(self.dict['Results']['Pitch'])  # m
         # alpha = 1e-6  # m2/s
-        t_series = np.arange(0.01, 3, 0.05)  # consider alpha
+        self.t_series = np.arange(0.01, 3, 0.05)  # consider alpha
         h = float(self.dict['Pipe']['Buried Depth'])  # m
 
         def sqrt_float16(x):
@@ -1299,8 +1330,8 @@ class DesignClass(QWidget):
         # for N_ring in N_ring_series:
         try:
             gs_series = []
-            for t in t_series:
-                gs: np.float16 = 0
+            for t in self.t_series:
+                gs = 0
                 for i in range(1, N_ring + 1):
                     for j in range(1, N_ring + 1):
                         if self.analysis_calculation_process:
@@ -1316,62 +1347,33 @@ class DesignClass(QWidget):
                                                 2 * sqrt_float16(t))) / sqrt_float16(
                                         d(w, phi) ** 2 + 4 * h ** 2)
 
-                                # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi, epsabs=1e-2, epsrel=1e-2)
-                                b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 10, 10)
-                                # print(b)
+                                # b, _ = dblquad(fun, 0, 2 * np.pi, lambda phi: 0, lambda phi: 2 * np.pi,
+                                # epsabs=1e-2, epsrel=1e-2)
+                                b = quadself(fun, 0, 2 * np.pi, 0, 2 * np.pi, 20, 20)
                                 gs += np.float16(b)
                         else:
                             return False
-                # print(f"gs: {gs}")
-                gs_series.append(gs)
+                print(f"gs: {gs}")
+                gs_series.append(gs/N_ring)
 
             self.plt_gfunction.clear()
-            self.plt_gfunction.plot(t_series * 11.57, gs_series, pen='b')  # 1e6/(3600*24)=11.57
+            self.plt_gfunction.plot(self.t_series * 11.57, gs_series, pen='b')  # 1e6/(3600*24)=11.57
 
-            tp_series = []
-            tp_series_0 = []
-            tp_series_05 = []
-            tp_series_1 = []
-            tp_series_2 = []
-            tp_series_4 = []
+
 
             conductivity = float(self.dict['Soil']['Thermal Conductivity'])
-            heatload = float(self.dict['System']['Heat Load']) / (N_ring * pitch)
+            heatload = float(self.dict['System']['Heat Load']) / pitch
 
             for a in gs_series:
-                tp_series.append(-a * heatload / (2 * np.pi * conductivity) * 3)
-            for i in range(0, len(tp_series)):
-                tp_series_0.append(tp_series[i] * erfc(0.01 / np.sqrt(t_series[i])))
-                tp_series_05.append(tp_series[i] * erfc(0.5 / np.sqrt(t_series[i])))
-                tp_series_1.append(tp_series[i] * erfc(1 / np.sqrt(t_series[i])))
-                tp_series_2.append(tp_series[i] * erfc(2 / np.sqrt(t_series[i])))
-                tp_series_4.append(tp_series[i] * erfc(4 / np.sqrt(t_series[i])))
+                self.tp_series.append(-a * heatload / (2 * np.pi * conductivity * 1e5) * 3)
+            for i in range(0, len(self.tp_series)):
+                self.tp_series_0.append(self.tp_series[i] * erfc(0.01 / np.sqrt(self.t_series[i])))
+                self.tp_series_05.append(self.tp_series[i] * erfc(0.5 / np.sqrt(self.t_series[i])))
+                self.tp_series_1.append(self.tp_series[i] * erfc(1 / np.sqrt(self.t_series[i])))
+                self.tp_series_2.append(self.tp_series[i] * erfc(2 / np.sqrt(self.t_series[i])))
+                self.tp_series_4.append(self.tp_series[i] * erfc(4 / np.sqrt(self.t_series[i])))
 
-            self.plt_temperaturepertubation.clear()
-            plot_item = self.plt_temperaturepertubation.getPlotItem()
-
-            curve0 = plot_item.plot(t_series * 11.57, tp_series_0, pen='b', name='0.01m')
-            curve1 = plot_item.plot(t_series * 11.57, tp_series_05, pen='r', name='0.5m')
-            curve2 = plot_item.plot(t_series * 11.57, tp_series_1, pen='w', name='1m')
-            curve3 = plot_item.plot(t_series * 11.57, tp_series_2, pen='y', name='2m')
-            curve4 = plot_item.plot(t_series * 11.57, tp_series_4, pen='g', name='4m')
-
-            legend = pg.LegendItem()
-            legend.setParentItem(plot_item)
-
-            legend.addItem(curve0, '0.01m')
-            legend.addItem(curve1, '0.5m')
-            legend.addItem(curve2, '1m')
-            legend.addItem(curve3, '2m')
-            legend.addItem(curve4, '4m')
-            legend.anchor((0, 0), (0.2, 0.95))
-
-            # self.plt_temperaturepertubation.clear()
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_0, pen='b', name='Surface')
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_05, pen='r', name='0.5m')
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_1, pen='w', name='1m')
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_2, pen='y', name='2m')
-            # self.plt_temperaturepertubation.plot(t_series * 11.57, tp_series_4, pen='g', name='4m')
+            self.show_analysis_graph()
 
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -1383,6 +1385,26 @@ class DesignClass(QWidget):
             print("analysis calculation error: ", e)
             self.shownotification(resource_path("./Image/error.png"), "Can't calculate analysis")
             return False
+
+    def show_analysis_graph(self):
+        self.plt_temperaturepertubation.clear()
+        plot_item = self.plt_temperaturepertubation.getPlotItem()
+
+        curve0 = plot_item.plot(self.t_series * 11.57, self.tp_series_0, pen='b', name='0.01m')
+        curve1 = plot_item.plot(self.t_series * 11.57, self.tp_series_05, pen='r', name='0.5m')
+        curve2 = plot_item.plot(self.t_series * 11.57, self.tp_series_1, pen='w', name='1m')
+        curve3 = plot_item.plot(self.t_series * 11.57, self.tp_series_2, pen='y', name='2m')
+        curve4 = plot_item.plot(self.t_series * 11.57, self.tp_series_4, pen='g', name='4m')
+
+        legend = pg.LegendItem()
+        legend.setParentItem(plot_item)
+
+        legend.addItem(curve0, '0.01m')
+        legend.addItem(curve1, '0.5m')
+        legend.addItem(curve2, '1m')
+        legend.addItem(curve3, '2m')
+        legend.addItem(curve4, '4m')
+        legend.anchor((0, 0), (0.2, 0.95))
 
     def btnexit(self):
         self.setEnabled(False)
