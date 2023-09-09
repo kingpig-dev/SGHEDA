@@ -707,8 +707,6 @@ class DesignClass(QWidget):
                                           "combobox"],
                                          ["Outer Diameter", "m", "lineedit", '0.021'],
                                          ["Inner Diameter", "m", "lineedit", '0.026'],
-                                         ["Pipe Type", ["SDR11", "SDR11-OD", "SDR13.5", "SDR13.5-OD"], "combobox"],
-                                         ["Flow Type", ["Turbulent", "Transition", "Laminar"], "combobox"],
                                          ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
                                          ]
         self.form_pipeproperties = InputForm(main, self.data_form_pipeproperties)
@@ -772,6 +770,21 @@ class DesignClass(QWidget):
                                            ]
         self.form_circulationpumps = InputForm(main, self.data_form_circulationpumps)
         self.form_circulationpumps.move(267, 100)
+
+        web_view = QWebEngineView(main)
+        file_path = self.currentpath + "\HTML\PumpTable1.html"
+        web_view.load(QUrl.fromLocalFile(file_path))
+        web_view.setAttribute(Qt.WA_StyledBackground)
+        web_view.setStyleSheet("""
+                            QWebEngineView { 
+                                border: 1px solid white;
+                                border-radius: 50px;
+                                padding: 50px;
+                            }
+                        """)
+        web_view.setContentsMargins(30, 20, 30, 20)
+        web_view.setGeometry(100, 300, 800, 350)
+
         timer = QTimer()
 
         def uimoveprevious():
@@ -875,7 +888,8 @@ class DesignClass(QWidget):
                                            ["Number of Ring", '', 'lineedit', '8'],
                                            ["Pipe Length", 'm', "lineedit", '25.6'],
                                            ['Inlet Temperature', '⁰C', 'lineedit', '40'],
-                                           ['System Flow Rate', 'm/s', 'lineedit', '20']
+                                           ['Diff Temperature', '⁰C', 'lineedit', '3'],
+                                           ['System Flow Rate', 'm/s', 'lineedit', '1.5']
                                            ]
         self.form_designdimensions = InputForm(main, self.data_form_designdimensions)
         self.form_designdimensions.move(277, 100)
@@ -883,11 +897,11 @@ class DesignClass(QWidget):
         label_description = IntroLabel3(main)
         label_description.setText('Description')
         label_description.setAlignment(Qt.AlignCenter)
-        label_description.move(440, 420)
+        label_description.move(440, 450)
 
         self.textedit_description = CustomQTextEdit(main)
         self.textedit_description.setPlaceholderText('Design GHE for blockchain mining equipment')
-        self.textedit_description.setGeometry(150, 455, 700, 150)
+        self.textedit_description.setGeometry(150, 485, 700, 150)
 
         def uisavedesign():
             if self.textedit_description.toPlainText() == "":
@@ -1201,7 +1215,6 @@ class DesignClass(QWidget):
             # Pipe
             D_i = float(self.dict['Pipe']['Inner Diameter'])
             D_o = float(self.dict['Pipe']['Outer Diameter'])
-            f_type = self.dict['Pipe']['Flow Type']
             k_pipe = float(self.dict['Pipe']['Pipe Conductivity'])
             d = float(self.dict['Pipe']['Buried Depth'])
 
@@ -1231,6 +1244,7 @@ class DesignClass(QWidget):
             # Length calculation
             m_w = rho * V * 3.14159 * (D_i / 2) ** 2
             T_out = T_in - E_heat / (m_w * c_p)
+            delta_T = T_in - T_out
             theta_w_in = T_in - T_g
             theta_w_out = T_out - T_g
 
@@ -1253,6 +1267,7 @@ class DesignClass(QWidget):
             dict['Number of Ring'] = str(L / (3.14 * ring_diameter + pitch))
             dict['Pipe Length'] = str(L + 2 * d)
             dict['Inlet Temperature'] = str(T_in)
+            dict['Outlet Temperature'] = str(T_out)
             dict['System Flow Rate'] = str(V)
             self.dict['Results'] = dict
 

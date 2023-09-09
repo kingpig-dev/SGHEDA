@@ -58,7 +58,7 @@ class InputForm(QGroupBox):
                         border-bottom: 2px solid #1F8EFA;
                     }
                 ''')
-                b.setPlaceholderText(elements[i][3])
+                b.setText(elements[i][3])
                 b.setAlignment(Qt.AlignCenter)
                 c = QLabel(elements[i][1])
                 self.grid.addWidget(a, i + 1, 0)
