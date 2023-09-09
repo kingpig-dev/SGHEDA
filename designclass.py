@@ -571,7 +571,7 @@ class DesignClass(QWidget):
         self.form_fluidproperties.move(257, 100)
 
         web_view = QWebEngineView(main)
-        file_path = self.currentpath + "\HTML\FluidTable1.html"
+        file_path = self.currentpath + "\HTML\FluidTable.html"
         web_view.load(QUrl.fromLocalFile(file_path))
         web_view.setAttribute(Qt.WA_StyledBackground)
         web_view.setStyleSheet("""
@@ -648,7 +648,7 @@ class DesignClass(QWidget):
         self.form_soilthermalproperties.move(232, 100)
 
         web_view = QWebEngineView(main)
-        file_path = self.currentpath + "\HTML\SoilTable1.html"
+        file_path = self.currentpath + "\HTML\SoilTable.html"
         web_view.load(QUrl.fromLocalFile(file_path))
         web_view.setAttribute(Qt.WA_StyledBackground)
         web_view.setStyleSheet("""
@@ -772,7 +772,7 @@ class DesignClass(QWidget):
         self.form_circulationpumps.move(267, 100)
 
         web_view = QWebEngineView(main)
-        file_path = self.currentpath + "\HTML\PumpTable1.html"
+        file_path = self.currentpath + "\HTML\PumpTable.html"
         web_view.load(QUrl.fromLocalFile(file_path))
         web_view.setAttribute(Qt.WA_StyledBackground)
         web_view.setStyleSheet("""
@@ -1085,15 +1085,29 @@ class DesignClass(QWidget):
         self.personal_setting.resize(300, 137)
         self.personal_setting.move(160, 470)
 
-        self.data_userinfo = ['User Info',
-                              ['Username', '', 'lineedit', '**** ****'],
-                              ['Gmail', '', 'lineedit', 'default@gmail.com'],
-                              ['Purpose', '', 'lineedit', 'Residental Building'],
-                              ['Country', '', 'lineedit', 'Canada'],
-                              ['Phone', '', 'lineedit', '1010101010']
-                              ]
-        self.userinfo = InputForm(main, self.data_userinfo)
-        self.userinfo.move(500, 350)
+        web_view = QWebEngineView(main)
+        file_path = self.currentpath + "\HTML\About.html"
+        web_view.load(QUrl.fromLocalFile(file_path))
+        web_view.setAttribute(Qt.WA_StyledBackground)
+        web_view.setStyleSheet("""
+                            QWebEngineView { 
+                                border: 1px solid white;
+                                border-radius: 50px;
+                                padding: 50px;
+                            }
+                        """)
+        web_view.setContentsMargins(20, 20, 30, 20)
+        web_view.setGeometry(485, 350, 370, 260)
+
+        # self.data_userinfo = ['User Info',
+        #                       ['Username', '', 'lineedit', '**** ****'],
+        #                       ['Gmail', '', 'lineedit', 'default@gmail.com'],
+        #                       ['Purpose', '', 'lineedit', 'Residental Building'],
+        #                       ['Country', '', 'lineedit', 'Canada'],
+        #                       ['Phone', '', 'lineedit', '1010101010']
+        #                       ]
+        # self.userinfo = InputForm(main, self.data_userinfo)
+        # self.userinfo.move(500, 350)
 
         self.btn_save_settings = QPushButton(main)
         self.btn_save_settings.setText('Save Settings')

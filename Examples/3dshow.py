@@ -1,54 +1,36 @@
-import vtk
+import pyvista as pv
+import numpy as np
 
-# Create a pipe geometry
-outer_radius = 0.2
+# Define the dimensions of the tube
+outer_radius = 0.15
 inner_radius = 0.1
-length = 1.0
-resolution = 30
+tube_length = 1.0
+tube_resolution = 100
+inner_color = (255, 0, 0)  # Red color for the inner cylinder
+outer_color = (0, 0, 255)  # Blue color for the outer cylinder
 
-# Create the pipe source
-pipe_source = vtk.vtkCylinderSource()
-pipe_source.SetRadius(outer_radius)
-pipe_source.SetHeight(length)
-pipe_source.SetResolution(resolution)
+# Create the outer cylinder
+outer_cylinder = pv.Cylinder(radius=outer_radius, height=tube_length, resolution=tube_resolution).triangulate()
+outer_cylinder.opacity = 0.2
+# outer_cylinder.cell_arrays["colors"] = outer_color
 
 # Create the inner cylinder
-inner_cylinder = vtk.vtkCylinderSource()
-inner_cylinder.SetRadius(inner_radius)
-inner_cylinder.SetHeight(length)
-inner_cylinder.SetResolution(resolution)
+inner_cylinder = pv.Cylinder(radius=inner_radius, height=tube_length, resolution=tube_resolution).triangulate()
+# inner_cylinder.cell_arrays["colors"] = inner_color
 
-# Combine the outer and inner cylinders using a boolean operation
-boolean_operation = vtk.vtkImplicitBoolean()
-boolean_operation.SetOperationTypeToDifference()
-boolean_operation.AddFunction(pipe_source.GetOutput())
-boolean_operation.AddFunction(inner_cylinder.GetOutput())
+# Create the material-filled tube by subtracting the inner cylinder from the outer cylinder
+tube = outer_cylinder - inner_cylinder
 
-# Create an isosurface
-isosurface = vtk.vtkContourFilter()
-isosurface.SetInputConnection(boolean_operation.GetOutputPort())
-isosurface.SetValue(0, 0.5)  # Set the isovalue to 0.5
+# Set the color of the inner and outer cylinders
+n_points = tube.n_points
+colors = np.zeros((n_points, 3))
+inner_color = np.array([255, 0, 0])  # Red color for the inner part
+outer_color = np.array([0, 0, 255])  # Blue color for the outer part
+colors[:n_points//2] = inner_color
+colors[n_points//2:] = outer_color
 
-# Create a mapper and actor for the isosurface
-mapper = vtk.vtkPolyDataMapper()
-mapper.SetInputConnection(isosurface.GetOutputPort())
+# Assign the colors as a scalar field to the tube
+tube["colors"] = colors
 
-actor = vtk.vtkActor()
-actor.SetMapper(mapper)
-
-# Create a renderer and render window
-renderer = vtk.vtkRenderer()
-renderer.AddActor(actor)
-renderer.SetBackground(1.0, 1.0, 1.0)  # Set background color to white
-
-render_window = vtk.vtkRenderWindow()
-render_window.AddRenderer(renderer)
-render_window.SetSize(800, 600)  # Set window size
-
-# Create an interactor and set the render window
-interactor = vtk.vtkRenderWindowInteractor()
-interactor.SetRenderWindow(render_window)
-
-# Enable user interaction
-interactor.Initialize()
-interactor.Start()
+# Plot the tube
+tube.plot(scalars="colors", show_scalar_bar=False)
