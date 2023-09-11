@@ -1,26 +1,29 @@
 import pyvista as pv
-import numpy as np
 
-# Define the dimensions of the tube
-outer_radius = 0.15
-inner_radius = 0.1
-tube_length = 1.0
-tube_resolution = 100
+# Tube dimensions
+inner_diameter = 0.021
+outer_diameter = 0.026
+height = 0.1
 
 # Create the outer cylinder
-outer_cylinder = pv.Cylinder(radius=outer_radius, height=tube_length, resolution=tube_resolution).triangulate()
+outer_cylinder = pv.Cylinder(radius=outer_diameter/2, height=height, resolution=100).triangulate()
 
 # Create the inner cylinder
-inner_cylinder = pv.Cylinder(radius=inner_radius, height=tube_length, resolution=tube_resolution).triangulate()
+inner_cylinder = pv.Cylinder(radius=inner_diameter/2, height=height, resolution=100).triangulate()
 
-# Set the transparency of the inner cylinder
-inner_opacity = 0.0  # Fully transparent inner cylinder
-inner_color = np.array([1.0, 0.0, 0.0, inner_opacity])  # Red color with specified opacity (alpha value)
-inner_cylinder.cell_arrays["colors"] = np.tile(inner_color, (inner_cylinder.n_cells, 1))
-
-# Create the material-filled tube by merging the inner and outer cylinders
-tube = outer_cylinder.copy()
-tube.merge(inner_cylinder)
+# Create the tube by subtracting the inner cylinder from the outer cylinder
+tube = outer_cylinder - inner_cylinder
 
 # Plot the tube
-tube.plot(scalars="colors", show_scalar_bar=False)
+p = pv.Plotter()
+p.add_mesh(tube, color='blue')
+
+# Adjust the lighting
+p.lighting = True  # Enable lighting
+p.ambient_intensity = 0.5  # Adjust ambient light intensity
+p.specular_intensity = 0.6  # Adjust specular light intensity
+
+# Adjust the camera position
+p.camera_position = [(1.5, -1.5, 1.5), (0, 0, 0), (0, 0, 1)]  # Set camera position as (x, y, z) coordinates
+
+p.show()
