@@ -647,37 +647,62 @@ class LicenseForm(QGroupBox):
         webbrowser.open(
             'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
+    def get_date(self, plaintext):
+        try:
+            time = plaintext[0:4]
+            day = plaintext[16:20]
+            year = plaintext[32:34]
+            return year+day+time
+        except Exception as e:
+            return '0'
+
     def get_license_info(self):
         ciphertext = self.serialnumber.text()
         print('ciphertext: ', ciphertext)
         print('current serial: ', self.design.serial_number)
         if ciphertext != self.design.serial_number:
             plaintext = self.caesar_decrypt(ciphertext, 5)
-            num_design = plaintext[0:4]
-            num_analysis = plaintext[12:16]
+
+            previous_time = 0
+            try:
+                previous_time = int(self.get_date(self.caesar_decrypt(self.design.serial_number, 5)))
+            except Exception as e:
+                previous_time = 0
+            current_time = int(self.get_date(plaintext))
+
+            print("previous time", previous_time)
+            print("current time", current_time)
+
+            num_design = plaintext[4:8]
+            num_analysis = plaintext[20:24]
             design_analysis = num_design + num_analysis
-            if plaintext[16:24] + plaintext[4:12] == self.value_machinenumber:
-                if design_analysis == 'g8u4bisk':
-                    print('full license')
-                    self.design.num_design = '∞'
-                    self.design.num_analysis = '∞'
-                    self.design.database_set_data()
-                    self.design.combobox_selection_changed()
-                    self.design.shownotification(resource_path('./Images/success.png'), 'Load new license!')
-                    self.design.serial_number = ciphertext
-                else:
-                    try:
-                        self.design.num_design += int(num_design)
-                        self.design.num_analysis += int(num_analysis)
-                        self.design.serial_number = ciphertext
+
+            if current_time > previous_time:
+                if plaintext[24:32] + plaintext[8:16] == self.value_machinenumber:
+                    if design_analysis == 'g8u4bisk':
+                        print('full license')
+                        self.design.num_design = '∞'
+                        self.design.num_analysis = '∞'
                         self.design.database_set_data()
                         self.design.combobox_selection_changed()
-                    except Exception as e:
-                        self.design.shownotification(resource_path("./Image/error.png"), "Invalid license!")
+                        self.design.shownotification(resource_path('./Images/success.png'), 'Successfully load!')
+                        self.design.serial_number = ciphertext
+                    else:
+                        try:
+                            self.design.num_design += int(num_design)
+                            self.design.num_analysis += int(num_analysis)
+                            self.design.serial_number = ciphertext
+                            self.design.database_set_data()
+                            self.design.combobox_selection_changed()
+                            self.design.shownotification(resource_path('./Images/success.png'), 'Successfully load!')
+                            self.design.serial_number = ciphertext
+                        except Exception as e:
+                            self.design.shownotification(resource_path("./Image/error.png"), "Invalid license!")
 
+                else:
+                    self.design.shownotification(resource_path("./Image/error.png"), "Not this machine!")
             else:
-                self.design.shownotification(resource_path("./Image/error.png"), "Invalid license!")
-
+                self.design.shownotification(resource_path('./Images/warning.png'), "Time expired!")
         else:
             self.design.shownotification(resource_path('./Images/warning.png'), "Can't use this number!")
 
