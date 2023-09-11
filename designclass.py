@@ -1150,7 +1150,7 @@ class DesignClass(QWidget):
         self.license_info.move(200, 100)
 
         self.data_time_setting = ['Time Setting',
-                                  ['Prediction Time', ['1 month', '2 month', '6 month', '1 year'], 'combobox']
+                                  ['Prediction Time', ['10 days', '20 days', '1 month', '2 month', '6 month'], 'combobox']
                                   ]
 
         self.time_setting = InputForm(main, self.data_time_setting, self)
@@ -1364,7 +1364,7 @@ class DesignClass(QWidget):
             dict['Number of Ring'] = str(L / (3.14 * ring_diameter + pitch))
             dict['Pipe Length'] = str(L + 2 * d)
             dict['Inlet Temperature'] = str(T_in)
-            dict['Outlet Temperature'] = str(T_out)
+            dict['Outlet Temperature'] = str(delta_T)
             dict['System Flow Rate'] = str(V)
             self.dict['Results'] = dict
 
@@ -1404,8 +1404,22 @@ class DesignClass(QWidget):
         N_ring = round(float(self.dict["Results"]['Number of Ring']) / 10)
         R = float(self.dict["Results"]['Ring Diameter'])  # m
         pitch = float(self.dict['Results']['Pitch'])  # m
+
         # alpha = 1e-6  # m2/s
-        self.t_series = np.arange(0.01, 3, 0.05)  # consider alpha
+
+        end_time = 0
+        if self.value_time_setting == '10 days':
+            end_time = 1
+        elif self.value_time_setting == '20 days':
+            end_time = 2
+        elif self.value_time_setting == '1 month':
+            end_time = 3
+        elif self.value_time_setting == '2 month':
+            end_time = 6
+        elif self.value_time_setting == '6 month':
+            end_time = 18
+
+        self.t_series = np.arange(0.01, end_time, 0.05)  # consider alpha
         h = float(self.dict['Pipe']['Buried Depth'])  # m
 
         def sqrt_float16(x):
