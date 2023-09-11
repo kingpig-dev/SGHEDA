@@ -4,6 +4,7 @@ from PyQt5.QtGui import QIcon, QCursor, QIntValidator
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QApplication, QWidget, QHBoxLayout, \
     QMainWindow, QComboBox
 from labelclass import IntroLabel3, ImageButton
+from datetime import datetime
 import sys
 import os
 
@@ -233,6 +234,7 @@ class Myapp(QMainWindow):
                                        background-color: #1F2843;
                                        border: none;
                                        border-bottom: 2px solid #1F8EFA;
+                                       font-size: 14px;
                                    }
                                ''')
         self.label_serialnumber.setGeometry(180, 160, 130, 30)
@@ -276,10 +278,10 @@ class Myapp(QMainWindow):
 
     def generate_license(self):
         print("generate license")
+        current_time = datetime.now()
         machine_number = self.machinenumber.text()
         if machine_number:
             print("machine number: ", machine_number)
-
             # get use number
             if self.combobox_selection.currentText() == ' Fully':
                 num_design = 'g8u4'
@@ -287,8 +289,13 @@ class Myapp(QMainWindow):
             else:
                 num_design = '{:4d}'.format(int(self.lineedit_design.text())).replace(' ', '0')
                 num_analysis = '{:4d}'.format(int(self.lineedit_analysis.text())).replace(' ', '0')
-            data = num_design + machine_number[8:16] + num_analysis + machine_number[0:8]
 
+            time = current_time.strftime("%H%M")
+            day = current_time.strftime("%m%d")
+            year = current_time.strftime("%Y")[2:4]
+
+            data = time + num_design + machine_number[8:16] + day + num_analysis + machine_number[0:8] + year
+            #       0,4      4,8            8,16              16,20     20,24           24,32           32,34
             # encrypt data with key
             self.encrypted_data = self.caesar_encrypt(data, self.encryption_key)
             self.serialnumber.setText(self.encrypted_data)

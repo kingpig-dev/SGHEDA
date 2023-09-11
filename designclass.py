@@ -1171,10 +1171,10 @@ class DesignClass(QWidget):
                             QWebEngineView { 
                                 border: 1px solid white;
                                 border-radius: 50px;
-                                padding: 50px;
+                                padding: 20px;
                             }
                         """)
-        web_view.setContentsMargins(20, 20, 30, 20)
+        web_view.setContentsMargins(10, 20, 30, 20)
         web_view.setGeometry(485, 350, 370, 260)
 
         # self.data_userinfo = ['User Info',
@@ -1225,8 +1225,11 @@ class DesignClass(QWidget):
     def setsettings(self):
         self.license_info.setData1()
         print(self.value_time_setting, self.value_personal_setting)
-        self.time_setting.setData1(list(self.value_time_setting.values()))
-        self.personal_setting.setData1(self.value_personal_setting)
+        try:
+            self.time_setting.setData1(list(self.value_time_setting.values()))
+            self.personal_setting.setData1(self.value_personal_setting)
+        except Exception as e:
+            print("initial setSetting")
 
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
@@ -1410,17 +1413,18 @@ class DesignClass(QWidget):
         # alpha = 1e-6  # m2/s
 
         end_time = 0
-        if self.value_time_setting == '10 days':
+        if self.value_time_setting["Prediction Time"] == '10 days':
             end_time = 1
-        elif self.value_time_setting == '20 days':
+        elif self.value_time_setting["Prediction Time"] == '20 days':
             end_time = 2
-        elif self.value_time_setting == '1 month':
+        elif self.value_time_setting["Prediction Time"] == '1 month':
             end_time = 3
-        elif self.value_time_setting == '2 month':
+        elif self.value_time_setting["Prediction Time"] == '2 month':
             end_time = 6
-        elif self.value_time_setting == '6 month':
+        elif self.value_time_setting["Prediction Time"] == '6 month':
             end_time = 18
 
+        print("end time: ", end_time)
         self.t_series = np.arange(0.01, end_time, 0.05)  # consider alpha
         h = float(self.dict['Pipe']['Buried Depth'])  # m
 
