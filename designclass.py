@@ -48,6 +48,9 @@ class DesignClass(QWidget):
         super().__init__(parent)
 
         ############ System Property ##############
+        self.pipeshowframe = None
+        self.plotter = None
+
         self.parent = parent
         self.num_design = 0
         self.num_analysis = 0
@@ -503,8 +506,21 @@ class DesignClass(QWidget):
         custom_message_box.show()
 
     def update_pipe(self):
-        tube = self.outer_cylinder - self.inner_cylinder
-        self.plotter.add_mesh(tube, color="blue")
+        pipe_data = self.form_pipeproperties.getData()
+        outer_diameter = float(list(pipe_data.values())[0])
+        inner_diameter = float(list(pipe_data.values())[1])
+        print(outer_diameter, inner_diameter)
+
+        outer_cylinder = pv.Cylinder(radius=outer_diameter/2, height=outer_diameter*4, resolution=100).triangulate()
+        inner_cylinder = pv.Cylinder(radius=inner_diameter/2, height=outer_diameter*4, resolution=100).triangulate()
+
+        tube = outer_cylinder - inner_cylinder
+
+        self.plotter = QtInteractor(self.pipeshowframe)
+        self.plotter.camera_position = [(0.15, -0.15, 0.15), (0, 0, 0), (0, 0, 0.15)]
+        self.plotter.background_color = "#1F2843"
+        self.plotter.add_mesh(tube, color='blue')
+        self.plotter.setGeometry(50, 30, 700, 230)
         self.plotter.show()
 
     # -----------------
@@ -727,12 +743,12 @@ class DesignClass(QWidget):
         #                                  ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
         #                                  ]
         self.data_form_pipeproperties = ["Pipe Properties",
-                                         ["Outer Diameter", "m", "lineedit", '0.021'],
-                                         ["Inner Diameter", "m", "lineedit", '0.026'],
+                                         ["Outer Diameter", "m", "lineedit", '0.026'],
+                                         ["Inner Diameter", "m", "lineedit", '0.021'],
                                          ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14'],
                                          ['Buried Depth', 'm', 'lineedit', '2.0']
                                          ]
-        self.form_pipeproperties = Pipe_InputForm(main, self.data_form_pipeproperties)
+        self.form_pipeproperties = Pipe_InputForm(main, self.data_form_pipeproperties, self)
         self.form_pipeproperties.move(257, 100)
 
         # self.data_form_pipeconfiguration = ["Pipe Configuration",
@@ -742,31 +758,40 @@ class DesignClass(QWidget):
 
         inner_diameter = 0.021
         outer_diameter = 0.026
-        height = 0.1
+        height = outer_diameter*4
 
         # Create the outer cylinder
-        self.outer_cylinder = pv.Cylinder(radius=outer_diameter / 2, height=height, resolution=100).triangulate()
+        outer_cylinder = pv.Cylinder(radius=outer_diameter / 2, height=height, resolution=100).triangulate()
 
         # Create the inner cylinder
-        self.inner_cylinder = pv.Cylinder(radius=inner_diameter / 2, height=height, resolution=100).triangulate()
+        inner_cylinder = pv.Cylinder(radius=inner_diameter / 2, height=height, resolution=100).triangulate()
 
         # Create the tube by subtracting the inner cylinder from the outer cylinder
-        tube = self.outer_cylinder - self.inner_cylinder
+        tube = outer_cylinder - inner_cylinder
 
-        self.frame = QFrame(main)
-        self.frame.setStyleSheet("""
+        self.pipeshowframe = QFrame(main)
+        self.pipeshowframe.setStyleSheet("""
              QFrame {
              border: 1px solid white;
              border-radius: 30%;
              }
         """)
-        self.frame.setGeometry(100, 350, 800, 300)
+        self.pipeshowframe.setGeometry(100, 350, 800, 300)
 
-        self.plotter = QtInteractor(self.frame)
+        self.plotter = QtInteractor(self.pipeshowframe)
+        self.plotter.camera_position = [(0.15, -0.15, 0.15), (0, 0, 0), (0, 0, 0.15)]
         self.plotter.background_color = "#1F2843"
         self.plotter.add_mesh(tube, color='blue')
         self.plotter.setGeometry(50, 30, 700, 230)
         self.plotter.show()
+
+        iconpath = self.currentpath + "/Images/refresh.png"
+        refresh_button = QPushButton(self.pipeshowframe)
+        refresh_button.setIcon(QIcon(iconpath))
+        refresh_button.setIconSize(QSize(25,25))
+        refresh_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        refresh_button.clicked.connect(self.update_pipe)
+        refresh_button.setGeometry(0, 0, 25, 25)
 
         def uimovenext():
             print("uimovenext")

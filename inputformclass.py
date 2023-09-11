@@ -12,8 +12,10 @@ from labelclass import IntroLabel3
 import traceback
 import os
 
+
 def resource_path(relative_path):
     return os.path.join(relative_path)
+
 
 class InputForm(QGroupBox):
 
@@ -148,22 +150,23 @@ class InputForm(QGroupBox):
         try:
             for i in range(1, len(self.input) + 1):
                 if self.elements[i][2] == "lineedit":
-                    self.input[i-1].setText(data[i-1])
+                    self.input[i - 1].setText(data[i - 1])
                 else:
-                    self.input[i-1].setCurrentText(data[i-1])
+                    self.input[i - 1].setCurrentText(data[i - 1])
         except Exception as e:
             print("setData exception: ", traceback.format_exc())
             # print(i)
 
     def setReadOnly(self, data):
-        for i in range(1, len(self.input)+1):
-            self.input[i-1].setReadOnly(data)
+        for i in range(1, len(self.input) + 1):
+            self.input[i - 1].setReadOnly(data)
 
 
 class Pipe_InputForm(QGroupBox):
 
-    def __init__(self, parent, elements):
+    def __init__(self, parent, elements, design):
         super().__init__(parent)
+        self.design = design
         self.setStyleSheet('''
             * {
                 background-color: #1F2843;
@@ -205,6 +208,8 @@ class Pipe_InputForm(QGroupBox):
                 ''')
                 b.setText(elements[i][3])
                 b.setAlignment(Qt.AlignCenter)
+
+
                 c = QLabel(elements[i][1])
                 self.grid.addWidget(a, i + 1, 0)
                 self.grid.addWidget(b, i + 1, 1)
@@ -304,6 +309,10 @@ class Pipe_InputForm(QGroupBox):
         for i in range(1, len(self.input) + 1):
             self.input[i - 1].setReadOnly(data)
 
+    def setPipeSize(self):
+        self.design.update_pipe()
+
+
 class InputDescription(QWidget):
     def __init__(self, parent, elements):
         super().__init__(parent)
@@ -325,6 +334,7 @@ class InputDescription(QWidget):
         self.description = CustomQTextEdit(self)
         self.description.setText(elements[1])
         self.grid.addWidget(self.description, 2, 0)
+
     def getData(self):
         return self.description.toPlainText()
 
@@ -333,6 +343,7 @@ class InputDescription(QWidget):
             return False
         else:
             return True
+
 
 class CustomQTextEdit(QTextEdit):
     def __init__(self, parent):
@@ -344,6 +355,7 @@ class CustomQTextEdit(QTextEdit):
             padding: 10px 20px 10px 20px;
             border-radius: 10px solid white;
         """)
+
 
 class LicenseForm(QGroupBox):
     def __init__(self, parent, design):
@@ -465,8 +477,10 @@ class LicenseForm(QGroupBox):
 
     def setData1(self):
         self.serialnumber.setText(self.design.serial_number)
+
     def redirect_get_license(self):
-        webbrowser.open('https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
+        webbrowser.open(
+            'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
 
     def get_license_info(self):
         ciphertext = self.serialnumber.text()
@@ -521,6 +535,7 @@ class LicenseForm(QGroupBox):
         print("plaintext: ", plaintext)
         return plaintext
 
+
 class PersonalForm(QGroupBox):
     def __init__(self, parent):
         super().__init__(parent)
@@ -549,7 +564,6 @@ class PersonalForm(QGroupBox):
         self.automateupgrate = QCheckBox('Automate Upgrade')
         self.grid.addWidget(self.automateupgrate, 3, 1)
 
-
     def getData(self):
         dict = {
             'Set Default Data': self.setdefaultdata.isChecked(),
@@ -560,6 +574,7 @@ class PersonalForm(QGroupBox):
     def setData(self, data):
         self.setdefaultdata.setChecked(data['Set Default Data'])
         self.automateupgrate.setChecked(data['Automate Upgrade'])
+
 
 class CustomRadioButton(QRadioButton):
     def __init__(self, image_path, parent=None):
@@ -654,6 +669,7 @@ class CustomRadioButtonGroup(QGroupBox):
         self.allhide()
         self.btn_images[num].show()
 
+
 class Dialog(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -671,7 +687,8 @@ class Dialog(QWidget):
         #
         # d = LicenseForm(self)
 
-        e = CustomRadioButtonGroup(self, ['./Images/horizontalslinky.png', './Images/verticalslinky.png', './Images/earthbasket.png'])
+        e = CustomRadioButtonGroup(self, ['./Images/horizontalslinky.png', './Images/verticalslinky.png',
+                                          './Images/earthbasket.png'])
 
         self.resize(600, 300)
 
