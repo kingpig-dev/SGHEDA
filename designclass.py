@@ -9,15 +9,16 @@ import os
 # UI
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QTabWidget, \
-    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox, QLineEdit
+    QHBoxLayout, QComboBox, QFileDialog, QScrollArea, QMessageBox, QLineEdit, QFrame
 from PyQt5.QtGui import QIcon, QCursor, QMovie
 from PyQt5.QtCore import Qt, QSize, QTimer, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+from pyvistaqt import QtInteractor
 
 # Self define
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1, TextButton
 from firstpageclass import FirstPageClass
-from inputformclass import InputForm, CustomQTextEdit, LicenseForm, PersonalForm, CustomRadioButtonGroup
+from inputformclass import InputForm, CustomQTextEdit, LicenseForm, PersonalForm, CustomRadioButtonGroup, Pipe_InputForm
 from labelclass import IntroLabel1, TickerLabel, IntroLabel3, IntroLabel2
 from notificationclass import CustomMessageBox, ExitNotification
 import pyqtgraph as pg
@@ -32,14 +33,21 @@ import hashlib
 import uuid
 import sqlite3
 
+# 3d model
+import pyvista as pv
 
 def resource_path(relative_path):
     return os.path.join(relative_path)
+
+#######################################
+########## Design Page ################
+#######################################
 
 class DesignClass(QWidget):
     def __init__(self, parent, path):
         super().__init__(parent)
 
+        ############ System Property ##############
         self.parent = parent
         self.num_design = 0
         self.num_analysis = 0
@@ -103,6 +111,7 @@ class DesignClass(QWidget):
         self.btn_home.move(20, 20)
         self.btn_home.clicked.connect(self.button0)
 
+        # Remaining Number
         self.combobox_selection = QComboBox(self.left_widget)
         self.icon_design = QIcon(resource_path('./Images/design.png'))
         self.icon_analysis = QIcon(resource_path('./Images/analysis02.png'))
@@ -165,6 +174,7 @@ class DesignClass(QWidget):
         """)
         self.label_num.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
+        # Left Widget Buttons & Ticker
         self.btn_1 = SquareButton(self.left_widget, resource_path('./Images/configuration01_b.png'),
                                   resource_path('./Images/configuration01.png'))
         self.btn_1.setText(' System Design ')
@@ -235,6 +245,7 @@ class DesignClass(QWidget):
         self.btn_6.clicked.connect(self.button6)
         self.btn_7.clicked.connect(self.button7)
 
+        # Extra buttons in left widget
         self.btn_setting = ExtraButton(self.left_widget, resource_path('./Images/setting_b.png'),
                                        resource_path('./Images/setting.png'))
         self.btn_setting.setText(' Settings')
@@ -312,6 +323,7 @@ class DesignClass(QWidget):
         main_layout.setStretch(1, 100)
         self.setLayout(main_layout)
 
+    # get project dir
     def init_appdata_dir(self):
         if os.path.isdir(self.appdata_dir):
             print("Folder exists")
@@ -489,6 +501,11 @@ class DesignClass(QWidget):
         custom_message_box = CustomMessageBox(icon, 'Custom Message', message, self)
         custom_message_box.setGeometry(950, 20, 300, 70)
         custom_message_box.show()
+
+    def update_pipe(self):
+        tube = self.outer_cylinder - self.inner_cylinder
+        self.plotter.add_mesh(tube, color="blue")
+        self.plotter.show()
 
     # -----------------
     # pages
@@ -701,33 +718,61 @@ class DesignClass(QWidget):
         label.setText(" Pipe")
         label.move(440, 30)
 
+        # self.data_form_pipeproperties = ["Pipe Properties",
+        #                                  ["Pipe Size",
+        #                                   ["3/4 in. (21mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
+        #                                   "combobox"],
+        #                                  ["Outer Diameter", "m", "lineedit", '0.021'],
+        #                                  ["Inner Diameter", "m", "lineedit", '0.026'],
+        #                                  ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
+        #                                  ]
         self.data_form_pipeproperties = ["Pipe Properties",
-                                         ["Pipe Size",
-                                          ["3/4 in. (21mm)", "1 in. (25mm)", "1 1/4 in. (32mm)", "1 1/2 in. (40mm)"],
-                                          "combobox"],
                                          ["Outer Diameter", "m", "lineedit", '0.021'],
                                          ["Inner Diameter", "m", "lineedit", '0.026'],
-                                         ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']
+                                         ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14'],
+                                         ['Buried Depth', 'm', 'lineedit', '2.0']
                                          ]
-        self.form_pipeproperties = InputForm(main, self.data_form_pipeproperties)
+        self.form_pipeproperties = Pipe_InputForm(main, self.data_form_pipeproperties)
         self.form_pipeproperties.move(257, 100)
 
-        self.data_form_pipeconfiguration = ["Pipe Configuration",
-                                            ['Buried Depth', 'm', 'lineedit', '2.0']]
-        self.form_pipeconfiguration = InputForm(main, self.data_form_pipeconfiguration)
-        self.form_pipeconfiguration.move(287, 450)
+        # self.data_form_pipeconfiguration = ["Pipe Configuration",
+        #                                     ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14']]
+        # self.form_pipeconfiguration = InputForm(main, self.data_form_pipeconfiguration)
+        # self.form_pipeconfiguration.move(287, 450)
+
+        inner_diameter = 0.021
+        outer_diameter = 0.026
+        height = 0.1
+
+        # Create the outer cylinder
+        self.outer_cylinder = pv.Cylinder(radius=outer_diameter / 2, height=height, resolution=100).triangulate()
+
+        # Create the inner cylinder
+        self.inner_cylinder = pv.Cylinder(radius=inner_diameter / 2, height=height, resolution=100).triangulate()
+
+        # Create the tube by subtracting the inner cylinder from the outer cylinder
+        tube = self.outer_cylinder - self.inner_cylinder
+
+        self.frame = QFrame(main)
+        self.frame.setStyleSheet("""
+             QFrame {
+             border: 1px solid white;
+             border-radius: 30%;
+             }
+        """)
+        self.frame.setGeometry(100, 350, 800, 300)
+
+        self.plotter = QtInteractor(self.frame)
+        self.plotter.background_color = "#1F2843"
+        self.plotter.add_mesh(tube, color='blue')
+        self.plotter.setGeometry(50, 30, 700, 230)
+        self.plotter.show()
 
         def uimovenext():
             print("uimovenext")
             dict = {}
             if self.form_pipeproperties.getValidation():
                 dict = self.form_pipeproperties.getData()
-            else:
-                self.btn_4_ticker.hide()
-                self.movenext()
-                return False
-            if self.form_pipeconfiguration.getValidation():
-                dict.update(self.form_pipeconfiguration.getData())
             else:
                 self.btn_4_ticker.hide()
                 self.movenext()
@@ -1175,19 +1220,23 @@ class DesignClass(QWidget):
             self.radiobutton_group.setData1(context['System']['type'])
             self.btn_1_ticker.show()
             self.dict['System'] = context['System']
+
             self.form_fluidproperties.setData1(list(context['Fluid'].values()))
             self.btn_2_ticker.show()
             self.dict['Fluid'] = context['Fluid']
+
             self.form_soilthermalproperties.setData1(list(context['Soil'].values()))
             self.btn_3_ticker.show()
             self.dict['Soil'] = context['Soil']
-            self.form_pipeproperties.setData1(list(context['Pipe'].values())[:6])
+
+            self.form_pipeproperties.setData1(list(context['Pipe'].values()))
             self.btn_4_ticker.show()
             self.dict['Pipe'] = context['Pipe']
-            self.form_pipeconfiguration.setData1(context['Pipe']['Buried Depth'])
+
             self.form_circulationpumps.setData1(list(context['Pump'].values()))
             self.btn_5_ticker.show()
             self.dict['Pump'] = context['Pump']
+
             self.form_designdimensions.setData1(list(context['Results'].values()))
             self.form_designdimensions.setReadOnly(True)
             self.textedit_description.setText(context['Description'])

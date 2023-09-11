@@ -1,36 +1,81 @@
-import pyvista as pv
+import sys
+
+# Setting the Qt bindings for QtPy
+import os
+
+os.environ["QT_API"] = "pyqt5"
+
+from qtpy import QtWidgets
+from qtpy.QtWidgets import QMainWindow
+
 import numpy as np
 
-# Define the dimensions of the tube
-outer_radius = 0.15
-inner_radius = 0.1
-tube_length = 1.0
-tube_resolution = 100
-inner_color = (255, 0, 0)  # Red color for the inner cylinder
-outer_color = (0, 0, 255)  # Blue color for the outer cylinder
+import pyvista as pv
+from pyvistaqt import QtInteractor
 
-# Create the outer cylinder
-outer_cylinder = pv.Cylinder(radius=outer_radius, height=tube_length, resolution=tube_resolution).triangulate()
-outer_cylinder.opacity = 0.2
-# outer_cylinder.cell_arrays["colors"] = outer_color
+import pandas as pd
 
-# Create the inner cylinder
-inner_cylinder = pv.Cylinder(radius=inner_radius, height=tube_length, resolution=tube_resolution).triangulate()
-# inner_cylinder.cell_arrays["colors"] = inner_color
 
-# Create the material-filled tube by subtracting the inner cylinder from the outer cylinder
-tube = outer_cylinder - inner_cylinder
+class MainWindow(QMainWindow):
 
-# Set the color of the inner and outer cylinders
-n_points = tube.n_points
-colors = np.zeros((n_points, 3))
-inner_color = np.array([255, 0, 0])  # Red color for the inner part
-outer_color = np.array([0, 0, 255])  # Blue color for the outer part
-colors[:n_points//2] = inner_color
-colors[n_points//2:] = outer_color
+    def __init__(self, parent=None, show=True):
+        QtWidgets.QMainWindow.__init__(self, parent)
 
-# Assign the colors as a scalar field to the tube
-tube["colors"] = colors
+        # create the frame
+        self.frame = QtWidgets.QFrame()
+        vlayout = QtWidgets.QVBoxLayout()
 
-# Plot the tube
-tube.plot(scalars="colors", show_scalar_bar=False)
+        # add the pyvista interactor object
+        self.plotter = QtInteractor(self.frame)
+        vlayout.addWidget(self.plotter.interactor)
+
+        self.frame.setLayout(vlayout)
+        self.setCentralWidget(self.frame)
+
+        # simple menu to demo functions
+        mainMenu = self.menuBar()
+        fileMenu = mainMenu.addMenu('File')
+        exitButton = QtWidgets.QAction('Exit', self)
+        exitButton.setShortcut('Ctrl+Q')
+        exitButton.triggered.connect(self.close)
+        fileMenu.addAction(exitButton)
+
+        # allow adding a sphere
+        meshMenu = mainMenu.addMenu('Mesh')
+        self.add_sphere_action = QtWidgets.QAction('Add Sphere', self)
+        self.add_sphere_action.triggered.connect(self.add_sphere)
+        meshMenu.addAction(self.add_sphere_action)
+
+        x = np.array([9, 8, 7, 6, 5, 4, 3, 2, 1])
+        y = np.array([9, 8, 7, 6, 5, 4, 3, 2, 1])
+        x, y = np.meshgrid(x, y)
+        z = x * y
+
+        # z[z < -10] = np.nan  # get rid of missing data. pyvista needs you to do this
+
+        i_res = 2  # display every nth point
+        j_res = 2  # display every nth point
+        self.grid = pv.StructuredGrid(x[::i_res, ::j_res], y[::i_res, ::j_res], z[::i_res, ::j_res])
+
+        self.z = z
+        self.x = x
+        self.y = y
+
+        self.plotter.add_mesh(self.grid, scalars=self.grid.points[:, 2], lighting=True, specular=0.5,
+                              smooth_shading=True,
+                              show_scalar_bar=True)
+
+        if show:
+            self.show()
+
+    def add_sphere(self):  # changing resolution, not adding a sphere
+        i_res = 5  # display every nth point
+        j_res = 5  # display every nth point
+        self.grid = pv.StructuredGrid(self.x[::i_res, ::j_res], self.y[::i_res, ::j_res], self.z[::i_res, ::j_res])
+        self.plotter.update()
+
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    window = MainWindow()
+    sys.exit(app.exec())
