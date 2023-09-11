@@ -19,8 +19,9 @@ def resource_path(relative_path):
 
 class InputForm(QGroupBox):
 
-    def __init__(self, parent, elements):
+    def __init__(self, parent, elements, design):
         super().__init__(parent)
+        self.design = design
         self.setStyleSheet('''
             * {
                 background-color: #1F2843;
@@ -34,20 +35,25 @@ class InputForm(QGroupBox):
                 border-radius: 30%;
             }
         ''')
+
         self.elements = elements
         self.grid = QGridLayout(self)
         label_title = IntroLabel3(elements[0])
         label_title.setAlignment(Qt.AlignCenter)
         self.grid.addWidget(label_title, 1, 0, 1, 3)
         self.input = []
+
         for i in range(1, len(elements)):
             if elements[i][2] == 'lineedit':
+                # name
                 a = QLabel(elements[i][0])
                 a.setStyleSheet('''
                     QLabel {
                         text-align: center;
                     }
                 ''')
+
+                # input data
                 b = QLineEdit()
                 b.setValidator(QDoubleValidator())
                 b.setMaxLength(10)
@@ -60,8 +66,14 @@ class InputForm(QGroupBox):
                         border-bottom: 2px solid #1F8EFA;
                     }
                 ''')
-                b.setText(elements[i][3])
+                if self.design.value_default_data:
+                    b.setText(elements[i][3])
+                else:
+                    b.setPlaceholderText(elements[i][3])
+
                 b.setAlignment(Qt.AlignCenter)
+
+                # unit
                 c = QLabel(elements[i][1])
                 self.grid.addWidget(a, i + 1, 0)
                 self.grid.addWidget(b, i + 1, 1)
@@ -145,8 +157,7 @@ class InputForm(QGroupBox):
             print('setData expeption: ', traceback.format_exc())
 
     def setData1(self, data):
-        # print(data)
-        # i=0
+        print(data)
         try:
             for i in range(1, len(self.input) + 1):
                 if self.elements[i][2] == "lineedit":
@@ -571,7 +582,7 @@ class PersonalForm(QGroupBox):
         }
         return dict
 
-    def setData(self, data):
+    def setData1(self, data):
         self.setdefaultdata.setChecked(data['Set Default Data'])
         self.automateupgrate.setChecked(data['Automate Upgrade'])
 

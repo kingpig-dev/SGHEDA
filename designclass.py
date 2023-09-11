@@ -48,6 +48,8 @@ class DesignClass(QWidget):
         super().__init__(parent)
 
         ############ System Property ##############
+        self.value_automate_upgrade = None
+        self.value_default_data = None
         self.pipeshowframe = None
         self.plotter = None
 
@@ -319,6 +321,8 @@ class DesignClass(QWidget):
             }
         ''')
 
+        self.setsettings()
+
         main_layout = QHBoxLayout()
         main_layout.addWidget(self.left_widget)
         main_layout.addWidget(self.right_widget)
@@ -347,7 +351,7 @@ class DesignClass(QWidget):
             # get data from db
             self.database_cursor.execute("SELECT * FROM property")
             rows = self.database_cursor.fetchall()
-            print("rows: ", len(rows))
+            print("rows: ", rows)
 
             # set data if data not exist
             if len(rows) > 0:
@@ -360,7 +364,8 @@ class DesignClass(QWidget):
                 self.serial_number = json_data["Serial Number"]
                 self.value_time_setting = json_data["Time Setting"]
                 self.value_personal_setting = json_data["Personal Setting"]
-                self.value_userinfo = json_data["User Info"]
+                self.value_default_data = self.value_personal_setting["Set Default Data"]
+                self.value_automate_upgrade = self.value_personal_setting["Automate Upgrade"]
 
                 print('loaddata')
             elif len(rows) == 0:
@@ -382,8 +387,7 @@ class DesignClass(QWidget):
                 'Program Version': self.program_version,
                 'Serial Number': self.serial_number,
                 'Time Setting': self.value_time_setting,
-                'Personal Setting': self.value_personal_setting,
-                'User Info': self.value_userinfo
+                'Personal Setting': self.value_personal_setting
             }
 
             self.database_cursor.execute("insert into property (data) values (?)", (json.dumps(json_data),))
@@ -541,7 +545,7 @@ class DesignClass(QWidget):
         self.data_form_systemdesign = ["System Design",
                                        ["Heat Load", "W", "lineedit", "2800"],
                                        ["Input Fluid Temperature", "⁰C", "lineedit", '40']]
-        self.form_systemdesign = InputForm(main, self.data_form_systemdesign)
+        self.form_systemdesign = InputForm(main, self.data_form_systemdesign, self)
         self.form_systemdesign.move(257, 100)
 
         self.radiobutton_group = CustomRadioButtonGroup(main, [resource_path('./Images/horizontalslinky.png'),
@@ -600,7 +604,7 @@ class DesignClass(QWidget):
                                           ["Specific Heat", "J/(Kg*⁰C)", "lineedit", "4162"],
                                           ["Density", "Kg/m^3", "lineedit", "1001"]
                                           ]
-        self.form_fluidproperties = InputForm(main, self.data_form_fluidproperties)
+        self.form_fluidproperties = InputForm(main, self.data_form_fluidproperties, self)
         self.form_fluidproperties.move(257, 100)
 
         web_view = QWebEngineView(main)
@@ -677,7 +681,7 @@ class DesignClass(QWidget):
                                                 ["Thermal Diffusivity", "m^2/h", 'lineedit', "0.0000001"],
                                                 ["Ground Temperature", "⁰C", "lineedit", '20']
                                                 ]
-        self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties)
+        self.form_soilthermalproperties = InputForm(main, self.data_form_soilthermalproperties, self)
         self.form_soilthermalproperties.move(232, 100)
 
         web_view = QWebEngineView(main)
@@ -748,7 +752,7 @@ class DesignClass(QWidget):
                                          ["Pipe Conductivity", "W/(m*K)", "lineedit", '0.14'],
                                          ['Buried Depth', 'm', 'lineedit', '2.0']
                                          ]
-        self.form_pipeproperties = Pipe_InputForm(main, self.data_form_pipeproperties, self)
+        self.form_pipeproperties = InputForm(main, self.data_form_pipeproperties, self)
         self.form_pipeproperties.move(257, 100)
 
         # self.data_form_pipeconfiguration = ["Pipe Configuration",
@@ -838,7 +842,7 @@ class DesignClass(QWidget):
                                            ["Fluid Velocity", "m/s", 'lineedit', '1.5'],
                                            ['Pump Motor Efficiency', '%', 'lineedit', '85']
                                            ]
-        self.form_circulationpumps = InputForm(main, self.data_form_circulationpumps)
+        self.form_circulationpumps = InputForm(main, self.data_form_circulationpumps, self)
         self.form_circulationpumps.move(267, 100)
 
         web_view = QWebEngineView(main)
@@ -918,10 +922,10 @@ class DesignClass(QWidget):
         movie = QMovie(resource_path('./Images/loading.gif'))
         loading_label = QLabel(main)
         loading_label.setAlignment(Qt.AlignCenter)
-        loading_label.setFixedSize(730, 730)
+        loading_label.setFixedSize(950, 730)
         loading_label.setVisible(False)
         loading_label.setMovie(movie)
-        loading_label.move(120, 0)
+        loading_label.move(20, 0)
 
         btn_loading_stop = ImageButton1(main, resource_path('./Images/x02.png'))
         btn_loading_stop.setToolTip('Cancel Calculation')
@@ -961,7 +965,7 @@ class DesignClass(QWidget):
                                            ['Diff Temperature', '⁰C', 'lineedit', '3'],
                                            ['System Flow Rate', 'm/s', 'lineedit', '1.5']
                                            ]
-        self.form_designdimensions = InputForm(main, self.data_form_designdimensions)
+        self.form_designdimensions = InputForm(main, self.data_form_designdimensions, self)
         self.form_designdimensions.move(277, 100)
 
         label_description = IntroLabel3(main)
@@ -1147,7 +1151,7 @@ class DesignClass(QWidget):
                                   ['Prediction Time', ['1 month', '2 month', '6 month', '1 year'], 'combobox']
                                   ]
 
-        self.time_setting = InputForm(main, self.data_time_setting)
+        self.time_setting = InputForm(main, self.data_time_setting, self)
         self.time_setting.resize(300, 100)
         self.time_setting.move(160, 350)
 
@@ -1206,11 +1210,9 @@ class DesignClass(QWidget):
     def savesettings(self):
         try:
             self.value_time_setting = self.time_setting.getData()
-            # print(self.value_time_setting)
+            print(self.value_time_setting)
             self.value_personal_setting = self.personal_setting.getData()
-            # print(self.value_personal_setting)
-            self.value_userinfo = self.userinfo.getData()
-            # print(self.value_userinfo)
+            print(self.value_personal_setting)
             if self.database_set_data():
                 self.shownotification(resource_path('./Images/success.png'), 'Save successfully!')
         except Exception as e:
@@ -1218,6 +1220,9 @@ class DesignClass(QWidget):
 
     def setsettings(self):
         self.license_info.setData1()
+        print(self.value_time_setting, self.value_personal_setting)
+        self.time_setting.setData1(list(self.value_time_setting.values()))
+        self.personal_setting.setData1(self.value_personal_setting)
 
     def movenext(self):
         self.right_widget.setCurrentIndex(self.right_widget.currentIndex() + 1)
@@ -1269,6 +1274,7 @@ class DesignClass(QWidget):
             self.dict['Results'] = context['Results']
             self.dict['Description'] = context['Description']
             # print(context)
+
             self.right_widget.setCurrentIndex(6)
             self.shownotification(resource_path('./Images/success.png'), 'Load successfully!')
         return True
@@ -1368,7 +1374,7 @@ class DesignClass(QWidget):
             return True
         except Exception as e:
             print('Size Calculation Error:', traceback.format_exc())
-            self.shownotification(resource_path("./Image/error.png"), "Can't calculate design parameters")
+            self.shownotification(resource_path("./Images/error.png"), "Calculation Error!!")
             return False
 
     def result(self):
