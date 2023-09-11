@@ -3,7 +3,7 @@ import json
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem, \
-    QAbstractItemView, QHeaderView
+    QAbstractItemView, QHeaderView, QFileDialog
 from PyQt5.QtGui import QIcon, QPixmap
 from buttonclass import MainButton1
 from labelclass import IntroLabel1, IntroLabel3
@@ -89,6 +89,15 @@ class FirstPageClass(QWidget):
         except Exception as e:
             print('there is not design files')
     def btnopen(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.ReadOnly
+
+        filepath, _ = QFileDialog.getOpenFileName(self, "Open Design File", "", "GLD Files (*.gld)", options=options)
+        self.parent.currentgldpath = filepath
+        self.parent.loaddata()
+        print(filepath)
+
+    def btnnext(self):
         selected_items = self.tableWidget.selectedItems()
         print('debug btnopen selected item: ', selected_items)
         if len(selected_items) == 2:
@@ -97,10 +106,9 @@ class FirstPageClass(QWidget):
             self.parent.currentgldpath = filepath
             self.parent.loaddata()
         else:
-            self.parent.shownotification('./Images/warning.png', 'Select a row.')
-    def btnnext(self):
-        print('btnnext')
-        self.parent.movenext()
+            # self.parent.shownotification('./Images/warning.png', 'Select a row.')
+            print('btnnext')
+            self.parent.movenext()
 
 
 if __name__ == '__main__':
