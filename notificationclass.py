@@ -68,7 +68,7 @@ class CustomMessageBox(QDialog):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.accept)
-        self.timer.start(1000)
+        self.timer.start(2000)
 
 class ExitNotification(QMessageBox):
     def __init__(self, parent=None):

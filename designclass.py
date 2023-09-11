@@ -18,7 +18,8 @@ from pyvistaqt import QtInteractor
 # Self define
 from buttonclass import ImageButton, ExtraButton, SquareButton, ExitButton, MainButton1, ImageButton1, TextButton
 from firstpageclass import FirstPageClass
-from inputformclass import InputForm, CustomQTextEdit, LicenseForm, PersonalForm, CustomRadioButtonGroup, Pipe_InputForm
+from inputformclass import InputForm, CustomQTextEdit, LicenseForm, PersonalForm, CustomRadioButtonGroup, \
+    Pipe_InputForm, DesignInputForm
 from labelclass import IntroLabel1, TickerLabel, IntroLabel3, IntroLabel2
 from notificationclass import CustomMessageBox, ExitNotification
 import pyqtgraph as pg
@@ -36,8 +37,10 @@ import sqlite3
 # 3d model
 import pyvista as pv
 
+
 def resource_path(relative_path):
     return os.path.join(relative_path)
+
 
 #######################################
 ########## Design Page ################
@@ -340,7 +343,8 @@ class DesignClass(QWidget):
                 print("Design Path exists")
             else:
                 with open(self.designpath, 'w') as file:
-                    json.dump({self.currentpath+"/Samples/sample.gld": "Design GHE for blockchain mining equipment"}, file)
+                    json.dump({self.currentpath + "/Samples/sample.gld": "Design GHE for blockchain mining equipment"},
+                              file)
             print("make appdata_dir")
 
     def check_serial_number(self):
@@ -515,8 +519,8 @@ class DesignClass(QWidget):
         inner_diameter = float(list(pipe_data.values())[1])
         print(outer_diameter, inner_diameter)
 
-        outer_cylinder = pv.Cylinder(radius=outer_diameter/2, height=outer_diameter*4, resolution=100).triangulate()
-        inner_cylinder = pv.Cylinder(radius=inner_diameter/2, height=outer_diameter*4, resolution=100).triangulate()
+        outer_cylinder = pv.Cylinder(radius=outer_diameter / 2, height=outer_diameter * 4, resolution=100).triangulate()
+        inner_cylinder = pv.Cylinder(radius=inner_diameter / 2, height=outer_diameter * 4, resolution=100).triangulate()
 
         tube = outer_cylinder - inner_cylinder
 
@@ -762,7 +766,7 @@ class DesignClass(QWidget):
 
         inner_diameter = 0.021
         outer_diameter = 0.026
-        height = outer_diameter*4
+        height = outer_diameter * 4
 
         # Create the outer cylinder
         outer_cylinder = pv.Cylinder(radius=outer_diameter / 2, height=height, resolution=100).triangulate()
@@ -792,7 +796,7 @@ class DesignClass(QWidget):
         iconpath = self.currentpath + "/Images/refresh.png"
         refresh_button = QPushButton(self.pipeshowframe)
         refresh_button.setIcon(QIcon(iconpath))
-        refresh_button.setIconSize(QSize(25,25))
+        refresh_button.setIconSize(QSize(25, 25))
         refresh_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         refresh_button.clicked.connect(self.update_pipe)
         refresh_button.setGeometry(0, 0, 25, 25)
@@ -859,11 +863,6 @@ class DesignClass(QWidget):
         web_view.setContentsMargins(30, 20, 30, 20)
         web_view.setGeometry(100, 300, 800, 350)
 
-        timer = QTimer()
-
-        def uimoveprevious():
-            self.moveprevious()
-
         def end_loading():
 
             self.left_widget.setEnabled(True)
@@ -872,7 +871,13 @@ class DesignClass(QWidget):
             movie.stop()
             timer.stop()
             self.result()
-            self.btn_6_ticker.show()
+
+        # timer object
+        timer = QTimer()
+        timer.timeout.connect(end_loading)
+
+        def uimoveprevious():
+            self.moveprevious()
 
         def start_loading():
             print("Design")
@@ -895,7 +900,6 @@ class DesignClass(QWidget):
                 self.left_widget.setEnabled(False)
                 btn_loading_stop.setVisible(True)
                 movie.start()
-                timer.timeout.connect(end_loading)
                 timer.start(2000)
             else:
                 self.shownotification(resource_path('./Images/error.png'), "Get license!")
@@ -965,7 +969,7 @@ class DesignClass(QWidget):
                                            ['Diff Temperature', '⁰C', 'lineedit', '3'],
                                            ['System Flow Rate', 'm/s', 'lineedit', '1.5']
                                            ]
-        self.form_designdimensions = InputForm(main, self.data_form_designdimensions, self)
+        self.form_designdimensions = DesignInputForm(main, self.data_form_designdimensions, self)
         self.form_designdimensions.move(277, 100)
 
         label_description = IntroLabel3(main)
@@ -986,7 +990,6 @@ class DesignClass(QWidget):
             if len(self.dict.keys()) >= 7:
                 options = QFileDialog.Options()
                 options |= QFileDialog.DontUseNativeDialog
-
 
                 file_path, _ = QFileDialog.getSaveFileName(main, "Save File", "", "Text Files *.gld;;",
                                                            options=options)
@@ -1148,7 +1151,8 @@ class DesignClass(QWidget):
         self.license_info.move(200, 100)
 
         self.data_time_setting = ['Time Setting',
-                                  ['Prediction Time', ['1 month', '2 month', '6 month', '1 year'], 'combobox']
+                                  ['Prediction Time', ['10 days', '20 days', '1 month', '2 month', '6 month'],
+                                   'combobox']
                                   ]
 
         self.time_setting = InputForm(main, self.data_time_setting, self)
@@ -1278,6 +1282,7 @@ class DesignClass(QWidget):
             self.right_widget.setCurrentIndex(6)
             self.shownotification(resource_path('./Images/success.png'), 'Load successfully!')
         return True
+
     def redirect_to_feedback(self):
         webbrowser.open(
             'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
@@ -1343,7 +1348,7 @@ class DesignClass(QWidget):
             theta_w_out = T_out - T_g
 
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
-            L = L*1.8
+            L = L * 1.8
             print("length of pipe:", L)
             ring_diameter = 0.75 * T_in / T_out
             pitch = 0.4 * T_in / T_out
@@ -1361,7 +1366,7 @@ class DesignClass(QWidget):
             dict['Number of Ring'] = str(L / (3.14 * ring_diameter + pitch))
             dict['Pipe Length'] = str(L + 2 * d)
             dict['Inlet Temperature'] = str(T_in)
-            dict['Outlet Temperature'] = str(T_out)
+            dict['Outlet Temperature'] = str(delta_T)
             dict['System Flow Rate'] = str(V)
             self.dict['Results'] = dict
 
@@ -1383,7 +1388,9 @@ class DesignClass(QWidget):
             self.form_designdimensions.setReadOnly(True)
             self.right_widget.setCurrentIndex(6)
             self.tickerbutton()
+            self.btn_6_ticker.show()
         else:
+            self.tickerbutton()
             print('Show Notification')
 
     def analysis(self):
@@ -1399,8 +1406,22 @@ class DesignClass(QWidget):
         N_ring = round(float(self.dict["Results"]['Number of Ring']) / 10)
         R = float(self.dict["Results"]['Ring Diameter'])  # m
         pitch = float(self.dict['Results']['Pitch'])  # m
+
         # alpha = 1e-6  # m2/s
-        self.t_series = np.arange(0.01, 3, 0.05)  # consider alpha
+
+        end_time = 0
+        if self.value_time_setting == '10 days':
+            end_time = 1
+        elif self.value_time_setting == '20 days':
+            end_time = 2
+        elif self.value_time_setting == '1 month':
+            end_time = 3
+        elif self.value_time_setting == '2 month':
+            end_time = 6
+        elif self.value_time_setting == '6 month':
+            end_time = 18
+
+        self.t_series = np.arange(0.01, end_time, 0.05)  # consider alpha
         h = float(self.dict['Pipe']['Buried Depth'])  # m
 
         def sqrt_float16(x):
@@ -1463,12 +1484,10 @@ class DesignClass(QWidget):
                         else:
                             return False
                 print(f"gs: {gs}")
-                gs_series.append(gs/N_ring)
+                gs_series.append(gs / N_ring)
 
             self.plt_gfunction.clear()
             self.plt_gfunction.plot(self.t_series * 11.57, gs_series, pen='b')  # 1e6/(3600*24)=11.57
-
-
 
             conductivity = float(self.dict['Soil']['Thermal Conductivity'])
             heatload = float(self.dict['System']['Heat Load']) / pitch
