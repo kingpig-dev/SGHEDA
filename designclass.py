@@ -863,11 +863,6 @@ class DesignClass(QWidget):
         web_view.setContentsMargins(30, 20, 30, 20)
         web_view.setGeometry(100, 300, 800, 350)
 
-        timer = QTimer()
-
-        def uimoveprevious():
-            self.moveprevious()
-
         def end_loading():
 
             self.left_widget.setEnabled(True)
@@ -876,6 +871,13 @@ class DesignClass(QWidget):
             movie.stop()
             timer.stop()
             self.result()
+
+        # timer object
+        timer = QTimer()
+        timer.timeout.connect(end_loading)
+
+        def uimoveprevious():
+            self.moveprevious()
 
         def start_loading():
             print("Design")
@@ -898,7 +900,6 @@ class DesignClass(QWidget):
                 self.left_widget.setEnabled(False)
                 btn_loading_stop.setVisible(True)
                 movie.start()
-                timer.timeout.connect(end_loading)
                 timer.start(2000)
             else:
                 self.shownotification(resource_path('./Images/error.png'), "Get license!")
@@ -1150,7 +1151,8 @@ class DesignClass(QWidget):
         self.license_info.move(200, 100)
 
         self.data_time_setting = ['Time Setting',
-                                  ['Prediction Time', ['10 days', '20 days', '1 month', '2 month', '6 month'], 'combobox']
+                                  ['Prediction Time', ['10 days', '20 days', '1 month', '2 month', '6 month'],
+                                   'combobox']
                                   ]
 
         self.time_setting = InputForm(main, self.data_time_setting, self)
