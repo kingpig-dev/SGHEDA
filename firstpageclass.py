@@ -88,10 +88,10 @@ class FirstPageClass(QWidget):
                 self.tableWidget.setItem(i, 1, desitem)
         except Exception as e:
             print('there is not design files')
+
     def btnopen(self):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
-
         filepath, _ = QFileDialog.getOpenFileName(self, "Open Design File", "", "GLD Files (*.gld)", options=options)
         self.parent.currentgldpath = filepath
         self.parent.loaddata()

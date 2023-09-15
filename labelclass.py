@@ -9,7 +9,7 @@ class IntroLabel1(QLabel):
         self.setStyleSheet('''
             QLabel {
                 color: #7C8AA7;
-                font-size: 30px;
+                font-size: 35px;
                 text-align: center;
             }
         ''')
@@ -22,7 +22,7 @@ class IntroLabel2(QLabel):
         self.setStyleSheet('''
             QLabel {
                 color: #7C8AA7;
-                font-size: 18px;
+                font-size: 25px;
                 text-align: center;
             }
         ''')
@@ -39,7 +39,16 @@ class IntroLabel3(QLabel):
                 text-decoration: underline;
             }
         ''')
-
+class IntroLabel4(QLabel):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setStyleSheet('''
+            QLabel {
+                color: #7C8AA7;
+                font-size: 14px;
+                text-align: center;
+            }
+        ''')
 
 class TickerLabel(QLabel):
     def __init__(self, parent=None):
