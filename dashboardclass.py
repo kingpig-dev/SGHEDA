@@ -1,8 +1,11 @@
 import sys
+import webbrowser
+
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout
 from PyQt5.QtGui import QIcon, QPixmap
 from buttonclass import MainButton
-from labelclass import IntroLabel1, IntroLabel2
+from labelclass import IntroLabel1, IntroLabel2, IntroLabel4
 
 import os
 
@@ -27,40 +30,55 @@ class Dashboard(QWidget):
         logo_pix = QPixmap(resource_path('./Images/logo03_glowed_white.png'))
         logo_pix.scaled(100, 100)
         logo_label = QLabel(self)
-        logo_label.setPixmap(logo_pix.scaled(400, 300))
-        logo_label.move(370, 100)
+        logo_label.setPixmap(logo_pix.scaled(430, 350))
+        logo_label.move(630, 200)
+
+        # Add another button to the layout
+        website_button = MainButton(self)
+        website_button.setText(self.tr('Open Website'))
+        website_button.setToolTip("https://ghedesign.center")
+        website_button.show()
+        website_button.setCursor(Qt.DragLinkCursor)
+        website_button.clicked.connect(self.redirect_to_website)
+        website_button.move(810, 600)
 
         # Add an introduction label
         intro_label_tile = IntroLabel1(self)
-        intro_label_tile.setText('Welcome to Slinky GHE Design & Analysis!')
-        intro_label_tile.move(350, 440)
+        intro_label_tile.setText('Welcome to')
+        intro_label_tile.move(100, 130)
         intro_label_tile.show()
 
-        intro_label = IntroLabel2(self)
-        intro_label.setText('''
-           This tool's intuitive interface and user-friendly features make it accessible to both seasoned professionals and 
-         aspiring engineers. Its comprehensive analysis capabilities provide detailed insights into the performance of the GHE, 
-         allowing users to optimize design parameters, such as pipe spacing, size, and configuration, with unparalleled accuracy.
-        This world-first slinky-type ground heat exchanger design and analysis tool represents the pinnacle of engineering ingenuity.
-         With its unrivaled precision, ease of use, and commitment to sustainability, it empowers engineers and designers to unlock 
-            the full potential of geothermal energy, paving the way for a more efficient and environmentally friendly world.
-        ''')
-        intro_label.move(90, 490)
-        intro_label.show()
+        intro_label_tile = IntroLabel1(self)
+        intro_label_tile.setText('Slinky GHE Design & Analysis!')
+        intro_label_tile.move(100, 180)
+        intro_label_tile.show()
+
+        feature_label1 = IntroLabel2(self)
+        feature_label1.setText('✓ Comprehensive Design Capabilities')
+        feature_label1.move(120, 360)
+
+        feature_label2 = IntroLabel2(self)
+        feature_label2.setText('✓ Accurate Performance Analysis')
+        feature_label2.move(120, 420)
+
+        feature_label2 = IntroLabel2(self)
+        feature_label2.setText('✓ User-friendly Interface')
+        feature_label2.move(120, 480)
 
         # Add a button to the layout
         design_button = MainButton(self)
-        design_button.setText('Open Design && Analysis')
+        design_button.setText('Open Program')
         design_button.show()
-        design_button.move(450, 680)
+        design_button.move(200, 600)
         design_button.clicked.connect(self.designUI)
 
-        # # Add another button to the layout
-        # analysis_button = MainButton(self)
-        # analysis_button.setText(self.tr('Design Analysis'))
-        # analysis_button.show()
-        # analysis_button.move(780, 650)
-        # analysis_button.clicked.connect(self.analysisUI)
+        copyright_label = IntroLabel4(self)
+        copyright_label.setText('''
+                                                                                         Copyright © 2023 SGHEDA
+            Warning: This program is protected by copyright law and international treaties. Unauthorized reproduction or distribution of this program,
+                    or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent under law.
+        ''')
+        copyright_label.move(140, 700)
 
     def designUI(self):
         self.parent.designUI()
@@ -68,6 +86,8 @@ class Dashboard(QWidget):
     def analysisUI(self):
         self.parent.analysisUI()
 
+    def redirect_to_website(self):
+        webbrowser.open("https://ghedesign.center")
 
 if __name__ == '__main__':
     # Create a new QApplication instance
