@@ -1391,8 +1391,9 @@ class DesignClass(QWidget):
             theta_w_in = T_in - T_g
             theta_w_out = T_out - T_g
 
+            print(m_w, c_p, R_total, theta_w_in, theta_w_out)
             L = (m_w * c_p * R_total) * math.log(theta_w_in / theta_w_out)
-            L = L * 1.8
+            L = L * 1.6
             print("length of pipe:", L)
             ring_diameter = 0.75 * T_in / T_out
             pitch = 0.4 * T_in / T_out
@@ -1407,7 +1408,7 @@ class DesignClass(QWidget):
             dict = {}
             dict['Ring Diameter'] = str(ring_diameter)
             dict['Pitch'] = str(pitch)
-            dict['Number of Ring'] = str(L / (3.14 * ring_diameter + pitch))
+            dict['Number of Ring'] = str(L / math.hypot(3.14 * ring_diameter, pitch))
             dict['Pipe Length'] = str(L + 2 * d)
             dict['Inlet Temperature'] = str(T_in)
             dict['Outlet Temperature'] = str(delta_T)
