@@ -804,10 +804,10 @@ class DesignClass(QWidget):
         height = outer_diameter * 4
 
         # Create the outer cylinder
-        outer_cylinder = pv.Cylinder(radius=outer_diameter / 2, height=height, resolution=100).triangulate()
+        outer_cylinder = pv.Cylinder(radius=outer_diameter / 2, height=height, resolution=200).triangulate()
 
         # Create the inner cylinder
-        inner_cylinder = pv.Cylinder(radius=inner_diameter / 2, height=height, resolution=100).triangulate()
+        inner_cylinder = pv.Cylinder(radius=inner_diameter / 2, height=height+0.2, resolution=200).triangulate()
 
         # Create the tube by subtracting the inner cylinder from the outer cylinder
         tube = outer_cylinder - inner_cylinder
