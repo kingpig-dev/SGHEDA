@@ -93,9 +93,12 @@ class FirstPageClass(QWidget):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
         filepath, _ = QFileDialog.getOpenFileName(self, "Open Design File", "", "GLD Files (*.gld)", options=options)
-        self.parent.currentgldpath = filepath
-        self.parent.loaddata()
-        print(filepath)
+        if filepath:
+            print("filepath", filepath)
+            self.parent.currentgldpath = filepath
+            self.parent.loaddata()
+        else:
+            print("no file selected")
 
     def btnnext(self):
         selected_items = self.tableWidget.selectedItems()
