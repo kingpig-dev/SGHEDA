@@ -645,7 +645,7 @@ class LicenseForm(QGroupBox):
 
     def redirect_get_license(self):
         webbrowser.open(
-            'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
+            'https://slinkyghxdesign.com/#license')
 
     def get_date(self, plaintext):
         try:

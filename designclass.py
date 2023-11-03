@@ -272,7 +272,7 @@ class DesignClass(QWidget):
         self.btn_feedback.setGeometry(50, 650, 100, 20)
 
         self.btn_help = TextButton(self.left_widget)
-        self.btn_help.setText('  Help  ')
+        self.btn_help.setText('  Get Manual  ')
         self.btn_help.clicked.connect(self.redirect_to_help)
         self.btn_help.setGeometry(50, 675, 100, 20)
 
@@ -437,6 +437,41 @@ class DesignClass(QWidget):
     # buttons
     def button0(self):
         print("button0")
+        self.right_widget.clear()
+        self.tab1 = self.ui1()
+        self.tab2 = self.ui2()
+        self.tab3 = self.ui3()
+        self.tab4 = self.ui4()
+        self.tab5 = self.ui5()
+        self.tab6 = self.ui6()
+        self.tab7 = self.ui7()
+        self.tab8 = self.ui8()
+        self.tab9 = self.ui9()
+
+        self.right_widget.addTab(self.tab1, '')
+        self.right_widget.addTab(self.tab2, '')
+        self.right_widget.addTab(self.tab3, '')
+        self.right_widget.addTab(self.tab4, '')
+        self.right_widget.addTab(self.tab5, '')
+        self.right_widget.addTab(self.tab6, '')
+        self.right_widget.addTab(self.tab7, '')
+        self.right_widget.addTab(self.tab8, '')
+        self.right_widget.addTab(self.tab9, '')
+
+        self.tab1.loadtable()
+        self.right_widget.setCurrentIndex(0)
+        self.tickerbutton()
+        self.dict = {}
+        self.btn_1_ticker.hide()
+        self.btn_2_ticker.hide()
+        self.btn_3_ticker.hide()
+        self.btn_4_ticker.hide()
+        self.btn_5_ticker.hide()
+        self.btn_6_ticker.hide()
+        self.btn_7_ticker.hide()
+
+    def button0notransition(self):
+        print("button0notransition")
         self.right_widget.clear()
         self.tab1 = self.ui1()
         self.tab2 = self.ui2()
@@ -796,6 +831,7 @@ class DesignClass(QWidget):
         iconpath = self.currentpath + "/Images/refresh.png"
         refresh_button = QPushButton(self.pipeshowframe)
         refresh_button.setIcon(QIcon(iconpath))
+        refresh_button.setToolTip('refresh')
         refresh_button.setIconSize(QSize(25, 25))
         refresh_button.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         refresh_button.clicked.connect(self.update_pipe)
@@ -1157,11 +1193,11 @@ class DesignClass(QWidget):
 
         self.time_setting = InputForm(main, self.data_time_setting, self)
         self.time_setting.resize(300, 100)
-        self.time_setting.move(160, 350)
+        self.time_setting.move(80, 350)
 
         self.personal_setting = PersonalForm(main)
         self.personal_setting.resize(300, 137)
-        self.personal_setting.move(160, 470)
+        self.personal_setting.move(80, 470)
 
         web_view = QWebEngineView(main)
         file_path = self.currentpath + "\HTML\About.html"
@@ -1175,7 +1211,7 @@ class DesignClass(QWidget):
                             }
                         """)
         web_view.setContentsMargins(10, 20, 30, 20)
-        web_view.setGeometry(485, 350, 370, 260)
+        web_view.setGeometry(405, 350, 460, 260)
 
         # self.data_userinfo = ['User Info',
         #                       ['Username', '', 'lineedit', '**** ****'],
@@ -1221,6 +1257,11 @@ class DesignClass(QWidget):
                 self.shownotification(resource_path('./Images/success.png'), 'Save successfully!')
         except Exception as e:
             self.shownotification(resource_path('./Images/error.png'), "Can't Save Settings!")
+        try:
+            self.database_get_data()
+            self.button0notransition()
+        except Exception as e:
+            self.shownotification(resource_path('./Images/error.png'), "Can't Load Pages!")
 
     def setsettings(self):
         self.license_info.setData1()
@@ -1288,11 +1329,11 @@ class DesignClass(QWidget):
 
     def redirect_to_feedback(self):
         webbrowser.open(
-            'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
+            'https://slinkyghxdesign.com/#contact')
 
     def redirect_to_help(self):
         webbrowser.open(
-            'https://www.figma.com/file/dCCAp7MQBZ4RTQteuPaS4s/SGHEDA_v1.1?type=design&node-id=0-1&mode=design&t=67IVnjAvS4q6OyWX-0')
+            'https://slinkyghxdesign.com/resource')
 
     def exitbutton(self):
         self.parent.exit()
