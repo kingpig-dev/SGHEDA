@@ -36,7 +36,7 @@ class Dashboard(QWidget):
         # Add another button to the layout
         website_button = MainButton(self)
         website_button.setText(self.tr('Open Website'))
-        website_button.setToolTip("https://ghedesign.center")
+        website_button.setToolTip("https://slinkyghxdesign.com")
         website_button.show()
         website_button.setCursor(Qt.DragLinkCursor)
         website_button.clicked.connect(self.redirect_to_website)
@@ -87,7 +87,7 @@ class Dashboard(QWidget):
         self.parent.analysisUI()
 
     def redirect_to_website(self):
-        webbrowser.open("https://ghedesign.center")
+        webbrowser.open("https://slinkyghxdesign.com")
 
 if __name__ == '__main__':
     # Create a new QApplication instance

@@ -297,6 +297,7 @@ class Myapp(QMainWindow):
             data = time + num_design + machine_number[8:16] + day + num_analysis + machine_number[0:8] + year
             #       0,4      4,8            8,16              16,20     20,24           24,32           32,34
             # encrypt data with key
+            print(data)
             self.encrypted_data = self.caesar_encrypt(data, self.encryption_key)
             self.serialnumber.setText(self.encrypted_data)
             self.state = 1
